@@ -106,7 +106,7 @@ Restraint stays. Identity comes from a few deliberate choices applied everywhere
 | `accent-hover` | `#0A6564` | `#5CCBC8` |
 | `on-accent` | `#FFFFFF` | `#171513` |
 | `success` | `#2F6B3F` | `#6FBF86` |
-| `warning` | `#8A6A00` | `#D9B23F` |
+| `warning` | `#866700` | `#D9B23F` |
 | `danger` | `#B42318` | `#F0867A` |
 
 **Status color:** success (green), warning (ochre), and danger (red) are distinct from the teal accent. Status always appears with an icon and label, never color alone. The accent is never used on error states or validation.
