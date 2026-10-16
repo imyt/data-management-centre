@@ -1,0 +1,240 @@
+/*
+  tokens.css  ->  frontend/src/tokens/tokens.css
+  Paper + teal. Source of truth is DESIGN.md; change it there first.
+  Assumes Tailwind v4 + shadcn/ui. Dark mode via the `.dark` class.
+  Import once in your global CSS, after `@import "tailwindcss";`
+*/
+
+/* ---------- 1. Semantic tokens (light) ---------- */
+:root {
+  --bg-canvas: #faf8f5;
+  --bg-surface: #fffefc;
+  --bg-subtle: #f1ede7;
+
+  --border-subtle: #e7e2da;
+  --border-strong: #8f8a81; /* control borders, 3:1 contrast */
+
+  --text-primary: #1f1d1a;
+  --text-secondary: #5e5a53;
+  --text-tertiary: #76716a; /* non-essential metadata only */
+
+  --accent: #0e7c7b;
+  --accent-hover: #0a6564;
+  --accent-bg: #e3f1f0; /* selection, active row tint */
+  --on-accent: #ffffff;
+
+  --success: #2f6b3f;
+  --success-bg: #e8f1ea;
+  --warning: #8a6a00;
+  --warning-bg: #f6efd8;
+  --danger: #b42318;
+  --danger-bg: #fbe9e7;
+
+  --radius-control: 4px;
+  --radius-card: 6px;
+  --radius-modal: 10px;
+
+  --elev-sm: 0 1px 2px rgb(31 29 26 / 0.06), 0 2px 8px rgb(31 29 26 / 0.06);
+  --elev-lg: 0 8px 32px rgb(31 29 26 / 0.14);
+
+  --duration-fast: 150ms;
+  --duration-base: 250ms;
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+
+  --z-base: 0;
+  --z-sticky: 10;
+  --z-nav: 20;
+  --z-pane: 30;
+  --z-popover: 40;
+  --z-modal: 50;
+  --z-toast: 60;
+
+  --row-height: 40px; /* comfortable */
+  --control-height: 36px;
+}
+
+/* ---------- 2. Semantic tokens (dark) ---------- */
+.dark {
+  --bg-canvas: #171513;
+  --bg-surface: #1f1c19;
+  --bg-subtle: #28241f;
+
+  --border-subtle: #34302a;
+  --border-strong: #77726a;
+
+  --text-primary: #f2efea;
+  --text-secondary: #b5b0a7;
+  --text-tertiary: #8f8a81;
+
+  --accent: #3fb8b5;
+  --accent-hover: #5ccbc8;
+  --accent-bg: #12302f;
+  --on-accent: #171513;
+
+  --success: #6fbf86;
+  --success-bg: #1d2a21;
+  --warning: #d9b23f;
+  --warning-bg: #2c2614;
+  --danger: #f0867a;
+  --danger-bg: #33201d;
+
+  --elev-sm: 0 1px 2px rgb(0 0 0 / 0.3), 0 2px 8px rgb(0 0 0 / 0.3);
+  --elev-lg: 0 8px 32px rgb(0 0 0 / 0.5);
+}
+
+/* ---------- 3. Density ---------- */
+[data-density="compact"] {
+  --row-height: 32px;
+  --control-height: 32px;
+}
+
+/* ---------- 4. shadcn variable mapping ----------
+   Note: shadcn's `--accent` means "subtle hover surface", NOT our teal.
+   Our teal is shadcn's `--primary`. */
+:root,
+.dark {
+  --background: var(--bg-canvas);
+  --foreground: var(--text-primary);
+
+  --card: var(--bg-surface);
+  --card-foreground: var(--text-primary);
+  --popover: var(--bg-surface);
+  --popover-foreground: var(--text-primary);
+
+  --primary: var(--accent);
+  --primary-foreground: var(--on-accent);
+
+  --secondary: var(--bg-subtle);
+  --secondary-foreground: var(--text-primary);
+
+  --muted: var(--bg-subtle);
+  --muted-foreground: var(--text-secondary);
+
+  --accent-surface: var(--bg-subtle); /* see @theme mapping below */
+  --destructive: var(--danger);
+
+  --border: var(--border-subtle);
+  --input: var(--border-strong);
+  --ring: var(--accent);
+
+  --radius: var(--radius-card);
+}
+
+/* ---------- 5. Tailwind v4 theme ---------- */
+@theme inline {
+  /* shadcn colors */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent-surface);
+  --color-accent-foreground: var(--text-primary);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* our extra semantic colors */
+  --color-canvas: var(--bg-canvas);
+  --color-surface: var(--bg-surface);
+  --color-subtle: var(--bg-subtle);
+  --color-border-strong: var(--border-strong);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-tertiary: var(--text-tertiary);
+  --color-brand: var(--accent);
+  --color-brand-hover: var(--accent-hover);
+  --color-brand-bg: var(--accent-bg);
+  --color-success: var(--success);
+  --color-success-bg: var(--success-bg);
+  --color-warning: var(--warning);
+  --color-warning-bg: var(--warning-bg);
+  --color-danger: var(--danger);
+  --color-danger-bg: var(--danger-bg);
+
+  /* radius */
+  --radius-sm: var(--radius-control);
+  --radius-md: var(--radius-card);
+  --radius-lg: var(--radius-modal);
+
+  /* shadows (only these two exist) */
+  --shadow-sm: var(--elev-sm);
+  --shadow-lg: var(--elev-lg);
+
+  /* type */
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --text-xs: 12px;
+  --text-sm: 13px;
+  --text-base: 15px;
+  --text-lg: 17px;
+  --text-xl: 22px;
+  --text-2xl: 28px;
+  --text-3xl: 34px;
+
+  /* motion */
+  --ease-out: var(--ease-standard);
+}
+
+/* z-index utilities: z-sticky, z-nav, z-pane, z-popover, z-modal, z-toast */
+@utility z-sticky  { z-index: var(--z-sticky); }
+@utility z-nav     { z-index: var(--z-nav); }
+@utility z-pane    { z-index: var(--z-pane); }
+@utility z-popover { z-index: var(--z-popover); }
+@utility z-modal   { z-index: var(--z-modal); }
+@utility z-toast   { z-index: var(--z-toast); }
+
+/* duration utilities: duration-fast, duration-base */
+@utility duration-fast { transition-duration: var(--duration-fast); }
+@utility duration-base { transition-duration: var(--duration-base); }
+
+/* ---------- 6. Base ---------- */
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+  html {
+    font-family: var(--font-sans);
+    font-feature-settings: "cv11", "ss01";
+    -webkit-font-smoothing: antialiased;
+    min-width: 1280px; /* desktop only, see DESIGN.md */
+  }
+  body {
+    font-size: var(--text-base); /* 15px; root stays 16px so rem spacing is true 4px steps */
+    background: var(--background);
+    color: var(--foreground);
+    line-height: 1.45;
+  }
+  h1, h2, h3 {
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.25;
+  }
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+  ::selection {
+    background: var(--accent-bg);
+  }
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+  .mono {
+    font-family: var(--font-mono);
+    font-size: 0.867em; /* ~13px at 15px base */
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
