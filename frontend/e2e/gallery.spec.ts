@@ -4,9 +4,9 @@ import { expect, test, type Page } from "@playwright/test"
 const THEMES = ["light", "dark"] as const
 type Theme = (typeof THEMES)[number]
 
-async function openGallery(page: Page, theme: Theme, path = "/gallery") {
+async function openGallery(page: Page, theme: Theme) {
   await page.addInitScript((t) => localStorage.setItem("dmc-theme", t), theme)
-  await page.goto(path)
+  await page.goto("/gallery")
   await expect(page.getByRole("heading", { level: 1, name: "Gallery" })).toBeVisible()
   await page.evaluate(() => document.fonts.ready)
 }
@@ -86,12 +86,16 @@ for (const theme of THEMES) {
 test("focus ring is the 2px accent outline on every control", async ({ page }) => {
   await openGallery(page, "light")
   await page.keyboard.press("Tab")
-  const outline = await page.evaluate(() => {
-    const el = document.activeElement as HTMLElement
-    const style = getComputedStyle(el)
-    return { style: style.outlineStyle, width: style.outlineWidth, offset: style.outlineOffset }
-  })
-  expect(outline).toEqual({ style: "solid", width: "2px", offset: "2px" })
+  // The first stop is AppShell's skip link, which moves on screen as it takes focus; poll until it settles.
+  await expect(page.getByRole("link", { name: "Skip to content" })).toBeFocused()
+  await expect
+    .poll(() =>
+      page.evaluate(() => {
+        const style = getComputedStyle(document.activeElement as HTMLElement)
+        return { style: style.outlineStyle, width: style.outlineWidth, offset: style.outlineOffset }
+      })
+    )
+    .toEqual({ style: "solid", width: "2px", offset: "2px" })
 })
 
 test("every section shows all seven states", async ({ page }) => {
@@ -119,7 +123,9 @@ test("DetailSplit keeps the selection in the URL and guards unsaved changes", as
 })
 
 test("DetailSplit opens from a deep link and shows not found for a missing item", async ({ page }) => {
-  await openGallery(page, "light", "/gallery?asset=AST-99999")
+  // Below 1536px the detail opens as a modal sheet, which hides the gallery heading from the
+  // accessibility tree, so skip openGallery's heading check.
+  await page.goto("/gallery?asset=AST-99999")
   // Docked panel at 1536px and wider, sheet below.
   const detail = page
     .getByRole("complementary", { name: "Asset details" })
