@@ -55,7 +55,6 @@ export function GlobalNav({ routes, inboxCount = 0 }: GlobalNavProps) {
           <NavLink
             key={s.id}
             to={routes[s.id]}
-            aria-label={showCount ? `Inbox, ${inboxCount} need you` : undefined}
             className={({ isActive }) =>
               cn(
                 "relative flex items-center gap-1 px-3 text-sm transition-colors duration-fast",
@@ -68,7 +67,8 @@ export function GlobalNav({ routes, inboxCount = 0 }: GlobalNavProps) {
                 {s.label}
                 {showCount && (
                   <span className="mono flex h-4.5 min-w-4.5 items-center justify-center rounded-full bg-primary px-1.5 text-xs text-primary-foreground tabular-nums">
-                    {inboxCount > 99 ? "99+" : inboxCount}
+                    <span aria-hidden="true">{inboxCount > 99 ? "99+" : inboxCount}</span>
+                    <span className="sr-only">, {inboxCount} need you</span>
                   </span>
                 )}
                 {isActive && <span aria-hidden="true" className="absolute inset-x-3 bottom-0 h-0.5 bg-primary" />}
