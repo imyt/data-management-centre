@@ -2,7 +2,7 @@
 
 import type { Client, ClientMeta, Options as Options2, RequestResult, TDataShape } from './client';
 import { client } from './client.gen';
-import type { CreateApplicationData, CreateApplicationErrors, CreateApplicationResponses, CreateDataStoreData, CreateDataStoreErrors, CreateDataStoreResponses, CreateEnvironmentData, CreateEnvironmentErrors, CreateEnvironmentResponses, GetApplicationData, GetApplicationErrors, GetApplicationResponses, GetExampleData, GetExampleErrors, GetExampleResponses, GetHealthData, GetHealthReadyData, GetHealthReadyErrors, GetHealthReadyResponses, GetHealthResponses, GetJobData, GetJobErrors, GetJobResponses, GetMeData, GetMeErrors, GetMeResponses, GetMetaData, GetMetaResponses, ListApplicationsData, ListApplicationsErrors, ListApplicationsResponses, ListDataCategoriesData, ListDataCategoriesResponses, ListDevUsersData, ListDevUsersErrors, ListDevUsersResponses, ListDomainsData, ListDomainsResponses, ListExamplesData, ListExamplesErrors, ListExamplesResponses, ListPurposesData, ListPurposesResponses, ListRegionsData, ListRegionsResponses, ListRetentionPoliciesData, ListRetentionPoliciesResponses, UpdateApplicationData, UpdateApplicationErrors, UpdateApplicationResponses } from './types.gen';
+import type { AssignOwnershipData, AssignOwnershipErrors, AssignOwnershipResponses, ConfirmOwnershipData, ConfirmOwnershipErrors, ConfirmOwnershipResponses, CreateApplicationData, CreateApplicationErrors, CreateApplicationResponses, CreateAssetData, CreateAssetErrors, CreateAssetResponses, CreateDataElementData, CreateDataElementErrors, CreateDataElementResponses, CreateDataStoreData, CreateDataStoreErrors, CreateDataStoreResponses, CreateEnvironmentData, CreateEnvironmentErrors, CreateEnvironmentResponses, DisputeOwnershipData, DisputeOwnershipErrors, DisputeOwnershipResponses, GetApplicationData, GetApplicationErrors, GetApplicationResponses, GetAssetData, GetAssetErrors, GetAssetResponses, GetExampleData, GetExampleErrors, GetExampleResponses, GetHealthData, GetHealthReadyData, GetHealthReadyErrors, GetHealthReadyResponses, GetHealthResponses, GetJobData, GetJobErrors, GetJobResponses, GetMeData, GetMeErrors, GetMeResponses, GetMetaData, GetMetaResponses, ListApplicationsData, ListApplicationsErrors, ListApplicationsResponses, ListAssetsData, ListAssetsErrors, ListAssetsResponses, ListDataCategoriesData, ListDataCategoriesResponses, ListDevUsersData, ListDevUsersErrors, ListDevUsersResponses, ListDomainsData, ListDomainsResponses, ListExamplesData, ListExamplesErrors, ListExamplesResponses, ListInboxData, ListInboxErrors, ListInboxResponses, ListPurposesData, ListPurposesResponses, ListRegionsData, ListRegionsResponses, ListRetentionPoliciesData, ListRetentionPoliciesResponses, ListUsersData, ListUsersErrors, ListUsersResponses, UpdateApplicationData, UpdateApplicationErrors, UpdateApplicationResponses, UpdateAssetData, UpdateAssetErrors, UpdateAssetResponses, UpdateDataElementData, UpdateDataElementErrors, UpdateDataElementResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -57,6 +57,11 @@ export const getMe = <ThrowOnError extends boolean = false>(options?: Options<Ge
  * List the personas to act as (dev authentication only)
  */
 export const listDevUsers = <ThrowOnError extends boolean = false>(options?: Options<ListDevUsersData, ThrowOnError>): RequestResult<ListDevUsersResponses, ListDevUsersErrors, ThrowOnError> => (options?.client ?? client).get<ListDevUsersResponses, ListDevUsersErrors, ThrowOnError>({ url: '/api/v1/dev/users', ...options });
+
+/**
+ * List active users, optionally those holding a role
+ */
+export const listUsers = <ThrowOnError extends boolean = false>(options?: Options<ListUsersData, ThrowOnError>): RequestResult<ListUsersResponses, ListUsersErrors, ThrowOnError> => (options?.client ?? client).get<ListUsersResponses, ListUsersErrors, ThrowOnError>({ url: '/api/v1/users', ...options });
 
 /**
  * List domains
@@ -140,3 +145,95 @@ export const createDataStore = <ThrowOnError extends boolean = false>(options: O
         ...options.headers
     }
 });
+
+/**
+ * List assets
+ */
+export const listAssets = <ThrowOnError extends boolean = false>(options?: Options<ListAssetsData, ThrowOnError>): RequestResult<ListAssetsResponses, ListAssetsErrors, ThrowOnError> => (options?.client ?? client).get<ListAssetsResponses, ListAssetsErrors, ThrowOnError>({ url: '/api/v1/assets', ...options });
+
+/**
+ * Declare an asset
+ */
+export const createAsset = <ThrowOnError extends boolean = false>(options: Options<CreateAssetData, ThrowOnError>): RequestResult<CreateAssetResponses, CreateAssetErrors, ThrowOnError> => (options.client ?? client).post<CreateAssetResponses, CreateAssetErrors, ThrowOnError>({
+    url: '/api/v1/assets',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Get an asset with its data elements and ownership
+ */
+export const getAsset = <ThrowOnError extends boolean = false>(options: Options<GetAssetData, ThrowOnError>): RequestResult<GetAssetResponses, GetAssetErrors, ThrowOnError> => (options.client ?? client).get<GetAssetResponses, GetAssetErrors, ThrowOnError>({ url: '/api/v1/assets/{asset_id}', ...options });
+
+/**
+ * Update an asset's declaration
+ */
+export const updateAsset = <ThrowOnError extends boolean = false>(options: Options<UpdateAssetData, ThrowOnError>): RequestResult<UpdateAssetResponses, UpdateAssetErrors, ThrowOnError> => (options.client ?? client).patch<UpdateAssetResponses, UpdateAssetErrors, ThrowOnError>({
+    url: '/api/v1/assets/{asset_id}',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Add a data element to an asset
+ */
+export const createDataElement = <ThrowOnError extends boolean = false>(options: Options<CreateDataElementData, ThrowOnError>): RequestResult<CreateDataElementResponses, CreateDataElementErrors, ThrowOnError> => (options.client ?? client).post<CreateDataElementResponses, CreateDataElementErrors, ThrowOnError>({
+    url: '/api/v1/assets/{asset_id}/data-elements',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Update a data element, including its PII and CDE flags
+ */
+export const updateDataElement = <ThrowOnError extends boolean = false>(options: Options<UpdateDataElementData, ThrowOnError>): RequestResult<UpdateDataElementResponses, UpdateDataElementErrors, ThrowOnError> => (options.client ?? client).patch<UpdateDataElementResponses, UpdateDataElementErrors, ThrowOnError>({
+    url: '/api/v1/data-elements/{element_id}',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Assign or reassign the Data Owner or Data Steward
+ */
+export const assignOwnership = <ThrowOnError extends boolean = false>(options: Options<AssignOwnershipData, ThrowOnError>): RequestResult<AssignOwnershipResponses, AssignOwnershipErrors, ThrowOnError> => (options.client ?? client).put<AssignOwnershipResponses, AssignOwnershipErrors, ThrowOnError>({
+    url: '/api/v1/assets/{asset_id}/ownership/{role}',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Confirm an ownership assigned to you
+ */
+export const confirmOwnership = <ThrowOnError extends boolean = false>(options: Options<ConfirmOwnershipData, ThrowOnError>): RequestResult<ConfirmOwnershipResponses, ConfirmOwnershipErrors, ThrowOnError> => (options.client ?? client).post<ConfirmOwnershipResponses, ConfirmOwnershipErrors, ThrowOnError>({ url: '/api/v1/assets/{asset_id}/ownership/{role}/confirm', ...options });
+
+/**
+ * Dispute an ownership assigned to you, with a reason
+ */
+export const disputeOwnership = <ThrowOnError extends boolean = false>(options: Options<DisputeOwnershipData, ThrowOnError>): RequestResult<DisputeOwnershipResponses, DisputeOwnershipErrors, ThrowOnError> => (options.client ?? client).post<DisputeOwnershipResponses, DisputeOwnershipErrors, ThrowOnError>({
+    url: '/api/v1/assets/{asset_id}/ownership/{role}/dispute',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * List what is waiting on the current user
+ */
+export const listInbox = <ThrowOnError extends boolean = false>(options?: Options<ListInboxData, ThrowOnError>): RequestResult<ListInboxResponses, ListInboxErrors, ThrowOnError> => (options?.client ?? client).get<ListInboxResponses, ListInboxErrors, ThrowOnError>({ url: '/api/v1/inbox', ...options });

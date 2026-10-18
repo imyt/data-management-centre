@@ -74,6 +74,10 @@ class IdentityService:
         row = self._users.by_username(username)
         return _to_user(row) if row is not None and row.active else None
 
+    def get_users(self, user_ids: set[uuid.UUID]) -> dict[uuid.UUID, User]:
+        """The users with these ids (active or not), by id; unknown ids are left out."""
+        return {row.id: _to_user(row) for row in self._users.by_ids(user_ids)}
+
     def list_active_users(self) -> list[User]:
         return [_to_user(row) for row in self._users.active()]
 

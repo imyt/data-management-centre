@@ -3,8 +3,8 @@
 import { type DefaultError, type InfiniteData, infiniteQueryOptions, queryOptions, type UseMutationOptions } from '@tanstack/react-query';
 
 import { client } from '../client.gen';
-import { createApplication, createDataStore, createEnvironment, getApplication, getExample, getHealth, getHealthReady, getJob, getMe, getMeta, listApplications, listDataCategories, listDevUsers, listDomains, listExamples, listPurposes, listRegions, listRetentionPolicies, type Options, updateApplication } from '../sdk.gen';
-import type { CreateApplicationData, CreateApplicationError, CreateApplicationResponse, CreateDataStoreData, CreateDataStoreError, CreateDataStoreResponse, CreateEnvironmentData, CreateEnvironmentError, CreateEnvironmentResponse, GetApplicationData, GetApplicationError, GetApplicationResponse, GetExampleData, GetExampleError, GetExampleResponse, GetHealthData, GetHealthReadyData, GetHealthReadyError, GetHealthReadyResponse, GetHealthResponse, GetJobData, GetJobError, GetJobResponse, GetMeData, GetMeError, GetMeResponse, GetMetaData, GetMetaResponse, ListApplicationsData, ListApplicationsError, ListApplicationsResponse, ListDataCategoriesData, ListDataCategoriesResponse, ListDevUsersData, ListDevUsersError, ListDevUsersResponse, ListDomainsData, ListDomainsResponse, ListExamplesData, ListExamplesError, ListExamplesResponse, ListPurposesData, ListPurposesResponse, ListRegionsData, ListRegionsResponse, ListRetentionPoliciesData, ListRetentionPoliciesResponse, UpdateApplicationData, UpdateApplicationError, UpdateApplicationResponse } from '../types.gen';
+import { assignOwnership, confirmOwnership, createApplication, createAsset, createDataElement, createDataStore, createEnvironment, disputeOwnership, getApplication, getAsset, getExample, getHealth, getHealthReady, getJob, getMe, getMeta, listApplications, listAssets, listDataCategories, listDevUsers, listDomains, listExamples, listInbox, listPurposes, listRegions, listRetentionPolicies, listUsers, type Options, updateApplication, updateAsset, updateDataElement } from '../sdk.gen';
+import type { AssignOwnershipData, AssignOwnershipError, AssignOwnershipResponse, ConfirmOwnershipData, ConfirmOwnershipError, ConfirmOwnershipResponse, CreateApplicationData, CreateApplicationError, CreateApplicationResponse, CreateAssetData, CreateAssetError, CreateAssetResponse, CreateDataElementData, CreateDataElementError, CreateDataElementResponse, CreateDataStoreData, CreateDataStoreError, CreateDataStoreResponse, CreateEnvironmentData, CreateEnvironmentError, CreateEnvironmentResponse, DisputeOwnershipData, DisputeOwnershipError, DisputeOwnershipResponse, GetApplicationData, GetApplicationError, GetApplicationResponse, GetAssetData, GetAssetError, GetAssetResponse, GetExampleData, GetExampleError, GetExampleResponse, GetHealthData, GetHealthReadyData, GetHealthReadyError, GetHealthReadyResponse, GetHealthResponse, GetJobData, GetJobError, GetJobResponse, GetMeData, GetMeError, GetMeResponse, GetMetaData, GetMetaResponse, ListApplicationsData, ListApplicationsError, ListApplicationsResponse, ListAssetsData, ListAssetsError, ListAssetsResponse, ListDataCategoriesData, ListDataCategoriesResponse, ListDevUsersData, ListDevUsersError, ListDevUsersResponse, ListDomainsData, ListDomainsResponse, ListExamplesData, ListExamplesError, ListExamplesResponse, ListInboxData, ListInboxError, ListInboxResponse, ListPurposesData, ListPurposesResponse, ListRegionsData, ListRegionsResponse, ListRetentionPoliciesData, ListRetentionPoliciesResponse, ListUsersData, ListUsersError, ListUsersResponse, UpdateApplicationData, UpdateApplicationError, UpdateApplicationResponse, UpdateAssetData, UpdateAssetError, UpdateAssetResponse, UpdateDataElementData, UpdateDataElementError, UpdateDataElementResponse } from '../types.gen';
 
 export type QueryKey<TOptions extends Options> = [
     Pick<TOptions, 'baseUrl' | 'body' | 'headers' | 'path' | 'query'> & {
@@ -242,6 +242,24 @@ export const listDevUsersOptions = (options?: Options<ListDevUsersData>) => quer
     queryKey: listDevUsersQueryKey(options)
 });
 
+export const listUsersQueryKey = (options?: Options<ListUsersData>) => createQueryKey('listUsers', options);
+
+/**
+ * List active users, optionally those holding a role
+ */
+export const listUsersOptions = (options?: Options<ListUsersData>) => queryOptions<ListUsersResponse, ListUsersError, ListUsersResponse, ReturnType<typeof listUsersQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await listUsers({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: listUsersQueryKey(options)
+});
+
 export const listDomainsQueryKey = (options?: Options<ListDomainsData>) => createQueryKey('listDomains', options);
 
 /**
@@ -465,3 +483,206 @@ export const createDataStoreMutation = (options?: Partial<Options<CreateDataStor
     };
     return mutationOptions;
 };
+
+export const listAssetsQueryKey = (options?: Options<ListAssetsData>) => createQueryKey('listAssets', options);
+
+/**
+ * List assets
+ */
+export const listAssetsOptions = (options?: Options<ListAssetsData>) => queryOptions<ListAssetsResponse, ListAssetsError, ListAssetsResponse, ReturnType<typeof listAssetsQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await listAssets({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: listAssetsQueryKey(options)
+});
+
+export const listAssetsInfiniteQueryKey = (options?: Options<ListAssetsData>): QueryKey<Options<ListAssetsData>> => createQueryKey('listAssets', options, true);
+
+/**
+ * List assets
+ */
+export const listAssetsInfiniteOptions = (options?: Options<ListAssetsData>) => {
+    const opts = infiniteQueryOptions<ListAssetsResponse, ListAssetsError, InfiniteData<ListAssetsResponse>, QueryKey<Options<ListAssetsData>>, string | null | Pick<QueryKey<Options<ListAssetsData>>[0], 'body' | 'headers' | 'path' | 'query'>>(
+    // @ts-ignore
+    {
+        queryFn: async ({ pageParam, queryKey, signal }) => {
+            // @ts-ignore
+            const page: Pick<QueryKey<Options<ListAssetsData>>[0], 'body' | 'headers' | 'path' | 'query'> = typeof pageParam === 'object' ? pageParam : {
+                query: {
+                    cursor: pageParam
+                }
+            };
+            const params = createInfiniteParams(queryKey, page);
+            const { data } = await listAssets({
+                ...options,
+                ...params,
+                signal,
+                throwOnError: true
+            });
+            return data;
+        },
+        queryKey: listAssetsInfiniteQueryKey(options)
+    });
+    return opts as Omit<typeof opts, 'initialData'>;
+};
+
+/**
+ * Declare an asset
+ */
+export const createAssetMutation = (options?: Partial<Options<CreateAssetData>>): UseMutationOptions<CreateAssetResponse, CreateAssetError, Options<CreateAssetData>> => {
+    const mutationOptions: UseMutationOptions<CreateAssetResponse, CreateAssetError, Options<CreateAssetData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await createAsset({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+export const getAssetQueryKey = (options: Options<GetAssetData>) => createQueryKey('getAsset', options);
+
+/**
+ * Get an asset with its data elements and ownership
+ */
+export const getAssetOptions = (options: Options<GetAssetData>) => queryOptions<GetAssetResponse, GetAssetError, GetAssetResponse, ReturnType<typeof getAssetQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await getAsset({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: getAssetQueryKey(options)
+});
+
+/**
+ * Update an asset's declaration
+ */
+export const updateAssetMutation = (options?: Partial<Options<UpdateAssetData>>): UseMutationOptions<UpdateAssetResponse, UpdateAssetError, Options<UpdateAssetData>> => {
+    const mutationOptions: UseMutationOptions<UpdateAssetResponse, UpdateAssetError, Options<UpdateAssetData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await updateAsset({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+/**
+ * Add a data element to an asset
+ */
+export const createDataElementMutation = (options?: Partial<Options<CreateDataElementData>>): UseMutationOptions<CreateDataElementResponse, CreateDataElementError, Options<CreateDataElementData>> => {
+    const mutationOptions: UseMutationOptions<CreateDataElementResponse, CreateDataElementError, Options<CreateDataElementData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await createDataElement({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+/**
+ * Update a data element, including its PII and CDE flags
+ */
+export const updateDataElementMutation = (options?: Partial<Options<UpdateDataElementData>>): UseMutationOptions<UpdateDataElementResponse, UpdateDataElementError, Options<UpdateDataElementData>> => {
+    const mutationOptions: UseMutationOptions<UpdateDataElementResponse, UpdateDataElementError, Options<UpdateDataElementData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await updateDataElement({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+/**
+ * Assign or reassign the Data Owner or Data Steward
+ */
+export const assignOwnershipMutation = (options?: Partial<Options<AssignOwnershipData>>): UseMutationOptions<AssignOwnershipResponse, AssignOwnershipError, Options<AssignOwnershipData>> => {
+    const mutationOptions: UseMutationOptions<AssignOwnershipResponse, AssignOwnershipError, Options<AssignOwnershipData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await assignOwnership({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+/**
+ * Confirm an ownership assigned to you
+ */
+export const confirmOwnershipMutation = (options?: Partial<Options<ConfirmOwnershipData>>): UseMutationOptions<ConfirmOwnershipResponse, ConfirmOwnershipError, Options<ConfirmOwnershipData>> => {
+    const mutationOptions: UseMutationOptions<ConfirmOwnershipResponse, ConfirmOwnershipError, Options<ConfirmOwnershipData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await confirmOwnership({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+/**
+ * Dispute an ownership assigned to you, with a reason
+ */
+export const disputeOwnershipMutation = (options?: Partial<Options<DisputeOwnershipData>>): UseMutationOptions<DisputeOwnershipResponse, DisputeOwnershipError, Options<DisputeOwnershipData>> => {
+    const mutationOptions: UseMutationOptions<DisputeOwnershipResponse, DisputeOwnershipError, Options<DisputeOwnershipData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await disputeOwnership({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+export const listInboxQueryKey = (options?: Options<ListInboxData>) => createQueryKey('listInbox', options);
+
+/**
+ * List what is waiting on the current user
+ */
+export const listInboxOptions = (options?: Options<ListInboxData>) => queryOptions<ListInboxResponse, ListInboxError, ListInboxResponse, ReturnType<typeof listInboxQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await listInbox({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: listInboxQueryKey(options)
+});

@@ -122,7 +122,8 @@ erDiagram
 | `application` | name, code, description, `app_owner_id`, `tech_owner_id`, `domain_id`, criticality, hosting, `vendor_id`, lifecycle_status (planned, active, retiring, decommissioned) |
 | `app_environment` | `application_id`, name, type (production, non_production), `region_id` |
 | `data_store` | `environment_id`, name, type, platform, `region_id`, `connection_ref` (secret reference, never the secret), harvest_status (never, succeeded, failed), last_harvested_at |
-| `asset` | type (dataset, report, model, file), name, `owner_id`, `steward_id`, classification, classification_status, `domain_id`, `data_category_id`, business_context, is_stored, `retention_policy_id` (required when stored) |
+| `asset` | type (dataset, report, model, file), name, classification, classification_status, `domain_id`, `data_category_id`, business_context, is_stored, `retention_policy_id` (required when stored) |
+| `asset_ownership` | `asset_id`, role (owner, steward), `user_id`, status (pending, confirmed, disputed), `assigned_by_id`, assigned_at, decided_at, reason. One row per asset and role; reassignments and disputes need a reason and are audited, so history lives in the audit trail |
 | `data_element` | `asset_id`, name, data_type, is_pii, pii_source (scanner, declared), is_cde, dq_threshold |
 | `application_asset` | `application_id`, `asset_id`, `data_store_id`, role (system_of_record, copy, consumer), access (read, write), `purpose_id` |
 | `business_process` | name, `owner_id`, criticality |
@@ -157,7 +158,7 @@ Reference data: `domain`, `data_category`, `region`, `retention_policy` (with `r
 | `access_request` | `asset_id`, `requester_id`, purpose, conditions, state, expires_at |
 | `change_review` | `application_id`, change_ref, new flows, decision, `decided_by` |
 | `attestation` | campaign, subject, `attester_id`, state, signed_at |
-| `inbox_item` | `user_id`, kind, subject, due_at, state |
+| `inbox_item` | `user_id`, kind, subject, due_at, state. Inbox v1 has no table: `GET /inbox` derives ownership confirmations due from `asset_ownership` |
 | `audit_event` | actor, action, subject, reason, before, after, at, prev_hash, hash |
 | `outbox_event` | type, payload, created_at, available_at, processed_at, attempts, last_error; each handler's delivery recorded once in `outbox_delivery` |
 | `job` | kind, payload, status (queued, running, succeeded, failed, cancelled), attempts, max_attempts, run_after, locked_by, locked_at, progress, result, error, created_by, idempotency_key |

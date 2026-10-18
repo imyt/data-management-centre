@@ -194,9 +194,323 @@ export type ApplicationUpdate = {
 };
 
 /**
+ * AssetCreate
+ */
+export type AssetCreate = {
+    /**
+     * Name
+     */
+    name: string;
+    type?: AssetType;
+    /**
+     * Description
+     */
+    description?: string | null;
+    /**
+     * Domain Id
+     */
+    domain_id: string;
+    /**
+     * Data Category Id
+     */
+    data_category_id?: string | null;
+    /**
+     * Business Context
+     */
+    business_context?: string | null;
+    /**
+     * Is Stored
+     */
+    is_stored?: boolean;
+    /**
+     * Retention Policy Id
+     *
+     * Required when the asset is stored; must be empty otherwise.
+     */
+    retention_policy_id?: string | null;
+};
+
+/**
+ * AssetDetail
+ */
+export type AssetDetail = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Name
+     */
+    name: string;
+    type: AssetType;
+    /**
+     * Description
+     */
+    description: string | null;
+    domain: ReferenceRef;
+    data_category: ReferenceRef | null;
+    /**
+     * Business Context
+     */
+    business_context: string | null;
+    /**
+     * Is Stored
+     */
+    is_stored: boolean;
+    retention_policy: ReferenceRef | null;
+    /**
+     * Created At
+     */
+    created_at: string;
+    /**
+     * Updated At
+     */
+    updated_at: string;
+    owner: OwnershipRead | null;
+    steward: OwnershipRead | null;
+    /**
+     * Data Elements
+     */
+    data_elements: Array<DataElementRead>;
+};
+
+/**
+ * AssetPage
+ */
+export type AssetPage = {
+    /**
+     * Data
+     */
+    data: Array<AssetSummary>;
+    /**
+     * Allowed Actions
+     *
+     * Actions the caller may take on `data` right now.
+     */
+    allowed_actions: Array<string>;
+    meta: ListMeta;
+};
+
+/**
+ * AssetResponse
+ */
+export type AssetResponse = {
+    data: AssetDetail;
+    /**
+     * Allowed Actions
+     *
+     * Actions the caller may take on `data` right now.
+     */
+    allowed_actions: Array<string>;
+    meta: Meta;
+};
+
+/**
+ * AssetSummary
+ */
+export type AssetSummary = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Name
+     */
+    name: string;
+    type: AssetType;
+    /**
+     * Description
+     */
+    description: string | null;
+    domain: ReferenceRef;
+    data_category: ReferenceRef | null;
+    /**
+     * Business Context
+     */
+    business_context: string | null;
+    /**
+     * Is Stored
+     */
+    is_stored: boolean;
+    retention_policy: ReferenceRef | null;
+    /**
+     * Created At
+     */
+    created_at: string;
+    /**
+     * Updated At
+     */
+    updated_at: string;
+    owner: OwnershipRead | null;
+    steward: OwnershipRead | null;
+};
+
+/**
+ * AssetType
+ */
+export type AssetType = 'dataset' | 'report' | 'model' | 'file';
+
+/**
+ * AssetUpdate
+ *
+ * Only the fields sent are changed.
+ */
+export type AssetUpdate = {
+    /**
+     * Name
+     */
+    name?: string | null;
+    type?: AssetType | null;
+    /**
+     * Description
+     */
+    description?: string | null;
+    /**
+     * Domain Id
+     */
+    domain_id?: string | null;
+    /**
+     * Data Category Id
+     */
+    data_category_id?: string | null;
+    /**
+     * Business Context
+     */
+    business_context?: string | null;
+    /**
+     * Is Stored
+     */
+    is_stored?: boolean | null;
+    /**
+     * Retention Policy Id
+     */
+    retention_policy_id?: string | null;
+};
+
+/**
+ * AssignOwnership
+ */
+export type AssignOwnership = {
+    /**
+     * User Id
+     */
+    user_id: string;
+    /**
+     * Reason
+     *
+     * Required when replacing an existing assignment.
+     */
+    reason?: string | null;
+};
+
+/**
  * Criticality
  */
 export type Criticality = 'low' | 'medium' | 'high' | 'critical';
+
+/**
+ * DataElementCreate
+ */
+export type DataElementCreate = {
+    /**
+     * Name
+     */
+    name: string;
+    /**
+     * Data Type
+     */
+    data_type: string;
+    /**
+     * Is Pii
+     *
+     * Declared as personal data.
+     */
+    is_pii?: boolean;
+    /**
+     * Is Cde
+     *
+     * Critical data element; set by a Data Owner.
+     */
+    is_cde?: boolean;
+};
+
+/**
+ * DataElementRead
+ */
+export type DataElementRead = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Asset Id
+     */
+    asset_id: string;
+    /**
+     * Name
+     */
+    name: string;
+    /**
+     * Data Type
+     */
+    data_type: string;
+    /**
+     * Is Pii
+     */
+    is_pii: boolean;
+    /**
+     * Pii Source
+     *
+     * `declared` or `scanner`; null when not PII.
+     */
+    pii_source: string | null;
+    /**
+     * Is Cde
+     */
+    is_cde: boolean;
+    /**
+     * Created At
+     */
+    created_at: string;
+};
+
+/**
+ * DataElementResponse
+ */
+export type DataElementResponse = {
+    data: DataElementRead;
+    /**
+     * Allowed Actions
+     *
+     * Actions the caller may take on `data` right now.
+     */
+    allowed_actions: Array<string>;
+    meta: Meta;
+};
+
+/**
+ * DataElementUpdate
+ *
+ * Only the fields sent are changed.
+ */
+export type DataElementUpdate = {
+    /**
+     * Name
+     */
+    name?: string | null;
+    /**
+     * Data Type
+     */
+    data_type?: string | null;
+    /**
+     * Is Pii
+     */
+    is_pii?: boolean | null;
+    /**
+     * Is Cde
+     */
+    is_cde?: boolean | null;
+};
 
 /**
  * DataStoreCreate
@@ -280,6 +594,16 @@ export type DataStoreResponse = {
  * DataStoreType
  */
 export type DataStoreType = 'relational' | 'document' | 'object_storage' | 'warehouse' | 'file_share';
+
+/**
+ * DisputeOwnership
+ */
+export type DisputeOwnership = {
+    /**
+     * Reason
+     */
+    reason: string;
+};
 
 /**
  * EnvironmentCreate
@@ -459,6 +783,75 @@ export type HealthReadyRead = {
 export type Hosting = 'on_premises' | 'private_cloud' | 'public_cloud' | 'saas';
 
 /**
+ * InboxItem
+ */
+export type InboxItem = {
+    /**
+     * Id
+     */
+    id: string;
+    kind: InboxItemKind;
+    /**
+     * Title
+     *
+     * What is being asked, in a sentence.
+     */
+    title: string;
+    /**
+     * Subject Type
+     *
+     * What it is about, e.g. `asset`.
+     */
+    subject_type: string;
+    /**
+     * Subject Id
+     */
+    subject_id: string;
+    /**
+     * Subject Name
+     */
+    subject_name: string;
+    /**
+     * Requested By
+     */
+    requested_by: string | null;
+    /**
+     * Requested At
+     */
+    requested_at: string;
+    /**
+     * Due At
+     */
+    due_at: string;
+    /**
+     * Overdue
+     */
+    overdue: boolean;
+};
+
+/**
+ * InboxItemKind
+ */
+export type InboxItemKind = 'ownership_confirmation';
+
+/**
+ * InboxPage
+ */
+export type InboxPage = {
+    /**
+     * Data
+     */
+    data: Array<InboxItem>;
+    /**
+     * Allowed Actions
+     *
+     * Actions the caller may take on `data` right now.
+     */
+    allowed_actions: Array<string>;
+    meta: ListMeta;
+};
+
+/**
  * JobRead
  *
  * A background job's state. Poll it while `status` is queued or running.
@@ -624,6 +1017,45 @@ export type MetaRead = {
      */
     contract: string;
 };
+
+/**
+ * OwnershipRead
+ */
+export type OwnershipRead = {
+    role: OwnershipRole;
+    user: UserRef;
+    status: OwnershipStatus;
+    assigned_by: UserRef | null;
+    /**
+     * Assigned At
+     */
+    assigned_at: string;
+    /**
+     * Decided At
+     */
+    decided_at: string | null;
+    /**
+     * Reason
+     *
+     * Why the assignee disputed, or why it was reassigned.
+     */
+    reason: string | null;
+};
+
+/**
+ * OwnershipRole
+ *
+ * The accountabilities assigned on an asset (FR-K10). The Application Owner sits on the
+ * application.
+ */
+export type OwnershipRole = 'owner' | 'steward';
+
+/**
+ * OwnershipStatus
+ *
+ * pending → confirmed or disputed. A reassignment starts again at pending.
+ */
+export type OwnershipStatus = 'pending' | 'confirmed' | 'disputed';
 
 /**
  * ProblemDetail
@@ -832,6 +1264,20 @@ export type UserRead = {
      * Domains the user is scoped to; null means every domain.
      */
     domain_ids: Array<string> | null;
+};
+
+/**
+ * UserRef
+ */
+export type UserRef = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Display Name
+     */
+    display_name: string;
 };
 
 /**
@@ -1094,6 +1540,40 @@ export type ListDevUsersResponses = {
 };
 
 export type ListDevUsersResponse = ListDevUsersResponses[keyof ListDevUsersResponses];
+
+export type ListUsersData = {
+    body?: never;
+    path?: never;
+    query?: {
+        /**
+         * Role
+         */
+        role?: Role | null;
+    };
+    url: '/api/v1/users';
+};
+
+export type ListUsersErrors = {
+    /**
+     * Not signed in
+     */
+    401: ProblemDetail;
+    /**
+     * Validation error
+     */
+    422: ProblemDetail;
+};
+
+export type ListUsersError = ListUsersErrors[keyof ListUsersErrors];
+
+export type ListUsersResponses = {
+    /**
+     * Successful Response
+     */
+    200: UserPage;
+};
+
+export type ListUsersResponse = ListUsersResponses[keyof ListUsersResponses];
 
 export type ListDomainsData = {
     body?: never;
@@ -1431,3 +1911,418 @@ export type CreateDataStoreResponses = {
 };
 
 export type CreateDataStoreResponse = CreateDataStoreResponses[keyof CreateDataStoreResponses];
+
+export type ListAssetsData = {
+    body?: never;
+    path?: never;
+    query?: {
+        /**
+         * Limit
+         */
+        limit?: number;
+        /**
+         * Cursor
+         */
+        cursor?: string | null;
+        /**
+         * Q
+         *
+         * Matches name, ignoring case.
+         */
+        q?: string | null;
+        /**
+         * Domain Id
+         */
+        domain_id?: string | null;
+        /**
+         * Type
+         */
+        type?: AssetType | null;
+    };
+    url: '/api/v1/assets';
+};
+
+export type ListAssetsErrors = {
+    /**
+     * Invalid input
+     */
+    400: ProblemDetail;
+    /**
+     * Validation error
+     */
+    422: ProblemDetail;
+};
+
+export type ListAssetsError = ListAssetsErrors[keyof ListAssetsErrors];
+
+export type ListAssetsResponses = {
+    /**
+     * Successful Response
+     */
+    200: AssetPage;
+};
+
+export type ListAssetsResponse = ListAssetsResponses[keyof ListAssetsResponses];
+
+export type CreateAssetData = {
+    body: AssetCreate;
+    path?: never;
+    query?: never;
+    url: '/api/v1/assets';
+};
+
+export type CreateAssetErrors = {
+    /**
+     * Invalid input
+     */
+    400: ProblemDetail;
+    /**
+     * Permission denied
+     */
+    403: ProblemDetail;
+    /**
+     * Validation error
+     */
+    422: ProblemDetail;
+};
+
+export type CreateAssetError = CreateAssetErrors[keyof CreateAssetErrors];
+
+export type CreateAssetResponses = {
+    /**
+     * Successful Response
+     */
+    201: AssetResponse;
+};
+
+export type CreateAssetResponse = CreateAssetResponses[keyof CreateAssetResponses];
+
+export type GetAssetData = {
+    body?: never;
+    path: {
+        /**
+         * Asset Id
+         */
+        asset_id: string;
+    };
+    query?: never;
+    url: '/api/v1/assets/{asset_id}';
+};
+
+export type GetAssetErrors = {
+    /**
+     * Permission denied
+     */
+    403: ProblemDetail;
+    /**
+     * Not found
+     */
+    404: ProblemDetail;
+    /**
+     * Validation error
+     */
+    422: ProblemDetail;
+};
+
+export type GetAssetError = GetAssetErrors[keyof GetAssetErrors];
+
+export type GetAssetResponses = {
+    /**
+     * Successful Response
+     */
+    200: AssetResponse;
+};
+
+export type GetAssetResponse = GetAssetResponses[keyof GetAssetResponses];
+
+export type UpdateAssetData = {
+    body: AssetUpdate;
+    path: {
+        /**
+         * Asset Id
+         */
+        asset_id: string;
+    };
+    query?: never;
+    url: '/api/v1/assets/{asset_id}';
+};
+
+export type UpdateAssetErrors = {
+    /**
+     * Invalid input
+     */
+    400: ProblemDetail;
+    /**
+     * Permission denied
+     */
+    403: ProblemDetail;
+    /**
+     * Not found
+     */
+    404: ProblemDetail;
+    /**
+     * Validation error
+     */
+    422: ProblemDetail;
+};
+
+export type UpdateAssetError = UpdateAssetErrors[keyof UpdateAssetErrors];
+
+export type UpdateAssetResponses = {
+    /**
+     * Successful Response
+     */
+    200: AssetResponse;
+};
+
+export type UpdateAssetResponse = UpdateAssetResponses[keyof UpdateAssetResponses];
+
+export type CreateDataElementData = {
+    body: DataElementCreate;
+    path: {
+        /**
+         * Asset Id
+         */
+        asset_id: string;
+    };
+    query?: never;
+    url: '/api/v1/assets/{asset_id}/data-elements';
+};
+
+export type CreateDataElementErrors = {
+    /**
+     * Invalid input
+     */
+    400: ProblemDetail;
+    /**
+     * Permission denied
+     */
+    403: ProblemDetail;
+    /**
+     * Not found
+     */
+    404: ProblemDetail;
+    /**
+     * Conflict
+     */
+    409: ProblemDetail;
+    /**
+     * Validation error
+     */
+    422: ProblemDetail;
+};
+
+export type CreateDataElementError = CreateDataElementErrors[keyof CreateDataElementErrors];
+
+export type CreateDataElementResponses = {
+    /**
+     * Successful Response
+     */
+    201: DataElementResponse;
+};
+
+export type CreateDataElementResponse = CreateDataElementResponses[keyof CreateDataElementResponses];
+
+export type UpdateDataElementData = {
+    body: DataElementUpdate;
+    path: {
+        /**
+         * Element Id
+         */
+        element_id: string;
+    };
+    query?: never;
+    url: '/api/v1/data-elements/{element_id}';
+};
+
+export type UpdateDataElementErrors = {
+    /**
+     * Invalid input
+     */
+    400: ProblemDetail;
+    /**
+     * Permission denied
+     */
+    403: ProblemDetail;
+    /**
+     * Not found
+     */
+    404: ProblemDetail;
+    /**
+     * Conflict
+     */
+    409: ProblemDetail;
+    /**
+     * Validation error
+     */
+    422: ProblemDetail;
+};
+
+export type UpdateDataElementError = UpdateDataElementErrors[keyof UpdateDataElementErrors];
+
+export type UpdateDataElementResponses = {
+    /**
+     * Successful Response
+     */
+    200: DataElementResponse;
+};
+
+export type UpdateDataElementResponse = UpdateDataElementResponses[keyof UpdateDataElementResponses];
+
+export type AssignOwnershipData = {
+    body: AssignOwnership;
+    path: {
+        /**
+         * Asset Id
+         */
+        asset_id: string;
+        role: OwnershipRole;
+    };
+    query?: never;
+    url: '/api/v1/assets/{asset_id}/ownership/{role}';
+};
+
+export type AssignOwnershipErrors = {
+    /**
+     * Invalid input
+     */
+    400: ProblemDetail;
+    /**
+     * Permission denied
+     */
+    403: ProblemDetail;
+    /**
+     * Not found
+     */
+    404: ProblemDetail;
+    /**
+     * Validation error
+     */
+    422: ProblemDetail;
+};
+
+export type AssignOwnershipError = AssignOwnershipErrors[keyof AssignOwnershipErrors];
+
+export type AssignOwnershipResponses = {
+    /**
+     * Successful Response
+     */
+    200: AssetResponse;
+};
+
+export type AssignOwnershipResponse = AssignOwnershipResponses[keyof AssignOwnershipResponses];
+
+export type ConfirmOwnershipData = {
+    body?: never;
+    path: {
+        /**
+         * Asset Id
+         */
+        asset_id: string;
+        role: OwnershipRole;
+    };
+    query?: never;
+    url: '/api/v1/assets/{asset_id}/ownership/{role}/confirm';
+};
+
+export type ConfirmOwnershipErrors = {
+    /**
+     * Permission denied
+     */
+    403: ProblemDetail;
+    /**
+     * Not found
+     */
+    404: ProblemDetail;
+    /**
+     * Conflict
+     */
+    409: ProblemDetail;
+    /**
+     * Validation error
+     */
+    422: ProblemDetail;
+};
+
+export type ConfirmOwnershipError = ConfirmOwnershipErrors[keyof ConfirmOwnershipErrors];
+
+export type ConfirmOwnershipResponses = {
+    /**
+     * Successful Response
+     */
+    200: AssetResponse;
+};
+
+export type ConfirmOwnershipResponse = ConfirmOwnershipResponses[keyof ConfirmOwnershipResponses];
+
+export type DisputeOwnershipData = {
+    body: DisputeOwnership;
+    path: {
+        /**
+         * Asset Id
+         */
+        asset_id: string;
+        role: OwnershipRole;
+    };
+    query?: never;
+    url: '/api/v1/assets/{asset_id}/ownership/{role}/dispute';
+};
+
+export type DisputeOwnershipErrors = {
+    /**
+     * Invalid input
+     */
+    400: ProblemDetail;
+    /**
+     * Permission denied
+     */
+    403: ProblemDetail;
+    /**
+     * Not found
+     */
+    404: ProblemDetail;
+    /**
+     * Conflict
+     */
+    409: ProblemDetail;
+    /**
+     * Validation error
+     */
+    422: ProblemDetail;
+};
+
+export type DisputeOwnershipError = DisputeOwnershipErrors[keyof DisputeOwnershipErrors];
+
+export type DisputeOwnershipResponses = {
+    /**
+     * Successful Response
+     */
+    200: AssetResponse;
+};
+
+export type DisputeOwnershipResponse = DisputeOwnershipResponses[keyof DisputeOwnershipResponses];
+
+export type ListInboxData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/inbox';
+};
+
+export type ListInboxErrors = {
+    /**
+     * Not signed in
+     */
+    401: ProblemDetail;
+};
+
+export type ListInboxError = ListInboxErrors[keyof ListInboxErrors];
+
+export type ListInboxResponses = {
+    /**
+     * Successful Response
+     */
+    200: InboxPage;
+};
+
+export type ListInboxResponse = ListInboxResponses[keyof ListInboxResponses];

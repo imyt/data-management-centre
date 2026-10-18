@@ -51,3 +51,26 @@ def check_in(column: str, values: type[StrEnum]) -> str:
     """SQL for a check constraint that keeps `column` within an enum's values."""
     quoted = ", ".join(f"'{v.value}'" for v in values)
     return f"{column} IN ({quoted})"
+
+
+class AssetType(StrEnum):
+    DATASET = "dataset"
+    REPORT = "report"
+    MODEL = "model"
+    FILE = "file"
+
+
+class OwnershipRole(StrEnum):
+    """The accountabilities assigned on an asset (FR-K10). The Application Owner sits on the
+    application."""
+
+    OWNER = "owner"  # the Data Owner
+    STEWARD = "steward"  # the Data Steward
+
+
+class OwnershipStatus(StrEnum):
+    """pending → confirmed or disputed. A reassignment starts again at pending."""
+
+    PENDING = "pending"
+    CONFIRMED = "confirmed"
+    DISPUTED = "disputed"

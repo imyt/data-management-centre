@@ -22,6 +22,11 @@ class UserRepository:
         query = select(UserAccount).where(UserAccount.active).order_by(UserAccount.display_name)
         return list(self._session.scalars(query))
 
+    def by_ids(self, user_ids: set[uuid.UUID]) -> list[UserAccount]:
+        if not user_ids:
+            return []
+        return list(self._session.scalars(select(UserAccount).where(UserAccount.id.in_(user_ids))))
+
     def add(self, user: UserAccount) -> UserAccount:
         self._session.add(user)
         self._session.flush()

@@ -8,12 +8,15 @@ from pydantic import BaseModel, ConfigDict, Field, StringConstraints
 
 from app.core.schemas import Envelope, ListEnvelope
 from app.modules.inventory.domain import (
+    AssetType,
     Criticality,
     DataStoreType,
     EnvironmentType,
     HarvestStatus,
     Hosting,
     LifecycleStatus,
+    OwnershipRole,
+    OwnershipStatus,
 )
 
 Name = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=200)]
@@ -181,4 +184,140 @@ class EnvironmentResponse(Envelope[EnvironmentRead]):
 
 
 class DataStoreResponse(Envelope[DataStoreRead]):
+    pass
+
+
+# --- Assets, data elements and ownership
+
+Reason = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=2000)]
+DataType = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=100)]
+
+
+class AssetCreate(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    name: Name
+    type: AssetType = AssetType.DATASET
+    description: Description | None = None
+    domain_id: uuid.UUID
+    data_category_id: uuid.UUID | None = None
+    business_context: Description | None = None
+    is_stored: bool = False
+    retention_policy_id: uuid.UUID | None = Field(
+        default=None, description="Required when the asset is stored; must be empty otherwise."
+    )
+
+
+class AssetUpdate(BaseModel):
+    """Only the fields sent are changed."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    name: Name | None = None
+    type: AssetType | None = None
+    description: Description | None = None
+    domain_id: uuid.UUID | None = None
+    data_category_id: uuid.UUID | None = None
+    business_context: Description | None = None
+    is_stored: bool | None = None
+    retention_policy_id: uuid.UUID | None = None
+
+
+class DataElementCreate(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    name: Name
+    data_type: DataType
+    is_pii: bool = Field(default=False, description="Declared as personal data.")
+    is_cde: bool = Field(default=False, description="Critical data element; set by a Data Owner.")
+
+
+class DataElementUpdate(BaseModel):
+    """Only the fields sent are changed."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    name: Name | None = None
+    data_type: DataType | None = None
+    is_pii: bool | None = None
+    is_cde: bool | None = None
+
+
+class DataElementRead(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: uuid.UUID
+    asset_id: uuid.UUID
+    name: str
+    data_type: str
+    is_pii: bool
+    pii_source: str | None = Field(description="`declared` or `scanner`; null when not PII.")
+    is_cde: bool
+    created_at: datetime
+
+
+class UserRef(BaseModel):
+    id: uuid.UUID
+    display_name: str
+
+
+class OwnershipRead(BaseModel):
+    role: OwnershipRole
+    user: UserRef
+    status: OwnershipStatus
+    assigned_by: UserRef | None
+    assigned_at: datetime
+    decided_at: datetime | None
+    reason: str | None = Field(description="Why the assignee disputed, or why it was reassigned.")
+
+
+class AssetRead(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: uuid.UUID
+    name: str
+    type: AssetType
+    description: str | None
+    domain: ReferenceRef
+    data_category: ReferenceRef | None
+    business_context: str | None
+    is_stored: bool
+    retention_policy: ReferenceRef | None
+    created_at: datetime
+    updated_at: datetime
+
+
+class AssetSummary(AssetRead):
+    owner: OwnershipRead | None
+    steward: OwnershipRead | None
+
+
+class AssetDetail(AssetSummary):
+    data_elements: list[DataElementRead]
+
+
+class AssignOwnership(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    user_id: uuid.UUID
+    reason: Reason | None = Field(
+        default=None, description="Required when replacing an existing assignment."
+    )
+
+
+class DisputeOwnership(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    reason: Reason
+
+
+class AssetPage(ListEnvelope[AssetSummary]):
+    pass
+
+
+class AssetResponse(Envelope[AssetDetail]):
+    pass
+
+
+class DataElementResponse(Envelope[DataElementRead]):
     pass

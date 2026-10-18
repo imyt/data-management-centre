@@ -1,8 +1,10 @@
 """The current user (`/me`) and, with dev authentication only, the personas to act as."""
 
-from fastapi import APIRouter
+from typing import Annotated
 
-from app.core.auth import DevAuthOnly, PrincipalDep
+from fastapi import APIRouter, Query
+
+from app.core.auth import DevAuthOnly, PrincipalDep, Role
 from app.core.db import SessionDep
 from app.core.schemas import ListMeta, error_responses
 from app.modules.identity.schemas import UserPage, UserRead, UserResponse
@@ -42,4 +44,22 @@ def get_me(principal: PrincipalDep, session: SessionDep) -> UserResponse:
 )
 def list_dev_users(session: SessionDep) -> UserPage:
     users = IdentityService(session).list_active_users()
+    return UserPage(data=[_read(u) for u in users], meta=ListMeta(total=len(users)))
+
+
+@router.get(
+    "/users",
+    response_model=UserPage,
+    operation_id="listUsers",
+    summary="List active users, optionally those holding a role",
+    responses=error_responses(401, 422),
+)
+def list_users(
+    principal: PrincipalDep,
+    session: SessionDep,
+    role: Annotated[Role | None, Query()] = None,
+) -> UserPage:
+    users = [
+        u for u in IdentityService(session).list_active_users() if role is None or role in u.roles
+    ]
     return UserPage(data=[_read(u) for u in users], meta=ListMeta(total=len(users)))

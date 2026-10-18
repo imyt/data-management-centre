@@ -10,7 +10,7 @@ import {
 } from "lucide-react"
 import { Outlet, useLocation } from "react-router"
 
-import { listDomainsOptions } from "@/api/@tanstack/react-query.gen"
+import { listDomainsOptions, listInboxOptions } from "@/api/@tanstack/react-query.gen"
 import {
   AccountMenu,
   AppShell,
@@ -63,6 +63,7 @@ export function AppLayout() {
     () => [ALL_SCOPE, ...(domains.data?.data ?? []).map((d) => ({ id: d.id, label: d.name }))],
     [domains.data]
   )
+  const inbox = useQuery(listInboxOptions())
   const context: ShellContext = { domainId: scope === ALL_DOMAINS ? null : scope }
 
   const page = SECTION_PAGES[section]
@@ -75,7 +76,7 @@ export function AppLayout() {
           {pairing.outdated && <UpdateBanner />}
           <PortalHeader
             sectionRoutes={SECTION_ROUTES}
-            inboxCount={0}
+            inboxCount={inbox.data?.meta.total ?? 0}
             scopes={scopes}
             scope={scope}
             onScopeChange={setScope}
