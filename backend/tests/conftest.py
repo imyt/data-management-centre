@@ -11,6 +11,7 @@ from app.core.config import Settings
 from app.core.db import Database
 from app.core.migrations import alembic_config
 from app.main import create_app
+from app.modules.identity.service import IdentityService, User
 
 
 class DatabaseUnderTest(BaseSettings):
@@ -88,3 +89,12 @@ def owner_connection(db_engine: Engine, migration_url: str) -> Iterator[Connecti
         if transaction.is_active:
             transaction.rollback()
     engine.dispose()
+
+
+@pytest.fixture
+def personas(database: Database) -> dict[str, User]:
+    """The dev personas, seeded in the test's transaction, by username. Send one's username in
+    the X-DMC-Dev-User header to act as them through `db_client`."""
+    with database.transaction() as session:
+        IdentityService(session).seed_personas()
+        return {user.username: user for user in IdentityService(session).list_active_users()}

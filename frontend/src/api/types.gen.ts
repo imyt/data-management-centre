@@ -175,6 +175,74 @@ export type ProblemDetail = {
 };
 
 /**
+ * Role
+ *
+ * The roles in PRD.md §2.
+ */
+export type Role = 'data_owner' | 'application_owner' | 'data_steward' | 'process_owner' | 'governance' | 'leadership' | 'auditor';
+
+/**
+ * UserPage
+ */
+export type UserPage = {
+    /**
+     * Data
+     */
+    data: Array<UserRead>;
+    /**
+     * Allowed Actions
+     *
+     * Actions the caller may take on `data` right now.
+     */
+    allowed_actions: Array<string>;
+    meta: ListMeta;
+};
+
+/**
+ * UserRead
+ */
+export type UserRead = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Username
+     *
+     * Sign-in name; in dev mode, the X-DMC-Dev-User value.
+     */
+    username: string;
+    /**
+     * Display Name
+     */
+    display_name: string;
+    /**
+     * Roles
+     */
+    roles: Array<Role>;
+    /**
+     * Domain Ids
+     *
+     * Domains the user is scoped to; null means every domain.
+     */
+    domain_ids: Array<string> | null;
+};
+
+/**
+ * UserResponse
+ */
+export type UserResponse = {
+    data: UserRead;
+    /**
+     * Allowed Actions
+     *
+     * Actions the caller may take on `data` right now.
+     */
+    allowed_actions: Array<string>;
+    meta: Meta;
+};
+
+/**
  * ValidationIssue
  *
  * One field that failed request validation.
@@ -287,3 +355,57 @@ export type GetExampleResponses = {
 };
 
 export type GetExampleResponse = GetExampleResponses[keyof GetExampleResponses];
+
+export type GetMeData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/me';
+};
+
+export type GetMeErrors = {
+    /**
+     * Not signed in
+     */
+    401: ProblemDetail;
+    /**
+     * Not implemented
+     */
+    501: ProblemDetail;
+};
+
+export type GetMeError = GetMeErrors[keyof GetMeErrors];
+
+export type GetMeResponses = {
+    /**
+     * Successful Response
+     */
+    200: UserResponse;
+};
+
+export type GetMeResponse = GetMeResponses[keyof GetMeResponses];
+
+export type ListDevUsersData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/dev/users';
+};
+
+export type ListDevUsersErrors = {
+    /**
+     * Not found
+     */
+    404: ProblemDetail;
+};
+
+export type ListDevUsersError = ListDevUsersErrors[keyof ListDevUsersErrors];
+
+export type ListDevUsersResponses = {
+    /**
+     * Successful Response
+     */
+    200: UserPage;
+};
+
+export type ListDevUsersResponse = ListDevUsersResponses[keyof ListDevUsersResponses];

@@ -2,7 +2,7 @@
 
 import type { Client, ClientMeta, Options as Options2, RequestResult, TDataShape } from './client';
 import { client } from './client.gen';
-import type { GetExampleData, GetExampleErrors, GetExampleResponses, GetHealthData, GetHealthResponses, ListExamplesData, ListExamplesErrors, ListExamplesResponses } from './types.gen';
+import type { GetExampleData, GetExampleErrors, GetExampleResponses, GetHealthData, GetHealthResponses, GetMeData, GetMeErrors, GetMeResponses, ListDevUsersData, ListDevUsersErrors, ListDevUsersResponses, ListExamplesData, ListExamplesErrors, ListExamplesResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -32,3 +32,13 @@ export const listExamples = <ThrowOnError extends boolean = false>(options?: Opt
  * Get an example
  */
 export const getExample = <ThrowOnError extends boolean = false>(options: Options<GetExampleData, ThrowOnError>): RequestResult<GetExampleResponses, GetExampleErrors, ThrowOnError> => (options.client ?? client).get<GetExampleResponses, GetExampleErrors, ThrowOnError>({ url: '/api/v1/examples/{example_id}', ...options });
+
+/**
+ * Get the current user
+ */
+export const getMe = <ThrowOnError extends boolean = false>(options?: Options<GetMeData, ThrowOnError>): RequestResult<GetMeResponses, GetMeErrors, ThrowOnError> => (options?.client ?? client).get<GetMeResponses, GetMeErrors, ThrowOnError>({ url: '/api/v1/me', ...options });
+
+/**
+ * List the personas to act as (dev authentication only)
+ */
+export const listDevUsers = <ThrowOnError extends boolean = false>(options?: Options<ListDevUsersData, ThrowOnError>): RequestResult<ListDevUsersResponses, ListDevUsersErrors, ThrowOnError> => (options?.client ?? client).get<ListDevUsersResponses, ListDevUsersErrors, ThrowOnError>({ url: '/api/v1/dev/users', ...options });

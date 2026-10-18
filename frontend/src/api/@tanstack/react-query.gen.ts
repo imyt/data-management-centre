@@ -3,8 +3,8 @@
 import { type DefaultError, type InfiniteData, infiniteQueryOptions, queryOptions } from '@tanstack/react-query';
 
 import { client } from '../client.gen';
-import { getExample, getHealth, listExamples, type Options } from '../sdk.gen';
-import type { GetExampleData, GetExampleError, GetExampleResponse, GetHealthData, GetHealthResponse, ListExamplesData, ListExamplesError, ListExamplesResponse } from '../types.gen';
+import { getExample, getHealth, getMe, listDevUsers, listExamples, type Options } from '../sdk.gen';
+import type { GetExampleData, GetExampleError, GetExampleResponse, GetHealthData, GetHealthResponse, GetMeData, GetMeError, GetMeResponse, ListDevUsersData, ListDevUsersError, ListDevUsersResponse, ListExamplesData, ListExamplesError, ListExamplesResponse } from '../types.gen';
 
 export type QueryKey<TOptions extends Options> = [
     Pick<TOptions, 'baseUrl' | 'body' | 'headers' | 'path' | 'query'> & {
@@ -150,4 +150,40 @@ export const getExampleOptions = (options: Options<GetExampleData>) => queryOpti
         return data;
     },
     queryKey: getExampleQueryKey(options)
+});
+
+export const getMeQueryKey = (options?: Options<GetMeData>) => createQueryKey('getMe', options);
+
+/**
+ * Get the current user
+ */
+export const getMeOptions = (options?: Options<GetMeData>) => queryOptions<GetMeResponse, GetMeError, GetMeResponse, ReturnType<typeof getMeQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await getMe({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: getMeQueryKey(options)
+});
+
+export const listDevUsersQueryKey = (options?: Options<ListDevUsersData>) => createQueryKey('listDevUsers', options);
+
+/**
+ * List the personas to act as (dev authentication only)
+ */
+export const listDevUsersOptions = (options?: Options<ListDevUsersData>) => queryOptions<ListDevUsersResponse, ListDevUsersError, ListDevUsersResponse, ReturnType<typeof listDevUsersQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await listDevUsers({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: listDevUsersQueryKey(options)
 });

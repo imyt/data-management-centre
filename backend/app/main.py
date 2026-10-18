@@ -10,11 +10,14 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.routing import APIRoute
 
 from app.core import health
+from app.core.auth import configure_authentication
 from app.core.config import Settings, get_settings
 from app.core.db import Database, create_database_engine
 from app.core.handlers import REQUEST_ID_HEADER, RequestIdMiddleware, register_error_handlers
 from app.core.migrations import ensure_database_is_current
 from app.modules.examples import router as examples
+from app.modules.identity import router as identity
+from app.modules.identity.service import IdentityDirectory
 
 API_PREFIX = "/api/v1"
 
@@ -55,9 +58,11 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         )
     app.add_middleware(RequestIdMiddleware)
     register_error_handlers(app)
+    configure_authentication(app, settings, IdentityDirectory())
 
     app.include_router(health.router, prefix=API_PREFIX)
     app.include_router(examples.router, prefix=API_PREFIX)
+    app.include_router(identity.router, prefix=API_PREFIX)
     return app
 
 
