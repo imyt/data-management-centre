@@ -44,6 +44,6 @@ The frontend had already been merged in `frontend/` (ADR 0001), not `apps/web`.
 
 - Database: SQLAlchemy, Alembic, Postgres roles per schema, and `infra/` Docker Compose. These come with the first slice that persists data.
 - Auth, audit, structured (JSON) logging, and the worker app.
-- CI jobs, including `export_openapi.py --check` and `lint-imports`.
+- Playwright e2e in CI. The screenshot baselines are win32-only (ADR 0001), so the Linux CI jobs skip e2e. The CI jobs themselves (`.github/workflows/backend.yml` and `frontend.yml`, path-filtered, which also check that `contracts/` and `frontend/src/api/` are up to date) are done.
 - The hey-api TanStack Query plugin. Add it in `openapi-ts.config.ts` when the first feature uses the client.
 - Starlette warns that `TestClient` over `httpx` is deprecated in favour of `httpx2`. Switching is a dependency change, so it is left for later.

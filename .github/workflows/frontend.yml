@@ -1,0 +1,60 @@
+name: frontend
+
+# Playwright e2e is not run here: its screenshot baselines are win32-only (ADR 0001).
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "frontend/**"
+      - "contracts/**"
+      - ".github/workflows/frontend.yml"
+  pull_request:
+    paths:
+      - "frontend/**"
+      - "contracts/**"
+      - ".github/workflows/frontend.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 12
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: pnpm
+          cache-dependency-path: frontend/pnpm-lock.yaml
+      # api:sync runs the backend's export_openapi.py through uv.
+      - uses: astral-sh/setup-uv@v10.3.0 # setup-uv publishes no moving major tag
+        with:
+          enable-cache: true
+          cache-dependency-glob: backend/uv.lock
+      # Also applies .pnpmfile.cjs, which gives hey-api its own TypeScript 6.
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run lint
+      - run: pnpm exec tsc -b
+      - run: pnpm test
+      - run: pnpm run build
+      - name: Generated API client is up to date
+        run: |
+          pnpm run api:sync
+          git diff --exit-code -- ../contracts src/api
+          # git diff misses new files, so also fail on untracked ones.
+          untracked=$(git ls-files --others --exclude-standard -- ../contracts src/api)
+          if [ -n "$untracked" ]; then
+            echo "Untracked generated files:"; echo "$untracked"; exit 1
+          fi
