@@ -4,36 +4,36 @@ applyTo: "frontend/**"
 
 # Frontend instructions
 
-Read `DESIGN.md` and `frontend/src/tokens/tokens.css` before writing any UI. If a request conflicts with them, follow them and flag the conflict.
+Read `DESIGN.md`, `frontend/CLAUDE.md` and `frontend/src/styles/patterns.css` before writing any UI. If a request conflicts with them, follow them and flag the conflict.
 
 ## Stack
 React, TypeScript, Tailwind v4, shadcn/ui (Radix), TanStack Table, react-hook-form + zod, lucide-react plus our custom glyphs. Desktop only (1280 to 3440px wide).
 
 ## Structure and imports
 ```
-src/tokens/     tokens.css
-src/ui/         shadcn-based primitives
-src/patterns/   composed: data table, filters, forms, empty/error states
-src/features/   app-specific; workflow screens
-src/api/        generated client (do not hand-edit)
-src/dev/        component gallery at /dev/components
+src/styles/              patterns.css (the only file with raw colour values)
+src/components/ui/       shadcn-based primitives
+src/components/patterns/ DMC patterns; index.ts is the barrel screens import
+src/features/            screens, one folder per area; the gallery is src/features/gallery at /gallery
+src/hooks/               shared hooks
+src/api/                 generated client (do not hand-edit)
 ```
-- `ui` imports tokens only. `patterns` import `ui`. `features` import `patterns`, `ui`, `api`.
+- `ui` imports tokens only. `patterns` import `ui`. `features` import `@/components/patterns` (the barrel), `api`, `lib`, `hooks`.
 - `ui` never imports from `patterns` or `features`.
-- Features never import Radix or shadcn internals directly; go through `ui` and `patterns`.
+- Features never import `@/components/ui`, Radix, cmdk, sonner or react-resizable-panels. oxlint `no-restricted-imports` enforces this; only the gallery is exempt.
 
 ## Styling rules
-- Use only design tokens through Tailwind utilities: `bg-background`, `bg-card`, `bg-subtle`, `text-foreground`, `text-muted-foreground`, `text-text-tertiary`, `border-border`, `border-input`, `bg-primary`, `text-primary-foreground`, `bg-brand-bg`, `text-success` / `bg-success-bg`, `text-warning` / `bg-warning-bg`, `text-danger` / `bg-danger-bg`.
+- Use only design tokens through Tailwind utilities: `bg-background`, `bg-card`, `bg-subtle`, `text-foreground`, `text-muted-foreground`, `text-text-tertiary`, `border-border`, `border-input`, `bg-primary`, `text-primary-foreground`, `bg-brand-bg`, `text-danger` / `bg-danger-bg` for destructive actions and errors. Record status is always `StatusBadge` (`status-passing`, `status-failing`, `status-excepted`, `status-pending`, `status-not-applicable`).
 - **Never:** inline styles, raw hex or rgb, arbitrary Tailwind values (`w-[13px]`, `text-[#...]`), raw `z-index` (use `z-sticky`, `z-pane`, `z-popover`, `z-modal`, `z-toast`), font weights above 600, ALL CAPS.
 - Type sizes come from the scale only (12, 13, 15, 17, 22, 28, 34px). Spacing is 4px steps.
-- One accent (teal, `primary`) for interaction only. Status colors always pair with an icon and label.
+- One accent (aubergine, `primary`) for primary actions, focus, selection and identity only. Status colors always pair with an icon and label.
 - Record IDs and timestamps use `.mono`; numbers in tables use `.tabular` and are right-aligned.
 - Empty values render as `—`.
 
 ## Components
 - Add missing shadcn components with `npx shadcn@latest add <name>`, then adapt them to DESIGN.md (our palette, 4/6/10 radius, no extra shadows or borders) before using them.
 - Restyle through variants (cva) in `/ui`, never with one-off class overrides at call sites.
-- Check `/dev/components` before creating anything new. Reuse over invent.
+- Check `/gallery` before creating anything new. Reuse over invent.
 - Every new `ui` or `pattern` component is added to the gallery with default, hover, focus, disabled, loading, error, and empty states, in light and dark.
 
 ## Behavior

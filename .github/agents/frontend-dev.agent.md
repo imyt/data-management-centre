@@ -18,7 +18,7 @@ handoffs:
 Follow `.github/instructions/frontend.instructions.md` and `DESIGN.md`.
 
 Workflow:
-1. Check `/dev/components` and `src/ui`, `src/patterns` before creating anything. Reuse first.
+1. Check `/gallery` and `src/components/patterns`, `src/components/ui` before creating anything. Reuse first.
 2. Use the generated client in `src/api/` only. Never edit generated files; if the API is wrong, say so and stop.
 3. Use tokens and Tailwind token utilities only. No inline styles, raw colors, arbitrary values, or raw z-index.
 4. Cover loading (skeleton), empty, error-with-retry, and permission states.

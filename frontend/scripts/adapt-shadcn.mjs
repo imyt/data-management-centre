@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Adapt shadcn CLI output in src/ui to DESIGN.md by swapping whole class tokens only.
+// Adapt shadcn CLI output in src/components/ui to DESIGN.md by swapping whole class tokens only.
 // Code shape, exports and variant names stay exactly as the CLI wrote them, so later
 // `npx shadcn@latest add <name> --overwrite` runs can be re-adapted with `npm run ui:adapt`.
 // Hand edits on top (Button loading/disabledReason, Badge status variants, Sonner theme,
@@ -8,19 +8,20 @@
 import { readdirSync, readFileSync, writeFileSync } from "node:fs"
 import { join } from "node:path"
 
-const UI = process.argv[2] ?? "src/ui"
+const UI = process.argv[2] ?? "src/components/ui"
 
 const DROP = new Set([
-  // Focus: tokens.css draws one global 2px accent outline with 2px offset on :focus-visible.
+  // Focus: patterns.css draws one global 2px accent outline with 2px offset on :focus-visible.
   "outline-none", "focus-visible:border-ring", "focus-visible:ring-[3px]", "focus-visible:ring-ring/50",
   "focus-visible:outline-1", "focus-visible:outline-ring", "focus:ring-2", "focus:ring-ring",
   "focus:ring-offset-2", "focus:outline-hidden", "ring-offset-background",
+  "focus-visible:ring-1", "focus-visible:ring-ring", "focus-visible:ring-offset-1", "focus-visible:outline-hidden",
   "focus-visible:ring-destructive/20", "aria-invalid:ring-destructive/20",
   // Elevation: only shadow-sm (menus) and shadow-lg (modals) exist.
   "shadow-xs", "shadow-2xs",
   "group-data-[variant=default]/tabs-list:data-[state=active]:shadow-sm",
   "group-data-[variant=line]/tabs-list:data-[state=active]:shadow-none",
-  // Selection colour is set once in tokens.css (::selection uses accent-bg).
+  // Selection colour is set once in patterns.css (::selection uses accent-bg).
   "selection:bg-primary", "selection:text-primary-foreground",
   // One size from the scale, no responsive bumps.
   "md:text-sm",
@@ -42,7 +43,7 @@ const REPLACE = new Map([
   ["transition-all", "transition-colors"],
 ])
 
-const MODAL_FILES = new Set(["dialog.tsx", "sheet.tsx"])
+const MODAL_FILES = new Set(["alert-dialog.tsx", "dialog.tsx", "sheet.tsx"])
 const FIELD_FILES = new Set(["input.tsx", "textarea.tsx", "select.tsx"])
 const BORDERS = new Set(["border", "border-l", "border-r", "border-t", "border-b"])
 
@@ -51,7 +52,7 @@ function adaptClasses(text, file) {
   if (!tokens.some((t) => t.includes("-") || t.includes(":"))) return text // not a class string
   let out = []
   for (let t of tokens) {
-    if (t.startsWith("dark:") || DROP.has(t)) continue // dark mode lives in tokens.css
+    if (t.startsWith("dark:") || DROP.has(t)) continue // dark mode lives in patterns.css
     t = REPLACE.get(t) ?? t
     if (t === "z-50") t = MODAL_FILES.has(file) ? "z-modal" : "z-popover"
     if (FIELD_FILES.has(file) && t === "bg-transparent" && tokens.includes("border-input")) t = "bg-surface"

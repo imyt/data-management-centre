@@ -5,8 +5,8 @@ import { RouterProvider } from "react-router"
 import "@/index.css"
 import { ThemeProvider } from "@/lib/theme"
 import { router } from "@/router"
-import { Toaster } from "@/ui/sonner"
-import { TooltipProvider } from "@/ui/tooltip"
+import { Toaster } from "@/components/ui/sonner"
+import { TooltipProvider } from "@/components/ui/tooltip"
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
