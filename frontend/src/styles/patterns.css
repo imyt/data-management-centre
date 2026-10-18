@@ -1,6 +1,6 @@
 /*
-  tokens.css  ->  frontend/sr./styles/patterns.css
-  Paper + teal. Source of truth is DESIGN.md; change it there first.
+  frontend/src/styles/patterns.css: the only file with raw colour values.
+  Paper + aubergine. Source of truth is DESIGN.md; change it there first.
   Assumes Tailwind v4 + shadcn/ui. Dark mode via the `.dark` class.
   Import once in your global CSS, after `@import "tailwindcss";`
 */
@@ -18,9 +18,9 @@
   --text-secondary: #5e5a53;
   --text-tertiary: #76716a; /* non-essential metadata only */
 
-  --accent: #0e7c7b;
-  --accent-hover: #0a6564;
-  --accent-bg: #e3f1f0; /* selection, active row tint */
+  --accent: #5b3a57; /* aubergine: primary actions, focus, selection, identity only */
+  --accent-hover: #4a2f47;
+  --accent-bg: #f1e9ef; /* selection, active row tint */
   --on-accent: #ffffff;
 
   --success: #2f6b3f;
@@ -29,6 +29,20 @@
   --warning-bg: #f6efd8;
   --danger: #b42318;
   --danger-bg: #fbe9e7;
+
+  /* The one status language (DESIGN.md: Colour). Never the accent. */
+  --status-passing: #2e6a47;
+  --status-passing-bg: #e5efe8;
+  --status-failing: #a23b2f;
+  --status-failing-bg: #f6e4e0;
+  --status-excepted: #85580f;
+  --status-excepted-bg: #f5ebd8;
+  --status-pending: #4f5b69;
+  --status-pending-bg: #eaedf0;
+  --status-not-applicable: #6e6a64;
+  --status-not-applicable-bg: #efedea;
+
+  --mark-idle: #d8d1c7; /* unlit corners of the DMC mark */
 
   --radius-control: 4px;
   --radius-card: 6px;
@@ -66,10 +80,10 @@
   --text-secondary: #b5b0a7;
   --text-tertiary: #8f8a81;
 
-  --accent: #3fb8b5;
-  --accent-hover: #5ccbc8;
-  --accent-bg: #12302f;
-  --on-accent: #171513;
+  --accent: #c39bbd;
+  --accent-hover: #d3b2ce;
+  --accent-bg: #3a2836;
+  --on-accent: #24161f;
 
   --success: #6fbf86;
   --success-bg: #1d2a21;
@@ -77,6 +91,19 @@
   --warning-bg: #2c2614;
   --danger: #f0867a;
   --danger-bg: #33201d;
+
+  --status-passing: #8fcaa6;
+  --status-passing-bg: #1f3329;
+  --status-failing: #eea397;
+  --status-failing-bg: #3d221e;
+  --status-excepted: #e3bd7a;
+  --status-excepted-bg: #3a2d17;
+  --status-pending: #b3bdc9;
+  --status-pending-bg: #272c32;
+  --status-not-applicable: #b5b0a9;
+  --status-not-applicable-bg: #2c2a27;
+
+  --mark-idle: #3a352f;
 
   --elev-sm: 0 1px 2px rgb(0 0 0 / 0.3), 0 2px 8px rgb(0 0 0 / 0.3);
   --elev-lg: 0 8px 32px rgb(0 0 0 / 0.5);
@@ -89,8 +116,8 @@
 }
 
 /* ---------- 4. shadcn variable mapping ----------
-   Note: shadcn's `--accent` means "subtle hover surface", NOT our teal.
-   Our teal is shadcn's `--primary`. */
+   Note: shadcn's `--accent` means "subtle hover surface", NOT our aubergine.
+   Our aubergine is shadcn's `--primary`. */
 :root,
 .dark {
   --background: var(--bg-canvas);
@@ -158,6 +185,17 @@
   --color-warning-bg: var(--warning-bg);
   --color-danger: var(--danger);
   --color-danger-bg: var(--danger-bg);
+  --color-status-passing: var(--status-passing);
+  --color-status-passing-bg: var(--status-passing-bg);
+  --color-status-failing: var(--status-failing);
+  --color-status-failing-bg: var(--status-failing-bg);
+  --color-status-excepted: var(--status-excepted);
+  --color-status-excepted-bg: var(--status-excepted-bg);
+  --color-status-pending: var(--status-pending);
+  --color-status-pending-bg: var(--status-pending-bg);
+  --color-status-not-applicable: var(--status-not-applicable);
+  --color-status-not-applicable-bg: var(--status-not-applicable-bg);
+  --color-mark-idle: var(--mark-idle);
 
   /* radius */
   --radius-sm: var(--radius-control);
