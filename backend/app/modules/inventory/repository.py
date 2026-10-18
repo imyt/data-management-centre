@@ -137,7 +137,7 @@ class InventoryRepository:
         asset_type: str | None,
         scope: frozenset[uuid.UUID] | None,
     ) -> Select[tuple[Asset]]:
-        statement = select(Asset)
+        statement: Select[tuple[Asset]] = select(Asset)
         if scope is not None:
             statement = statement.where(Asset.domain_id.in_(scope))
         if query:
@@ -202,7 +202,9 @@ class InventoryRepository:
             statement = statement.where(DataElement.id != excluding)
         return self._session.scalar(statement) is not None
 
-    def pending_ownerships(self, user_id: uuid.UUID, scope: frozenset[uuid.UUID] | None):
+    def pending_ownerships(
+        self, user_id: uuid.UUID, scope: frozenset[uuid.UUID] | None
+    ) -> list[AssetOwnership]:
         """Pending ownerships assigned to `user_id`, oldest first, with their assets."""
         statement = (
             select(AssetOwnership)
