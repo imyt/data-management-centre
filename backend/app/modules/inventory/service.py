@@ -18,11 +18,13 @@ from app.core.errors import (
     NotFoundError,
     PermissionDeniedError,
 )
+from app.core.outbox import publish
 from app.core.pagination import PageResult, decode_cursor, encode_cursor
 from app.modules.audit.service import AuditService
 from app.modules.identity.service import IdentityService, User
 from app.modules.inventory.domain import (
     AssetType,
+    HarvestStatus,
     LifecycleStatus,
     OwnershipRole,
     OwnershipStatus,
@@ -51,6 +53,8 @@ from app.modules.inventory.schemas import (
     DataStoreCreate,
     EnvironmentCreate,
 )
+
+DATA_STORE_CREATED = "inventory.data_store_created"
 
 # Who may register and change applications (PRD §2). Changes also need the domain in scope.
 _REGISTRARS = {Role.APPLICATION_OWNER, Role.GOVERNANCE}
@@ -102,8 +106,37 @@ def _application_snapshot(application: Application) -> dict[str, Any]:
     }
 
 
+@dataclass(frozen=True)
+class DataStoreRef:
+    """What connectors needs to know about a data store and where it sits."""
+
+    id: uuid.UUID
+    name: str
+    type: str
+    platform: str
+    connection_ref: str
+    application_id: uuid.UUID
+    application_name: str
+    domain_id: uuid.UUID
+
+
+def _data_store_ref(store: DataStore) -> DataStoreRef:
+    application = store.environment.application
+    return DataStoreRef(
+        id=store.id,
+        name=store.name,
+        type=store.type,
+        platform=store.platform,
+        connection_ref=store.connection_ref,
+        application_id=application.id,
+        application_name=application.name,
+        domain_id=application.domain_id,
+    )
+
+
 class InventoryService:
     def __init__(self, session: Session) -> None:
+        self._session = session
         self._repository = InventoryRepository(session)
         self._audit = AuditService(session)
 
@@ -260,7 +293,48 @@ class InventoryService:
                 **data.model_dump(),
             },
         )
+        publish(
+            self._session,
+            DATA_STORE_CREATED,
+            {"data_store_id": store.id, "application_id": environment.application_id},
+        )
         return store
+
+    # --- Data stores, for connectors
+
+    def get_data_store(self, principal: Principal, store_id: uuid.UUID) -> DataStoreRef:
+        """A data store and its application, if the application is in the caller's scope."""
+        ref = self.find_data_store(store_id)
+        if ref is None:
+            raise NotFoundError(
+                f"Data store {store_id} does not exist.", details={"id": str(store_id)}
+            )
+        if not principal.in_scope(ref.domain_id):
+            raise PermissionDeniedError(
+                "This data store is outside the domains you are scoped to.",
+                details={"id": str(store_id)},
+            )
+        return ref
+
+    def find_data_store(self, store_id: uuid.UUID) -> DataStoreRef | None:
+        """Like `get_data_store` without the caller: for jobs, which act for the system."""
+        store = self._repository.get_data_store(store_id)
+        return _data_store_ref(store) if store else None
+
+    def list_data_store_ids(self) -> list[uuid.UUID]:
+        return self._repository.list_data_store_ids()
+
+    def record_harvest(self, store_id: uuid.UUID, *, succeeded: bool, at: datetime) -> None:
+        """Set a store's harvest status after a run. The caller audits the run."""
+        store = self._repository.get_data_store(store_id)
+        if store is None:
+            raise NotFoundError(f"Data store {store_id} does not exist.")
+        store.harvest_status = (
+            HarvestStatus.SUCCEEDED if succeeded else HarvestStatus.FAILED
+        ).value
+        if succeeded:
+            store.last_harvested_at = at
+        self._repository.flush(store)
 
     # --- Checks
 
@@ -750,6 +824,53 @@ class AssetService:
                 details={"action": f"confirm_{role}"},
             )
         return ownership
+
+    # --- For connectors: assets declared from, and elements matched to, harvested objects
+
+    def asset_names(self, asset_ids: set[uuid.UUID]) -> dict[uuid.UUID, str]:
+        return self._repository.asset_names(asset_ids)
+
+    def element_ids_by_name(
+        self, principal: Principal, asset_id: uuid.UUID, columns: list[tuple[str, str]]
+    ) -> dict[str, uuid.UUID]:
+        """The asset's data element for each harvested `(name, data_type)` column, adding the
+        ones it lacks. Each addition is audited as any other element is."""
+        view = self.get_asset(principal, asset_id)
+        by_name = {e.name: e.id for e in view.asset.data_elements}
+        for name, data_type in columns:
+            if name not in by_name:
+                element = self.add_data_element(
+                    principal, asset_id, DataElementCreate(name=name, data_type=data_type)
+                )
+                by_name[name] = element.id
+        return by_name
+
+    def declare_stored_dataset(
+        self,
+        principal: Principal,
+        *,
+        name: str,
+        description: str | None,
+        domain_id: uuid.UUID,
+        retention_policy_id: uuid.UUID,
+        data_category_id: uuid.UUID | None,
+        owner_id: uuid.UUID | None,
+    ) -> uuid.UUID:
+        """Declare a stored dataset and, if given, name its Data Owner (who then confirms)."""
+        view = self.create_asset(
+            principal,
+            AssetCreate(
+                name=name,
+                description=description,
+                domain_id=domain_id,
+                data_category_id=data_category_id,
+                is_stored=True,
+                retention_policy_id=retention_policy_id,
+            ),
+        )
+        if owner_id is not None:
+            self.assign(principal, view.asset.id, OwnershipRole.OWNER, owner_id, None)
+        return view.asset.id
 
     # --- Inbox
 

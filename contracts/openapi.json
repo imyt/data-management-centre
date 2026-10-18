@@ -1797,6 +1797,452 @@
         }
       }
     },
+    "/api/v1/data-stores/{data_store_id}/harvest": {
+      "get": {
+        "tags": [
+          "connectors"
+        ],
+        "summary": "Get a data store's harvest status, recent runs and unmapped counts",
+        "operationId": "getHarvestStatus",
+        "parameters": [
+          {
+            "name": "data_store_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Data Store Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HarvestStatusResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Permission denied",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "connectors"
+        ],
+        "summary": "Harvest a data store now",
+        "description": "Queues a harvest and returns the job; poll `/jobs/{id}` or the harvest status.",
+        "operationId": "runHarvest",
+        "parameters": [
+          {
+            "name": "data_store_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Data Store Id"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Permission denied",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/data-stores/{data_store_id}/objects": {
+      "get": {
+        "tags": [
+          "connectors"
+        ],
+        "summary": "List the schemas, tables and columns the last harvest found",
+        "operationId": "listPhysicalObjects",
+        "parameters": [
+          {
+            "name": "data_store_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Data Store Id"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "default": 100,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor"
+            }
+          },
+          {
+            "name": "kind",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/ObjectKind"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Kind"
+            }
+          },
+          {
+            "name": "parent_path",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Only the children of this path.",
+              "title": "Parent Path"
+            },
+            "description": "Only the children of this path."
+          },
+          {
+            "name": "mapped",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "false: only tables and columns with no asset or element yet.",
+              "title": "Mapped"
+            },
+            "description": "false: only tables and columns with no asset or element yet."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PhysicalObjectPage"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Permission denied",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/data-stores/{data_store_id}/mappings": {
+      "post": {
+        "tags": [
+          "connectors"
+        ],
+        "summary": "Map a table to an existing asset",
+        "description": "Matches the table's columns to the asset's data elements by name and adds the elements it lacks.",
+        "operationId": "mapTable",
+        "parameters": [
+          {
+            "name": "data_store_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Data Store Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MapTable"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PhysicalObjectResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Permission denied",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/data-stores/{data_store_id}/mappings/assets": {
+      "post": {
+        "tags": [
+          "connectors"
+        ],
+        "summary": "Declare an asset for each unmapped table and map it",
+        "description": "Each asset is a stored dataset in the application's domain with a data element per column. A given Data Owner is asked to confirm.",
+        "operationId": "createAssetsFromTables",
+        "parameters": [
+          {
+            "name": "data_store_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Data Store Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateAssets"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreatedAssetList"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Permission denied",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/inbox": {
       "get": {
         "tags": [
@@ -2768,6 +3214,111 @@
         ],
         "title": "AssignOwnership"
       },
+      "CreateAssets": {
+        "properties": {
+          "paths": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 100,
+            "minItems": 1,
+            "title": "Paths",
+            "description": "Unmapped tables to declare an asset for each."
+          },
+          "retention_policy_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Retention Policy Id",
+            "description": "How long the data may be kept."
+          },
+          "data_category_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Data Category Id"
+          },
+          "owner_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Owner Id",
+            "description": "A Data Owner in the application's domain, who is asked to confirm."
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "paths",
+          "retention_policy_id"
+        ],
+        "title": "CreateAssets"
+      },
+      "CreatedAsset": {
+        "properties": {
+          "path": {
+            "type": "string",
+            "title": "Path"
+          },
+          "asset_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Asset Id"
+          },
+          "asset_name": {
+            "type": "string",
+            "title": "Asset Name"
+          }
+        },
+        "type": "object",
+        "required": [
+          "path",
+          "asset_id",
+          "asset_name"
+        ],
+        "title": "CreatedAsset"
+      },
+      "CreatedAssetList": {
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/CreatedAsset"
+            },
+            "type": "array",
+            "title": "Data"
+          },
+          "allowed_actions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Allowed Actions",
+            "description": "Actions the caller may take on `data` right now."
+          },
+          "meta": {
+            "$ref": "#/components/schemas/Meta"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data",
+          "allowed_actions",
+          "meta"
+        ],
+        "title": "CreatedAssetList"
+      },
       "Criticality": {
         "type": "string",
         "enum": [
@@ -3359,6 +3910,78 @@
         "title": "HarvestStatus",
         "description": "`never` until the first harvest runs (slice 4)."
       },
+      "HarvestStatusRead": {
+        "properties": {
+          "data_store_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Data Store Id"
+          },
+          "last_run": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SnapshotRead"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The latest run, whether it worked or not."
+          },
+          "objects": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ObjectCounts"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "From the last successful run; null if no run has succeeded."
+          },
+          "recent_runs": {
+            "items": {
+              "$ref": "#/components/schemas/SnapshotRead"
+            },
+            "type": "array",
+            "title": "Recent Runs",
+            "description": "Latest first."
+          }
+        },
+        "type": "object",
+        "required": [
+          "data_store_id",
+          "last_run",
+          "objects",
+          "recent_runs"
+        ],
+        "title": "HarvestStatusRead"
+      },
+      "HarvestStatusResponse": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/HarvestStatusRead"
+          },
+          "allowed_actions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Allowed Actions",
+            "description": "Actions the caller may take on `data` right now."
+          },
+          "meta": {
+            "$ref": "#/components/schemas/Meta"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data",
+          "allowed_actions",
+          "meta"
+        ],
+        "title": "HarvestStatusResponse"
+      },
       "HealthRead": {
         "properties": {
           "status": {
@@ -3730,6 +4353,29 @@
         "title": "ListMeta",
         "description": "Meta for a list: freshness plus cursor paging."
       },
+      "MapTable": {
+        "properties": {
+          "path": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Path",
+            "description": "The table's path, e.g. `public.orders`."
+          },
+          "asset_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Asset Id",
+            "description": "The asset the table stores. Its columns are matched to the asset's data elements by name, and the missing elements are added."
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "path",
+          "asset_id"
+        ],
+        "title": "MapTable"
+      },
       "Meta": {
         "properties": {
           "evaluated_at": {
@@ -3813,6 +4459,98 @@
         ],
         "title": "MetaRead"
       },
+      "ObjectCounts": {
+        "properties": {
+          "schemas": {
+            "type": "integer",
+            "title": "Schemas"
+          },
+          "tables": {
+            "type": "integer",
+            "title": "Tables"
+          },
+          "columns": {
+            "type": "integer",
+            "title": "Columns"
+          },
+          "unmapped_tables": {
+            "type": "integer",
+            "title": "Unmapped Tables"
+          },
+          "unmapped_columns": {
+            "type": "integer",
+            "title": "Unmapped Columns"
+          }
+        },
+        "type": "object",
+        "required": [
+          "schemas",
+          "tables",
+          "columns",
+          "unmapped_tables",
+          "unmapped_columns"
+        ],
+        "title": "ObjectCounts",
+        "description": "What the last successful harvest found, and how much of it is not yet mapped."
+      },
+      "ObjectKind": {
+        "type": "string",
+        "enum": [
+          "schema",
+          "table",
+          "column"
+        ],
+        "title": "ObjectKind",
+        "description": "What a physical object is. Only tables and columns map to assets and data elements."
+      },
+      "ObjectMappingRead": {
+        "properties": {
+          "asset_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Asset Id",
+            "description": "Set on a table."
+          },
+          "asset_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Asset Name"
+          },
+          "data_element_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Data Element Id",
+            "description": "Set on a column."
+          }
+        },
+        "type": "object",
+        "required": [
+          "asset_id",
+          "asset_name",
+          "data_element_id"
+        ],
+        "title": "ObjectMappingRead"
+      },
       "OwnershipRead": {
         "properties": {
           "role": {
@@ -3894,6 +4632,138 @@
         ],
         "title": "OwnershipStatus",
         "description": "pending → confirmed or disputed. A reassignment starts again at pending."
+      },
+      "PhysicalObjectPage": {
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/PhysicalObjectRead"
+            },
+            "type": "array",
+            "title": "Data"
+          },
+          "allowed_actions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Allowed Actions",
+            "description": "Actions the caller may take on `data` right now."
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ListMeta"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data",
+          "allowed_actions",
+          "meta"
+        ],
+        "title": "PhysicalObjectPage"
+      },
+      "PhysicalObjectRead": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/ObjectKind"
+          },
+          "path": {
+            "type": "string",
+            "title": "Path",
+            "description": "Dotted, e.g. `public.orders.id`."
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "parent_path": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parent Path"
+          },
+          "data_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Data Type"
+          },
+          "row_count": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Row Count",
+            "description": "Estimated from statistics; harvest reads no rows."
+          },
+          "mapping": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ObjectMappingRead"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Null for an unmapped table or column, and for schemas."
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "kind",
+          "path",
+          "name",
+          "parent_path",
+          "data_type",
+          "row_count",
+          "mapping"
+        ],
+        "title": "PhysicalObjectRead"
+      },
+      "PhysicalObjectResponse": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/PhysicalObjectRead"
+          },
+          "allowed_actions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Allowed Actions",
+            "description": "Actions the caller may take on `data` right now."
+          },
+          "meta": {
+            "$ref": "#/components/schemas/Meta"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data",
+          "allowed_actions",
+          "meta"
+        ],
+        "title": "PhysicalObjectResponse"
       },
       "ProblemDetail": {
         "properties": {
@@ -4141,6 +5011,67 @@
         ],
         "title": "Role",
         "description": "The roles in PRD.md §2."
+      },
+      "SnapshotRead": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "status": {
+            "$ref": "#/components/schemas/SnapshotStatus"
+          },
+          "taken_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Taken At"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error",
+            "description": "Why the run failed, safe to show to users."
+          },
+          "schemas": {
+            "type": "integer",
+            "title": "Schemas"
+          },
+          "tables": {
+            "type": "integer",
+            "title": "Tables"
+          },
+          "columns": {
+            "type": "integer",
+            "title": "Columns"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "status",
+          "taken_at",
+          "error",
+          "schemas",
+          "tables",
+          "columns"
+        ],
+        "title": "SnapshotRead",
+        "description": "One harvest run. A failed run has no objects, only the reason."
+      },
+      "SnapshotStatus": {
+        "type": "string",
+        "enum": [
+          "succeeded",
+          "failed"
+        ],
+        "title": "SnapshotStatus"
       },
       "UserPage": {
         "properties": {

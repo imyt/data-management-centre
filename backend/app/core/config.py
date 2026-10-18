@@ -35,6 +35,9 @@ class Settings(BaseSettings):
     # without a refresh before another worker treats its worker as dead and requeues it.
     worker_poll_seconds: float = 1.0
     job_lease_seconds: int = 300
+    # How often the worker harvests every data store (a store is also harvested when registered
+    # and on demand).
+    harvest_interval_seconds: int = 86_400
 
     @field_validator("cors_origins", mode="before")
     @classmethod

@@ -26,6 +26,7 @@ import { ApplicationForm } from "@/features/applications/application-form"
 import { DataStoreForm, EnvironmentForm } from "@/features/applications/know-forms"
 import { CRITICALITY, DATA_STORE_TYPE, ENVIRONMENT_TYPE, HARVEST, HOSTING, LIFECYCLE } from "@/features/applications/labels"
 import { problemStatus } from "@/features/applications/problem"
+import { HarvestSection } from "@/features/harvest/harvest-section"
 
 const PANEL_ID = "application-stage-panel"
 
@@ -215,6 +216,7 @@ function EnvironmentSection({ environment, canAddStore }: { environment: Environ
                   {DATA_STORE_TYPE[store.type]} · {store.platform} · {store.region.name}
                 </p>
                 <p className="mono text-xs text-muted-foreground">{store.connection_ref}</p>
+                <HarvestSection dataStoreId={store.id} storeName={store.name} />
               </li>
             )
           })}

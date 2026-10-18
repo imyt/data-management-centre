@@ -118,13 +118,19 @@ class InventoryRepository:
     def get_environment(self, environment_id: uuid.UUID) -> AppEnvironment | None:
         return self._session.get(AppEnvironment, environment_id)
 
+    def get_data_store(self, store_id: uuid.UUID) -> DataStore | None:
+        return self._session.get(DataStore, store_id)
+
+    def list_data_store_ids(self) -> list[uuid.UUID]:
+        return list(self._session.scalars(select(DataStore.id).order_by(DataStore.id)))
+
     def add[T: (Application, AppEnvironment, DataStore)](self, entity: T) -> T:
         self._session.add(entity)
         self._session.flush()
         self._session.refresh(entity)
         return entity
 
-    def flush(self, entity: Application) -> None:
+    def flush(self, entity: Application | DataStore) -> None:
         self._session.flush()
         self._session.refresh(entity)
 
@@ -188,6 +194,12 @@ class InventoryRepository:
             .execution_options(populate_existing=True)
         )
         return self._session.scalar(statement)
+
+    def asset_names(self, asset_ids: set[uuid.UUID]) -> dict[uuid.UUID, str]:
+        if not asset_ids:
+            return {}
+        rows = self._session.execute(select(Asset.id, Asset.name).where(Asset.id.in_(asset_ids)))
+        return {row.id: row.name for row in rows}
 
     def get_data_element(self, element_id: uuid.UUID) -> DataElement | None:
         return self._session.get(DataElement, element_id)

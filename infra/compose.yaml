@@ -36,6 +36,8 @@ services:
       DMC_ENVIRONMENT: ${DMC_ENVIRONMENT:-dev}
       DMC_DATABASE_URL: postgresql+psycopg://dmc_app:${DMC_APP_PASSWORD:-dmc_app}@db:5432/dmc
       DMC_MIGRATION_DATABASE_URL: postgresql+psycopg://dmc_migrator:${DMC_MIGRATOR_PASSWORD:-dmc_migrator}@db:5432/dmc
+      # What the sample data store's connection_ref (env:DMC_ESTATE_HARVEST_URL) resolves to.
+      DMC_ESTATE_HARVEST_URL: postgresql+psycopg://dmc_harvest:${DMC_HARVEST_PASSWORD:-dmc_harvest}@db:5432/estate
     depends_on:
       db:
         condition: service_healthy

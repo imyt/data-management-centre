@@ -3,8 +3,8 @@
 import { type DefaultError, type InfiniteData, infiniteQueryOptions, queryOptions, type UseMutationOptions } from '@tanstack/react-query';
 
 import { client } from '../client.gen';
-import { assignOwnership, confirmOwnership, createApplication, createAsset, createDataElement, createDataStore, createEnvironment, disputeOwnership, getApplication, getAsset, getExample, getHealth, getHealthReady, getJob, getMe, getMeta, listApplications, listAssets, listDataCategories, listDevUsers, listDomains, listExamples, listInbox, listPurposes, listRegions, listRetentionPolicies, listUsers, type Options, updateApplication, updateAsset, updateDataElement } from '../sdk.gen';
-import type { AssignOwnershipData, AssignOwnershipError, AssignOwnershipResponse, ConfirmOwnershipData, ConfirmOwnershipError, ConfirmOwnershipResponse, CreateApplicationData, CreateApplicationError, CreateApplicationResponse, CreateAssetData, CreateAssetError, CreateAssetResponse, CreateDataElementData, CreateDataElementError, CreateDataElementResponse, CreateDataStoreData, CreateDataStoreError, CreateDataStoreResponse, CreateEnvironmentData, CreateEnvironmentError, CreateEnvironmentResponse, DisputeOwnershipData, DisputeOwnershipError, DisputeOwnershipResponse, GetApplicationData, GetApplicationError, GetApplicationResponse, GetAssetData, GetAssetError, GetAssetResponse, GetExampleData, GetExampleError, GetExampleResponse, GetHealthData, GetHealthReadyData, GetHealthReadyError, GetHealthReadyResponse, GetHealthResponse, GetJobData, GetJobError, GetJobResponse, GetMeData, GetMeError, GetMeResponse, GetMetaData, GetMetaResponse, ListApplicationsData, ListApplicationsError, ListApplicationsResponse, ListAssetsData, ListAssetsError, ListAssetsResponse, ListDataCategoriesData, ListDataCategoriesResponse, ListDevUsersData, ListDevUsersError, ListDevUsersResponse, ListDomainsData, ListDomainsResponse, ListExamplesData, ListExamplesError, ListExamplesResponse, ListInboxData, ListInboxError, ListInboxResponse, ListPurposesData, ListPurposesResponse, ListRegionsData, ListRegionsResponse, ListRetentionPoliciesData, ListRetentionPoliciesResponse, ListUsersData, ListUsersError, ListUsersResponse, UpdateApplicationData, UpdateApplicationError, UpdateApplicationResponse, UpdateAssetData, UpdateAssetError, UpdateAssetResponse, UpdateDataElementData, UpdateDataElementError, UpdateDataElementResponse } from '../types.gen';
+import { assignOwnership, confirmOwnership, createApplication, createAsset, createAssetsFromTables, createDataElement, createDataStore, createEnvironment, disputeOwnership, getApplication, getAsset, getExample, getHarvestStatus, getHealth, getHealthReady, getJob, getMe, getMeta, listApplications, listAssets, listDataCategories, listDevUsers, listDomains, listExamples, listInbox, listPhysicalObjects, listPurposes, listRegions, listRetentionPolicies, listUsers, mapTable, type Options, runHarvest, updateApplication, updateAsset, updateDataElement } from '../sdk.gen';
+import type { AssignOwnershipData, AssignOwnershipError, AssignOwnershipResponse, ConfirmOwnershipData, ConfirmOwnershipError, ConfirmOwnershipResponse, CreateApplicationData, CreateApplicationError, CreateApplicationResponse, CreateAssetData, CreateAssetError, CreateAssetResponse, CreateAssetsFromTablesData, CreateAssetsFromTablesError, CreateAssetsFromTablesResponse, CreateDataElementData, CreateDataElementError, CreateDataElementResponse, CreateDataStoreData, CreateDataStoreError, CreateDataStoreResponse, CreateEnvironmentData, CreateEnvironmentError, CreateEnvironmentResponse, DisputeOwnershipData, DisputeOwnershipError, DisputeOwnershipResponse, GetApplicationData, GetApplicationError, GetApplicationResponse, GetAssetData, GetAssetError, GetAssetResponse, GetExampleData, GetExampleError, GetExampleResponse, GetHarvestStatusData, GetHarvestStatusError, GetHarvestStatusResponse, GetHealthData, GetHealthReadyData, GetHealthReadyError, GetHealthReadyResponse, GetHealthResponse, GetJobData, GetJobError, GetJobResponse, GetMeData, GetMeError, GetMeResponse, GetMetaData, GetMetaResponse, ListApplicationsData, ListApplicationsError, ListApplicationsResponse, ListAssetsData, ListAssetsError, ListAssetsResponse, ListDataCategoriesData, ListDataCategoriesResponse, ListDevUsersData, ListDevUsersError, ListDevUsersResponse, ListDomainsData, ListDomainsResponse, ListExamplesData, ListExamplesError, ListExamplesResponse, ListInboxData, ListInboxError, ListInboxResponse, ListPhysicalObjectsData, ListPhysicalObjectsError, ListPhysicalObjectsResponse, ListPurposesData, ListPurposesResponse, ListRegionsData, ListRegionsResponse, ListRetentionPoliciesData, ListRetentionPoliciesResponse, ListUsersData, ListUsersError, ListUsersResponse, MapTableData, MapTableError, MapTableResponse, RunHarvestData, RunHarvestError, RunHarvestResponse, UpdateApplicationData, UpdateApplicationError, UpdateApplicationResponse, UpdateAssetData, UpdateAssetError, UpdateAssetResponse, UpdateDataElementData, UpdateDataElementError, UpdateDataElementResponse } from '../types.gen';
 
 export type QueryKey<TOptions extends Options> = [
     Pick<TOptions, 'baseUrl' | 'body' | 'headers' | 'path' | 'query'> & {
@@ -659,6 +659,129 @@ export const disputeOwnershipMutation = (options?: Partial<Options<DisputeOwners
     const mutationOptions: UseMutationOptions<DisputeOwnershipResponse, DisputeOwnershipError, Options<DisputeOwnershipData>> = {
         mutationFn: async (fnOptions) => {
             const { data } = await disputeOwnership({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+export const getHarvestStatusQueryKey = (options: Options<GetHarvestStatusData>) => createQueryKey('getHarvestStatus', options);
+
+/**
+ * Get a data store's harvest status, recent runs and unmapped counts
+ */
+export const getHarvestStatusOptions = (options: Options<GetHarvestStatusData>) => queryOptions<GetHarvestStatusResponse, GetHarvestStatusError, GetHarvestStatusResponse, ReturnType<typeof getHarvestStatusQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await getHarvestStatus({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: getHarvestStatusQueryKey(options)
+});
+
+/**
+ * Harvest a data store now
+ *
+ * Queues a harvest and returns the job; poll `/jobs/{id}` or the harvest status.
+ */
+export const runHarvestMutation = (options?: Partial<Options<RunHarvestData>>): UseMutationOptions<RunHarvestResponse, RunHarvestError, Options<RunHarvestData>> => {
+    const mutationOptions: UseMutationOptions<RunHarvestResponse, RunHarvestError, Options<RunHarvestData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await runHarvest({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+export const listPhysicalObjectsQueryKey = (options: Options<ListPhysicalObjectsData>) => createQueryKey('listPhysicalObjects', options);
+
+/**
+ * List the schemas, tables and columns the last harvest found
+ */
+export const listPhysicalObjectsOptions = (options: Options<ListPhysicalObjectsData>) => queryOptions<ListPhysicalObjectsResponse, ListPhysicalObjectsError, ListPhysicalObjectsResponse, ReturnType<typeof listPhysicalObjectsQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await listPhysicalObjects({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: listPhysicalObjectsQueryKey(options)
+});
+
+export const listPhysicalObjectsInfiniteQueryKey = (options: Options<ListPhysicalObjectsData>): QueryKey<Options<ListPhysicalObjectsData>> => createQueryKey('listPhysicalObjects', options, true);
+
+/**
+ * List the schemas, tables and columns the last harvest found
+ */
+export const listPhysicalObjectsInfiniteOptions = (options: Options<ListPhysicalObjectsData>) => {
+    const opts = infiniteQueryOptions<ListPhysicalObjectsResponse, ListPhysicalObjectsError, InfiniteData<ListPhysicalObjectsResponse>, QueryKey<Options<ListPhysicalObjectsData>>, string | null | Pick<QueryKey<Options<ListPhysicalObjectsData>>[0], 'body' | 'headers' | 'path' | 'query'>>(
+    // @ts-ignore
+    {
+        queryFn: async ({ pageParam, queryKey, signal }) => {
+            // @ts-ignore
+            const page: Pick<QueryKey<Options<ListPhysicalObjectsData>>[0], 'body' | 'headers' | 'path' | 'query'> = typeof pageParam === 'object' ? pageParam : {
+                query: {
+                    cursor: pageParam
+                }
+            };
+            const params = createInfiniteParams(queryKey, page);
+            const { data } = await listPhysicalObjects({
+                ...options,
+                ...params,
+                signal,
+                throwOnError: true
+            });
+            return data;
+        },
+        queryKey: listPhysicalObjectsInfiniteQueryKey(options)
+    });
+    return opts as Omit<typeof opts, 'initialData'>;
+};
+
+/**
+ * Map a table to an existing asset
+ *
+ * Matches the table's columns to the asset's data elements by name and adds the elements it lacks.
+ */
+export const mapTableMutation = (options?: Partial<Options<MapTableData>>): UseMutationOptions<MapTableResponse, MapTableError, Options<MapTableData>> => {
+    const mutationOptions: UseMutationOptions<MapTableResponse, MapTableError, Options<MapTableData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await mapTable({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+/**
+ * Declare an asset for each unmapped table and map it
+ *
+ * Each asset is a stored dataset in the application's domain with a data element per column. A given Data Owner is asked to confirm.
+ */
+export const createAssetsFromTablesMutation = (options?: Partial<Options<CreateAssetsFromTablesData>>): UseMutationOptions<CreateAssetsFromTablesResponse, CreateAssetsFromTablesError, Options<CreateAssetsFromTablesData>> => {
+    const mutationOptions: UseMutationOptions<CreateAssetsFromTablesResponse, CreateAssetsFromTablesError, Options<CreateAssetsFromTablesData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await createAssetsFromTables({
                 ...options,
                 ...fnOptions,
                 throwOnError: true

@@ -2,7 +2,7 @@
 
 import type { Client, ClientMeta, Options as Options2, RequestResult, TDataShape } from './client';
 import { client } from './client.gen';
-import type { AssignOwnershipData, AssignOwnershipErrors, AssignOwnershipResponses, ConfirmOwnershipData, ConfirmOwnershipErrors, ConfirmOwnershipResponses, CreateApplicationData, CreateApplicationErrors, CreateApplicationResponses, CreateAssetData, CreateAssetErrors, CreateAssetResponses, CreateDataElementData, CreateDataElementErrors, CreateDataElementResponses, CreateDataStoreData, CreateDataStoreErrors, CreateDataStoreResponses, CreateEnvironmentData, CreateEnvironmentErrors, CreateEnvironmentResponses, DisputeOwnershipData, DisputeOwnershipErrors, DisputeOwnershipResponses, GetApplicationData, GetApplicationErrors, GetApplicationResponses, GetAssetData, GetAssetErrors, GetAssetResponses, GetExampleData, GetExampleErrors, GetExampleResponses, GetHealthData, GetHealthReadyData, GetHealthReadyErrors, GetHealthReadyResponses, GetHealthResponses, GetJobData, GetJobErrors, GetJobResponses, GetMeData, GetMeErrors, GetMeResponses, GetMetaData, GetMetaResponses, ListApplicationsData, ListApplicationsErrors, ListApplicationsResponses, ListAssetsData, ListAssetsErrors, ListAssetsResponses, ListDataCategoriesData, ListDataCategoriesResponses, ListDevUsersData, ListDevUsersErrors, ListDevUsersResponses, ListDomainsData, ListDomainsResponses, ListExamplesData, ListExamplesErrors, ListExamplesResponses, ListInboxData, ListInboxErrors, ListInboxResponses, ListPurposesData, ListPurposesResponses, ListRegionsData, ListRegionsResponses, ListRetentionPoliciesData, ListRetentionPoliciesResponses, ListUsersData, ListUsersErrors, ListUsersResponses, UpdateApplicationData, UpdateApplicationErrors, UpdateApplicationResponses, UpdateAssetData, UpdateAssetErrors, UpdateAssetResponses, UpdateDataElementData, UpdateDataElementErrors, UpdateDataElementResponses } from './types.gen';
+import type { AssignOwnershipData, AssignOwnershipErrors, AssignOwnershipResponses, ConfirmOwnershipData, ConfirmOwnershipErrors, ConfirmOwnershipResponses, CreateApplicationData, CreateApplicationErrors, CreateApplicationResponses, CreateAssetData, CreateAssetErrors, CreateAssetResponses, CreateAssetsFromTablesData, CreateAssetsFromTablesErrors, CreateAssetsFromTablesResponses, CreateDataElementData, CreateDataElementErrors, CreateDataElementResponses, CreateDataStoreData, CreateDataStoreErrors, CreateDataStoreResponses, CreateEnvironmentData, CreateEnvironmentErrors, CreateEnvironmentResponses, DisputeOwnershipData, DisputeOwnershipErrors, DisputeOwnershipResponses, GetApplicationData, GetApplicationErrors, GetApplicationResponses, GetAssetData, GetAssetErrors, GetAssetResponses, GetExampleData, GetExampleErrors, GetExampleResponses, GetHarvestStatusData, GetHarvestStatusErrors, GetHarvestStatusResponses, GetHealthData, GetHealthReadyData, GetHealthReadyErrors, GetHealthReadyResponses, GetHealthResponses, GetJobData, GetJobErrors, GetJobResponses, GetMeData, GetMeErrors, GetMeResponses, GetMetaData, GetMetaResponses, ListApplicationsData, ListApplicationsErrors, ListApplicationsResponses, ListAssetsData, ListAssetsErrors, ListAssetsResponses, ListDataCategoriesData, ListDataCategoriesResponses, ListDevUsersData, ListDevUsersErrors, ListDevUsersResponses, ListDomainsData, ListDomainsResponses, ListExamplesData, ListExamplesErrors, ListExamplesResponses, ListInboxData, ListInboxErrors, ListInboxResponses, ListPhysicalObjectsData, ListPhysicalObjectsErrors, ListPhysicalObjectsResponses, ListPurposesData, ListPurposesResponses, ListRegionsData, ListRegionsResponses, ListRetentionPoliciesData, ListRetentionPoliciesResponses, ListUsersData, ListUsersErrors, ListUsersResponses, MapTableData, MapTableErrors, MapTableResponses, RunHarvestData, RunHarvestErrors, RunHarvestResponses, UpdateApplicationData, UpdateApplicationErrors, UpdateApplicationResponses, UpdateAssetData, UpdateAssetErrors, UpdateAssetResponses, UpdateDataElementData, UpdateDataElementErrors, UpdateDataElementResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -226,6 +226,51 @@ export const confirmOwnership = <ThrowOnError extends boolean = false>(options: 
  */
 export const disputeOwnership = <ThrowOnError extends boolean = false>(options: Options<DisputeOwnershipData, ThrowOnError>): RequestResult<DisputeOwnershipResponses, DisputeOwnershipErrors, ThrowOnError> => (options.client ?? client).post<DisputeOwnershipResponses, DisputeOwnershipErrors, ThrowOnError>({
     url: '/api/v1/assets/{asset_id}/ownership/{role}/dispute',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Get a data store's harvest status, recent runs and unmapped counts
+ */
+export const getHarvestStatus = <ThrowOnError extends boolean = false>(options: Options<GetHarvestStatusData, ThrowOnError>): RequestResult<GetHarvestStatusResponses, GetHarvestStatusErrors, ThrowOnError> => (options.client ?? client).get<GetHarvestStatusResponses, GetHarvestStatusErrors, ThrowOnError>({ url: '/api/v1/data-stores/{data_store_id}/harvest', ...options });
+
+/**
+ * Harvest a data store now
+ *
+ * Queues a harvest and returns the job; poll `/jobs/{id}` or the harvest status.
+ */
+export const runHarvest = <ThrowOnError extends boolean = false>(options: Options<RunHarvestData, ThrowOnError>): RequestResult<RunHarvestResponses, RunHarvestErrors, ThrowOnError> => (options.client ?? client).post<RunHarvestResponses, RunHarvestErrors, ThrowOnError>({ url: '/api/v1/data-stores/{data_store_id}/harvest', ...options });
+
+/**
+ * List the schemas, tables and columns the last harvest found
+ */
+export const listPhysicalObjects = <ThrowOnError extends boolean = false>(options: Options<ListPhysicalObjectsData, ThrowOnError>): RequestResult<ListPhysicalObjectsResponses, ListPhysicalObjectsErrors, ThrowOnError> => (options.client ?? client).get<ListPhysicalObjectsResponses, ListPhysicalObjectsErrors, ThrowOnError>({ url: '/api/v1/data-stores/{data_store_id}/objects', ...options });
+
+/**
+ * Map a table to an existing asset
+ *
+ * Matches the table's columns to the asset's data elements by name and adds the elements it lacks.
+ */
+export const mapTable = <ThrowOnError extends boolean = false>(options: Options<MapTableData, ThrowOnError>): RequestResult<MapTableResponses, MapTableErrors, ThrowOnError> => (options.client ?? client).post<MapTableResponses, MapTableErrors, ThrowOnError>({
+    url: '/api/v1/data-stores/{data_store_id}/mappings',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Declare an asset for each unmapped table and map it
+ *
+ * Each asset is a stored dataset in the application's domain with a data element per column. A given Data Owner is asked to confirm.
+ */
+export const createAssetsFromTables = <ThrowOnError extends boolean = false>(options: Options<CreateAssetsFromTablesData, ThrowOnError>): RequestResult<CreateAssetsFromTablesResponses, CreateAssetsFromTablesErrors, ThrowOnError> => (options.client ?? client).post<CreateAssetsFromTablesResponses, CreateAssetsFromTablesErrors, ThrowOnError>({
+    url: '/api/v1/data-stores/{data_store_id}/mappings/assets',
     ...options,
     headers: {
         'Content-Type': 'application/json',

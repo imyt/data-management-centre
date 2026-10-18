@@ -50,7 +50,7 @@ Goal: everything later slices depend on, already working the way it will in ever
 | **1. Reference data** | Domains, data categories, regions, retention policies, purposes; the scope selector filters by domain | FR-D2 |
 | **2. Applications** | Register applications with environments and data stores; Applications list and detail with `StageTracker` (Know stage) | FR-K1, FR-K2 |
 | **3. Assets and ownership** | Assets and data elements; declare category, business context, stored flag and retention; assign, confirm, reassign or dispute owners and stewards; **Inbox v1** (ownership confirmations due) | FR-K5, FR-K6 (declared PII, CDE flag), FR-K10, FR-I1 (done) |
-| **4. Harvest** | `connectors` module with a Postgres harvest adapter, run as jobs on a schedule and on demand; snapshots and physical objects; harvest status and failures on the data store; map objects to assets and elements, and flag unmapped objects | FR-K3, FR-K4, FR-D3 (first part) |
+| **4. Harvest** (done) | `connectors` module with a Postgres harvest adapter, run as jobs on a schedule (`DMC_HARVEST_INTERVAL_SECONDS`), on demand, and once when a store is registered; snapshots and physical objects; harvest status and failures on the data store; map objects to assets and elements, and flag unmapped objects. Not yet: unmapping, oldest-record dates, snapshot retention, a secrets store behind `connection_ref` | FR-K3, FR-K4, FR-D3 (first part) |
 
 **Exit:** an Application Owner registers an application whose store is the local `estate` database, harvest fills it in, and a Data Owner confirms ownership of its assets from the Inbox.
 

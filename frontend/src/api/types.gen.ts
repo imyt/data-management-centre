@@ -404,6 +404,69 @@ export type AssignOwnership = {
 };
 
 /**
+ * CreateAssets
+ */
+export type CreateAssets = {
+    /**
+     * Paths
+     *
+     * Unmapped tables to declare an asset for each.
+     */
+    paths: Array<string>;
+    /**
+     * Retention Policy Id
+     *
+     * How long the data may be kept.
+     */
+    retention_policy_id: string;
+    /**
+     * Data Category Id
+     */
+    data_category_id?: string | null;
+    /**
+     * Owner Id
+     *
+     * A Data Owner in the application's domain, who is asked to confirm.
+     */
+    owner_id?: string | null;
+};
+
+/**
+ * CreatedAsset
+ */
+export type CreatedAsset = {
+    /**
+     * Path
+     */
+    path: string;
+    /**
+     * Asset Id
+     */
+    asset_id: string;
+    /**
+     * Asset Name
+     */
+    asset_name: string;
+};
+
+/**
+ * CreatedAssetList
+ */
+export type CreatedAssetList = {
+    /**
+     * Data
+     */
+    data: Array<CreatedAsset>;
+    /**
+     * Allowed Actions
+     *
+     * Actions the caller may take on `data` right now.
+     */
+    allowed_actions: Array<string>;
+    meta: Meta;
+};
+
+/**
  * Criticality
  */
 export type Criticality = 'low' | 'medium' | 'high' | 'critical';
@@ -754,6 +817,44 @@ export type ExampleStatus = 'draft' | 'active' | 'retired';
 export type HarvestStatus = 'never' | 'succeeded' | 'failed';
 
 /**
+ * HarvestStatusRead
+ */
+export type HarvestStatusRead = {
+    /**
+     * Data Store Id
+     */
+    data_store_id: string;
+    /**
+     * The latest run, whether it worked or not.
+     */
+    last_run: SnapshotRead | null;
+    /**
+     * From the last successful run; null if no run has succeeded.
+     */
+    objects: ObjectCounts | null;
+    /**
+     * Recent Runs
+     *
+     * Latest first.
+     */
+    recent_runs: Array<SnapshotRead>;
+};
+
+/**
+ * HarvestStatusResponse
+ */
+export type HarvestStatusResponse = {
+    data: HarvestStatusRead;
+    /**
+     * Allowed Actions
+     *
+     * Actions the caller may take on `data` right now.
+     */
+    allowed_actions: Array<string>;
+    meta: Meta;
+};
+
+/**
  * HealthRead
  */
 export type HealthRead = {
@@ -973,6 +1074,24 @@ export type ListMeta = {
 };
 
 /**
+ * MapTable
+ */
+export type MapTable = {
+    /**
+     * Path
+     *
+     * The table's path, e.g. `public.orders`.
+     */
+    path: string;
+    /**
+     * Asset Id
+     *
+     * The asset the table stores. Its columns are matched to the asset's data elements by name, and the missing elements are added.
+     */
+    asset_id: string;
+};
+
+/**
  * Meta
  *
  * Freshness of the data in a response, when the data was derived by an evaluation.
@@ -1019,6 +1138,63 @@ export type MetaRead = {
 };
 
 /**
+ * ObjectCounts
+ *
+ * What the last successful harvest found, and how much of it is not yet mapped.
+ */
+export type ObjectCounts = {
+    /**
+     * Schemas
+     */
+    schemas: number;
+    /**
+     * Tables
+     */
+    tables: number;
+    /**
+     * Columns
+     */
+    columns: number;
+    /**
+     * Unmapped Tables
+     */
+    unmapped_tables: number;
+    /**
+     * Unmapped Columns
+     */
+    unmapped_columns: number;
+};
+
+/**
+ * ObjectKind
+ *
+ * What a physical object is. Only tables and columns map to assets and data elements.
+ */
+export type ObjectKind = 'schema' | 'table' | 'column';
+
+/**
+ * ObjectMappingRead
+ */
+export type ObjectMappingRead = {
+    /**
+     * Asset Id
+     *
+     * Set on a table.
+     */
+    asset_id: string | null;
+    /**
+     * Asset Name
+     */
+    asset_name: string | null;
+    /**
+     * Data Element Id
+     *
+     * Set on a column.
+     */
+    data_element_id: string | null;
+};
+
+/**
  * OwnershipRead
  */
 export type OwnershipRead = {
@@ -1056,6 +1232,76 @@ export type OwnershipRole = 'owner' | 'steward';
  * pending → confirmed or disputed. A reassignment starts again at pending.
  */
 export type OwnershipStatus = 'pending' | 'confirmed' | 'disputed';
+
+/**
+ * PhysicalObjectPage
+ */
+export type PhysicalObjectPage = {
+    /**
+     * Data
+     */
+    data: Array<PhysicalObjectRead>;
+    /**
+     * Allowed Actions
+     *
+     * Actions the caller may take on `data` right now.
+     */
+    allowed_actions: Array<string>;
+    meta: ListMeta;
+};
+
+/**
+ * PhysicalObjectRead
+ */
+export type PhysicalObjectRead = {
+    /**
+     * Id
+     */
+    id: string;
+    kind: ObjectKind;
+    /**
+     * Path
+     *
+     * Dotted, e.g. `public.orders.id`.
+     */
+    path: string;
+    /**
+     * Name
+     */
+    name: string;
+    /**
+     * Parent Path
+     */
+    parent_path: string | null;
+    /**
+     * Data Type
+     */
+    data_type: string | null;
+    /**
+     * Row Count
+     *
+     * Estimated from statistics; harvest reads no rows.
+     */
+    row_count: number | null;
+    /**
+     * Null for an unmapped table or column, and for schemas.
+     */
+    mapping: ObjectMappingRead | null;
+};
+
+/**
+ * PhysicalObjectResponse
+ */
+export type PhysicalObjectResponse = {
+    data: PhysicalObjectRead;
+    /**
+     * Allowed Actions
+     *
+     * Actions the caller may take on `data` right now.
+     */
+    allowed_actions: Array<string>;
+    meta: Meta;
+};
 
 /**
  * ProblemDetail
@@ -1218,6 +1464,46 @@ export type RetentionPolicyRead = {
  * The roles in PRD.md §2.
  */
 export type Role = 'data_owner' | 'application_owner' | 'data_steward' | 'process_owner' | 'governance' | 'leadership' | 'auditor';
+
+/**
+ * SnapshotRead
+ *
+ * One harvest run. A failed run has no objects, only the reason.
+ */
+export type SnapshotRead = {
+    /**
+     * Id
+     */
+    id: string;
+    status: SnapshotStatus;
+    /**
+     * Taken At
+     */
+    taken_at: string;
+    /**
+     * Error
+     *
+     * Why the run failed, safe to show to users.
+     */
+    error: string | null;
+    /**
+     * Schemas
+     */
+    schemas: number;
+    /**
+     * Tables
+     */
+    tables: number;
+    /**
+     * Columns
+     */
+    columns: number;
+};
+
+/**
+ * SnapshotStatus
+ */
+export type SnapshotStatus = 'succeeded' | 'failed';
 
 /**
  * UserPage
@@ -2301,6 +2587,233 @@ export type DisputeOwnershipResponses = {
 };
 
 export type DisputeOwnershipResponse = DisputeOwnershipResponses[keyof DisputeOwnershipResponses];
+
+export type GetHarvestStatusData = {
+    body?: never;
+    path: {
+        /**
+         * Data Store Id
+         */
+        data_store_id: string;
+    };
+    query?: never;
+    url: '/api/v1/data-stores/{data_store_id}/harvest';
+};
+
+export type GetHarvestStatusErrors = {
+    /**
+     * Permission denied
+     */
+    403: ProblemDetail;
+    /**
+     * Not found
+     */
+    404: ProblemDetail;
+    /**
+     * Validation error
+     */
+    422: ProblemDetail;
+};
+
+export type GetHarvestStatusError = GetHarvestStatusErrors[keyof GetHarvestStatusErrors];
+
+export type GetHarvestStatusResponses = {
+    /**
+     * Successful Response
+     */
+    200: HarvestStatusResponse;
+};
+
+export type GetHarvestStatusResponse = GetHarvestStatusResponses[keyof GetHarvestStatusResponses];
+
+export type RunHarvestData = {
+    body?: never;
+    path: {
+        /**
+         * Data Store Id
+         */
+        data_store_id: string;
+    };
+    query?: never;
+    url: '/api/v1/data-stores/{data_store_id}/harvest';
+};
+
+export type RunHarvestErrors = {
+    /**
+     * Permission denied
+     */
+    403: ProblemDetail;
+    /**
+     * Not found
+     */
+    404: ProblemDetail;
+    /**
+     * Validation error
+     */
+    422: ProblemDetail;
+};
+
+export type RunHarvestError = RunHarvestErrors[keyof RunHarvestErrors];
+
+export type RunHarvestResponses = {
+    /**
+     * Successful Response
+     */
+    202: JobResponse;
+};
+
+export type RunHarvestResponse = RunHarvestResponses[keyof RunHarvestResponses];
+
+export type ListPhysicalObjectsData = {
+    body?: never;
+    path: {
+        /**
+         * Data Store Id
+         */
+        data_store_id: string;
+    };
+    query?: {
+        /**
+         * Limit
+         */
+        limit?: number;
+        /**
+         * Cursor
+         */
+        cursor?: string | null;
+        /**
+         * Kind
+         */
+        kind?: ObjectKind | null;
+        /**
+         * Parent Path
+         *
+         * Only the children of this path.
+         */
+        parent_path?: string | null;
+        /**
+         * Mapped
+         *
+         * false: only tables and columns with no asset or element yet.
+         */
+        mapped?: boolean | null;
+    };
+    url: '/api/v1/data-stores/{data_store_id}/objects';
+};
+
+export type ListPhysicalObjectsErrors = {
+    /**
+     * Permission denied
+     */
+    403: ProblemDetail;
+    /**
+     * Not found
+     */
+    404: ProblemDetail;
+    /**
+     * Validation error
+     */
+    422: ProblemDetail;
+};
+
+export type ListPhysicalObjectsError = ListPhysicalObjectsErrors[keyof ListPhysicalObjectsErrors];
+
+export type ListPhysicalObjectsResponses = {
+    /**
+     * Successful Response
+     */
+    200: PhysicalObjectPage;
+};
+
+export type ListPhysicalObjectsResponse = ListPhysicalObjectsResponses[keyof ListPhysicalObjectsResponses];
+
+export type MapTableData = {
+    body: MapTable;
+    path: {
+        /**
+         * Data Store Id
+         */
+        data_store_id: string;
+    };
+    query?: never;
+    url: '/api/v1/data-stores/{data_store_id}/mappings';
+};
+
+export type MapTableErrors = {
+    /**
+     * Invalid input
+     */
+    400: ProblemDetail;
+    /**
+     * Permission denied
+     */
+    403: ProblemDetail;
+    /**
+     * Not found
+     */
+    404: ProblemDetail;
+    /**
+     * Conflict
+     */
+    409: ProblemDetail;
+    /**
+     * Validation error
+     */
+    422: ProblemDetail;
+};
+
+export type MapTableError = MapTableErrors[keyof MapTableErrors];
+
+export type MapTableResponses = {
+    /**
+     * Successful Response
+     */
+    200: PhysicalObjectResponse;
+};
+
+export type MapTableResponse = MapTableResponses[keyof MapTableResponses];
+
+export type CreateAssetsFromTablesData = {
+    body: CreateAssets;
+    path: {
+        /**
+         * Data Store Id
+         */
+        data_store_id: string;
+    };
+    query?: never;
+    url: '/api/v1/data-stores/{data_store_id}/mappings/assets';
+};
+
+export type CreateAssetsFromTablesErrors = {
+    /**
+     * Invalid input
+     */
+    400: ProblemDetail;
+    /**
+     * Permission denied
+     */
+    403: ProblemDetail;
+    /**
+     * Not found
+     */
+    404: ProblemDetail;
+    /**
+     * Validation error
+     */
+    422: ProblemDetail;
+};
+
+export type CreateAssetsFromTablesError = CreateAssetsFromTablesErrors[keyof CreateAssetsFromTablesErrors];
+
+export type CreateAssetsFromTablesResponses = {
+    /**
+     * Successful Response
+     */
+    201: CreatedAssetList;
+};
+
+export type CreateAssetsFromTablesResponse = CreateAssetsFromTablesResponses[keyof CreateAssetsFromTablesResponses];
 
 export type ListInboxData = {
     body?: never;

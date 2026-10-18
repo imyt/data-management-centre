@@ -22,6 +22,7 @@ from app.core.jobs.registry import Registry
 from app.core.jobs.worker import Worker
 from app.core.logs import configure_logging
 from app.core.migrations import DatabaseOutOfDateError, ensure_database_is_current
+from app.modules.connectors import jobs as connectors
 
 logger = logging.getLogger("app.worker")
 
@@ -30,6 +31,9 @@ def build_registry() -> Registry:
     """Every job, event handler and schedule. Modules add theirs here as they gain them."""
     registry = Registry()
     register_platform_jobs(registry)
+    connectors.register(
+        registry, interval=timedelta(seconds=get_settings().harvest_interval_seconds)
+    )
     return registry
 
 

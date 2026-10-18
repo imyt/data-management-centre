@@ -130,8 +130,9 @@ erDiagram
 | `application_process` | `application_id`, `process_id`, role (system_of_record, consumer, supporting), confirmation_status |
 | `integration` | source (`source_application_id` or `source_party_id`), `target_application_id`, asset_ids, method, frequency, source_region, target_region, state (declared, observed, declared_and_observed), last_observed_at |
 | `external_party` | name, region, approved_target (boolean) |
-| `harvest_snapshot` | `data_store_id`, taken_at, status, error |
-| `physical_object` | `snapshot_id`, kind (schema, table, column), path, row_count, oldest_record_at |
+| `harvest_snapshot` | `data_store_id`, taken_at, status (succeeded, failed), error, `requested_by` (a failed run keeps only the reason; objects stay those of the last success) |
+| `physical_object` | `snapshot_id`, kind (schema, table, column), dotted path (`public.orders.id`), name, `parent_path`, ordinal, data_type, row_count (estimated from statistics). `oldest_record_at` follows with `retention_window` (slice 6) |
+| `physical_object_mapping` | `data_store_id`, path, and `asset_id` (a table) or `data_element_id` (a column), `mapped_by_id`. Kept per path, not per snapshot, so a mapping survives the next harvest; a table or column in the last snapshot with no row is **unmapped**. The harvest tables belong to `connectors` (schema `connectors`, ids only across modules), not `inventory` |
 | `declaration` | subject (type, id), field, declared_value, `declared_by`, declared_at, expires_at, check_state (confirmed, mismatch, unverifiable, expired) |
 
 Reference data: `domain`, `data_category`, `region`, `retention_policy` (with `retention_days`), `purpose`, each with a unique `code` and a `name`. The inventory module owns them, including `domain`; other modules (identity's domain scopes) refer to domain ids without a foreign key.
@@ -272,6 +273,7 @@ Main resources: `applications`, `environments`, `data-stores`, `assets`, `data-e
 - OIDC login; roles and scopes from identity provider groups. Until then, and locally, dev authentication picks a seeded persona per role; both produce the same principal (ADR 0007).
 - Authorisation in the service layer on every request: role permits the operation, scope permits the subject. The API computes `allowed_actions` from the same rules (`require` and `allowed_actions` over one `Permission` list per module, ADR 0007).
 - Connector credentials live in the corporate secrets store; DMC stores only references.
+- A data store's `connection_ref` is resolved by `connectors` when a harvest runs. Until the secrets store is chosen (Phase 4) only `env:DMC_<NAME>_HARVEST_URL` works. The resolver refuses any other variable and any URL that is one of DMC's own databases, and the adapter opens its session read-only with a statement timeout, so a harvest never runs with DMC's own credentials.
 - Harvest reads metadata and aggregate statistics; sampling of values is opt-in per store, masked at rest, and every reveal is logged.
 - Audit events are append-only and hash-chained (`prev_hash`, `hash`) so tampering is detectable. Evidence is stored with SHA-256 hashes.
 

@@ -5,13 +5,16 @@ from app import worker
 from app.core.config import Settings
 from app.core.jobs.housekeeping import PURGE
 from app.core.migrations import DatabaseOutOfDateError
+from app.modules.connectors.jobs import HARVEST_ALL
+from app.modules.connectors.service import HARVEST
 
 
 def test_registry_has_the_platforms_jobs_and_schedules() -> None:
     registry = worker.build_registry()
 
-    assert PURGE in registry.jobs
-    assert [schedule.kind for schedule in registry.schedules.values()] == [PURGE]
+    assert {PURGE, HARVEST, HARVEST_ALL} <= set(registry.jobs)
+    assert [schedule.kind for schedule in registry.schedules.values()] == [PURGE, HARVEST_ALL]
+    assert "inventory.data_store_created" in registry.events
 
 
 def test_dmc_worker_needs_a_database_url(
