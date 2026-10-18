@@ -1,6 +1,6 @@
 # ADR 0004: Environments, the database, and frontend/backend pairing
 
-- Status: accepted
+- Status: accepted; decision 4 amended 2026-10-18 so the API may sit on its own URL
 - Date: 2026-10-18
 
 ## Context
@@ -50,15 +50,16 @@ What exists today:
 - CI runs `upgrade head`, then `downgrade base`, then `upgrade head` again on an empty Postgres 18 (`ARCHITECTURE.md` §13). It also checks that the models match the migrations.
 - Schema changes are backward compatible with the previous release (expand, then contract), so rolling back the app does not require rolling back the database.
 
-### 4. Pairing: one origin per environment
+### 4. Pairing: the frontend learns its API at runtime
 
 Each environment is one unit: **frontend + API + worker + migration step + its own Postgres and secrets**, all deployed from the same commit SHA.
 
-- The corporate gateway, or a small nginx container in front of the static build, serves the SPA and routes `/api/` to the API in **the same environment**. The browser only ever sees one origin, for example `https://dmc-staging.<corp>/` and `https://dmc-staging.<corp>/api/v1/...`.
-- The generated client uses a **relative base URL**. The frontend never knows a backend address, so it cannot point at the wrong one. `VITE_API_BASE_URL` is removed.
-- **Locally**, the Vite dev server proxies `/api` to `http://localhost:8000`, so local setup has the same shape as deployed environments and CORS isn't needed. `DMC_CORS_ORIGINS` stays as an escape hatch, empty by default.
+- The frontend and the API may be deployed on **separate URLs** (for example `https://dmc-staging.<corp>/` and `https://dmc-api-staging.<corp>/`) or on one origin behind a gateway that routes `/api/`. The frontend does not assume either.
+- The bundle holds **no backend address**. The generated client's default base URL is empty, so calls go to `/api/v1/...` on the frontend's own origin. Where the API has its own URL, the deployment serves `/config.json` (`{"apiBaseUrl": "https://..."}`) from its environment variables and the app loads it before mounting (`frontend/src/lib/runtime-config.ts`). `VITE_API_BASE_URL` is removed.
+- With separate URLs the browser makes cross-origin calls, so the API's `DMC_CORS_ORIGINS` must list that environment's frontend origin, and nothing else. Pairing is then enforced twice: the frontend only calls the API its environment configured, and the API only accepts its own frontend.
+- **Locally**, the Vite dev server proxies `/api` to `http://localhost:8000` (override with `DMC_API_PROXY_TARGET`), so no `/config.json` and no CORS are needed.
 - **Build once, promote.** Nothing environment-specific is baked into the bundle, so the same frontend build and the same backend image move from dev to staging to production. Builds are tagged with the git SHA.
-- If a value other than the API address ever has to differ per environment in the UI (for example the identity provider's client ID), the gateway or nginx container serves `/config.json` from environment variables and the app loads it before mounting. It never goes into a `VITE_*` variable.
+- Any other value that has to differ per environment in the UI (for example the identity provider's client ID) goes into the same `/config.json`, never into a `VITE_*` variable.
 
 ### 5. Pairing check: `GET /api/v1/meta`
 
@@ -93,7 +94,7 @@ The API exposes an unauthenticated `meta` endpoint (`operation_id: getMeta`), ne
 ## Consequences
 
 - Developers need Docker for the local database. `docker compose up db` from `infra/` is the only prerequisite beyond `uv` and `pnpm`.
-- `frontend/src/lib/api-config.ts`, `src/env.d.ts`, `.env.example` and `vite.config.ts` change: the base URL becomes relative and the dev server gets an `/api` proxy. This replaces the `VITE_API_BASE_URL` part of ADR 0002 decision 6.
+- `frontend/src/lib/api-config.ts`, `src/env.d.ts`, `.env.example` and `vite.config.ts` change: the base URL defaults to same-origin, `/config.json` can set a separate API origin at runtime, and the dev server gets an `/api` proxy. This replaces the `VITE_API_BASE_URL` part of ADR 0002 decision 6.
 - The unit of deployment is the environment, not the app. A frontend and a backend from different commits never run together in a deployed environment.
 - Each environment has its own database, so moving data between environments is always a deliberate step. Production data never goes to lower environments.
 

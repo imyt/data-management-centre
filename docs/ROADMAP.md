@@ -33,7 +33,7 @@ Goal: everything later slices depend on, already working the way it will in ever
 | 0.5 | `audit` module: hash-chained `audit_event`, written in the same transaction as the change, with `reason` | FR-U1; ARCHITECTURE §9 |
 | 0.6 | Outbox and job queue: `outbox_event`, a job table with `SKIP LOCKED`, worker process and scheduler, `/api/v1/jobs/{id}`, `202` + job id, `Idempotency-Key` | ARCHITECTURE §3, §5, §8 |
 | 0.7 | `identity` module, first part: users, roles, domain scopes; dev authentication with a persona switcher; scope and role checks in services; `allowed_actions` computed from the same rules | FR-D1 (shape); ADR 0004 §7 |
-| 0.8 | `GET /api/v1/meta`, contract hash; relative API base URL, Vite `/api` proxy, `VITE_API_BASE_URL` removed; environment badge and update banner in `PortalHeader` | ADR 0004 §4–5 |
+| 0.8 | `GET /api/v1/meta`, contract hash; API base URL from runtime `/config.json` (same-origin by default), Vite `/api` proxy, `VITE_API_BASE_URL` removed; environment badge and update banner in `PortalHeader` | ADR 0004 §4–5 |
 | 0.9 | Frontend: settle the router (React Router 8 is installed), add the hey-api TanStack Query plugin, wire `AppShell` navigation (Inbox, Assets, Applications, Controls, Reports) with empty screens | ARCHITECTURE §10, §14 |
 | 0.10 | Structured JSON logs with request and job IDs; health for API and worker | ARCHITECTURE §12 |
 | 0.11 | mypy in CI; Dockerfiles for the backend (API and worker share one image) and the frontend (nginx serving the build and proxying `/api/`); `docker compose up` runs everything | ARCHITECTURE §13; ADR 0004 §4 |
