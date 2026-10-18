@@ -9,7 +9,16 @@ import {
 } from "lucide-react"
 import { Outlet, useLocation } from "react-router"
 
-import { AppShell, PortalHeader, type NavGroup, type ScopeOption, type Section } from "@/components/patterns"
+import {
+  AppShell,
+  PortalHeader,
+  UpdateBanner,
+  type NavGroup,
+  type ScopeOption,
+  type Section,
+} from "@/components/patterns"
+
+import { usePairing } from "./use-pairing"
 
 const SECTION_ROUTES: Record<Section, string> = {
   inbox: "/",
@@ -42,6 +51,7 @@ export function AppLayout() {
   const { pathname } = useLocation()
   const section = sectionFor(pathname)
   const [scope, setScope] = React.useState(SCOPES[0].id)
+  const pairing = usePairing()
 
   const page = SECTION_PAGES[section]
   const nav: NavGroup[] = [{ items: [{ label: page.label, to: SECTION_ROUTES[section], icon: page.icon }] }]
@@ -49,15 +59,19 @@ export function AppLayout() {
   return (
     <AppShell
       header={
-        <PortalHeader
-          sectionRoutes={SECTION_ROUTES}
-          inboxCount={0}
-          scopes={SCOPES}
-          scope={scope}
-          onScopeChange={setScope}
-          posture={null}
-          postureTo={SECTION_ROUTES.reports}
-        />
+        <>
+          {pairing.outdated && <UpdateBanner />}
+          <PortalHeader
+            sectionRoutes={SECTION_ROUTES}
+            inboxCount={0}
+            scopes={SCOPES}
+            scope={scope}
+            onScopeChange={setScope}
+            posture={null}
+            postureTo={SECTION_ROUTES.reports}
+            environment={pairing.environmentBadge}
+          />
+        </>
       }
       nav={nav}
     >

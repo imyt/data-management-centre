@@ -14,6 +14,7 @@ import {
   DmcMark,
   EmptyState,
   EntityHeader,
+  EnvironmentBadge,
   ErrorState,
   ExplainWhy,
   Field,
@@ -30,6 +31,7 @@ import {
   stageTabId,
   STATUSES,
   StatusBadge,
+  UpdateBanner,
   useDetail,
   useDetailParam,
   type ActiveFilter,
@@ -582,6 +584,45 @@ export const patternEntries: GalleryEntry[] = [
       loading: <PostureReadout loading to="/reports" />,
       error: <PostureReadout posture={{ passingPercent: 71, evaluatedAt: minutesAgo(180) }} to="/reports" />,
       empty: <PostureReadout posture={null} to="/reports" />,
+    },
+  },
+  {
+    id: "environment-badge",
+    name: "EnvironmentBadge",
+    layer: "patterns",
+    summary:
+      "Part of PortalHeader. Outside production the header names the environment from GET /api/v1/meta, so nobody mistakes staging for production.",
+    states: {
+      default: (
+        <div className="flex gap-2">
+          <EnvironmentBadge environment="staging" />
+          <EnvironmentBadge environment="dev" />
+          <EnvironmentBadge environment="local" />
+        </div>
+      ),
+      hover: { na: "the badge is not interactive." },
+      focus: { na: "the badge is not interactive." },
+      disabled: { na: "the badge is not interactive." },
+      loading: { na: "no badge until the API answers." },
+      error: { na: "no badge when GET /api/v1/meta fails." },
+      empty: { na: "production shows no badge." },
+    },
+  },
+  {
+    id: "update-banner",
+    name: "UpdateBanner",
+    layer: "patterns",
+    wide: true,
+    summary:
+      "Above the header when the API serves a different contract than this bundle was built with. It can't be dismissed; Reload fetches the matching bundle.",
+    states: {
+      default: <UpdateBanner onReload={() => undefined} />,
+      hover: <UpdateBanner onReload={() => undefined} />,
+      focus: <UpdateBanner onReload={() => undefined} />,
+      disabled: { na: "Reload always works." },
+      loading: { na: "the page reloads at once." },
+      error: { na: "shown only once the API has answered." },
+      empty: { na: "hidden while the contracts match." },
     },
   },
   {

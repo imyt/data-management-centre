@@ -65,7 +65,7 @@ Tokens live in `frontend/src/styles/patterns.css`.
 
 ## Layout
 
-**Header** (`PortalHeader`): mark and full name, global navigation (Inbox with count, Assets, Applications, Controls, Reports), search (⌘K), scope switcher, posture readout with freshness, account menu.
+**Header** (`PortalHeader`): mark and full name (with the environment badge outside production), global navigation (Inbox with count, Assets, Applications, Controls, Reports), search (⌘K), scope switcher, posture readout with freshness, account menu.
 
 **Sidebar** (`AppShell`): pages within the current section. Collapses to icons below 1280px; remembers the user's choice.
 
@@ -73,7 +73,7 @@ Tokens live in `frontend/src/styles/patterns.css`.
 
 ## Patterns
 
-Built: `AppShell`, `PortalHeader`, `DmcMark`, `StageTracker`, `DetailSplit` and `DetailLayout`, `EntityHeader`, `StatusBadge`, `ExplainWhy`, `ConfirmWithReason`, state set (empty, error, no access, not found, loading). DataTable is maintained separately.
+Built: `AppShell`, `PortalHeader` (with `EnvironmentBadge` outside production), `UpdateBanner`, `DmcMark`, `StageTracker`, `DetailSplit` and `DetailLayout`, `EntityHeader`, `StatusBadge`, `ExplainWhy`, `ConfirmWithReason`, state set (empty, error, no access, not found, loading). DataTable is maintained separately.
 
 Next as screens need them: command palette, inbox and approval card, filter builder, compare view, lineage graph, audit timeline, evidence viewer, wizard, background job progress, notification centre.
 

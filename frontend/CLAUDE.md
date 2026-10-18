@@ -10,3 +10,4 @@ Follow `../DESIGN.md`.
 - Every data view handles loading, empty, error, no access and not found.
 - Render actions from the API's `allowed_actions`; never infer permissions in the client.
 - IDs, counts and timestamps use the mono font with tabular figures.
+- Per-environment values come from `/config.json` at runtime, never `VITE_*`. The shell checks `GET /api/v1/meta` against the contract hash embedded at build time (`plugins/contract-hash.ts`, ADR 0008) and shows `UpdateBanner` on a mismatch.

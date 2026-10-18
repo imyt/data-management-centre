@@ -189,6 +189,26 @@ export function ScopeSwitcher({ options, value, onChange }: ScopeSwitcherProps) 
   )
 }
 
+/* ---------- environment badge ---------- */
+
+interface EnvironmentBadgeProps {
+  /** The API's environment from GET /api/v1/meta, e.g. staging. */
+  environment: string
+}
+
+/** Outside production the header names the environment, so nobody mistakes staging for production. */
+export function EnvironmentBadge({ environment }: EnvironmentBadgeProps) {
+  return (
+    <span
+      data-slot="environment-badge"
+      className="mono rounded-sm border border-warning bg-warning-bg px-1.5 text-xs leading-5 font-medium tracking-wide text-warning uppercase"
+    >
+      <span className="sr-only">Environment: </span>
+      {environment}
+    </span>
+  )
+}
+
 /* ---------- header ---------- */
 
 interface PortalHeaderProps {
@@ -205,6 +225,8 @@ interface PortalHeaderProps {
   postureTo: string
   /** Avatar and account menu. */
   userMenu?: React.ReactNode
+  /** Shown as a badge next to the name; leave unset in production. */
+  environment?: string | null
 }
 
 /** Mark and full name, sections, search, scope, posture, account. The hairline accent rule sits under it. */
@@ -220,6 +242,7 @@ export function PortalHeader({
   postureLoading,
   postureTo,
   userMenu,
+  environment,
 }: PortalHeaderProps) {
   React.useEffect(() => {
     if (!onOpenCommand) return
@@ -238,10 +261,13 @@ export function PortalHeader({
       data-slot="portal-header"
       className="z-nav flex h-14 shrink-0 items-stretch gap-4 border-b border-primary bg-surface px-4 xl:gap-7"
     >
-      <Link to={homeTo} className="flex items-center gap-2 rounded-sm">
-        <DmcMark size={22} title="" />
-        <span className="text-base font-semibold tracking-tight whitespace-nowrap">Data Management Centre</span>
-      </Link>
+      <div className="flex items-center gap-2">
+        <Link to={homeTo} className="flex items-center gap-2 rounded-sm">
+          <DmcMark size={22} title="" />
+          <span className="text-base font-semibold tracking-tight whitespace-nowrap">Data Management Centre</span>
+        </Link>
+        {environment && <EnvironmentBadge environment={environment} />}
+      </div>
 
       <GlobalNav routes={sectionRoutes} inboxCount={inboxCount} />
 

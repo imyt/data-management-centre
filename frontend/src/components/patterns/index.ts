@@ -16,6 +16,7 @@ export { ExplainWhy, type ExplainSource } from "./explain-why"
 export { Field, fieldA11y, ReadOnlyField } from "./field"
 export { FilterChips, type ActiveFilter } from "./filter-chips"
 export {
+  EnvironmentBadge,
   GlobalNav,
   PortalHeader,
   PostureReadout,
@@ -28,3 +29,4 @@ export {
 export { StageTracker, stageTabId, type StageState, type StageTone } from "./stage-tracker"
 export { EmptyState, ErrorState, LoadingState, NoAccessState, NotFoundState } from "./states"
 export { StatusBadge, STATUSES, type Status } from "./status-badge"
+export { UpdateBanner } from "./update-banner"
