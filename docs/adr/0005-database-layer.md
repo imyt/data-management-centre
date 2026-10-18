@@ -5,7 +5,7 @@
 
 ## Context
 
-Roadmap row 0.2 adds database access to the backend. ADR 0004 fixed the platform: PostgreSQL 18, a runtime role that can only read and write data, a migration role that owns the schemas, and tests against real Postgres. This ADR records how the code uses it.
+Roadmap rows 0.2 and 0.3 add database access and migrations to the backend. ADR 0004 fixed the platform: PostgreSQL 18, a runtime role that can only read and write data, a migration role that owns the schemas, and tests against real Postgres. This ADR records how the code uses it.
 
 ## Decisions
 
@@ -19,7 +19,14 @@ Roadmap row 0.2 adds database access to the backend. ADR 0004 fixed the platform
    - Each test runs inside a transaction on one connection that is rolled back afterwards. Sessions join it through a savepoint, so a commit inside the code under test only releases the savepoint. The `db_client` fixture gives an app whose requests run in that same transaction.
    - Tests connect as the runtime role, so a missing grant fails a test rather than a deployment.
    - If the database is unreachable, the run fails and says how to start it. Tests are never silently skipped.
-6. **CI** starts Postgres with the same `infra/compose.yaml` and init scripts as local development, rather than a separately configured service container.
+6. **Migrations.**
+   - Alembic lives in `backend/migrations/` with no `alembic.ini`. `uv run dmc-migrate` (`app/core/migrations.py`) builds the config and always uses `DMC_MIGRATION_DATABASE_URL`, so migrations run as the migration role. It wraps `upgrade`, `downgrade`, `revision`, `current`, `history` and `check`.
+   - `migrations/env.py` imports every `app/modules/<module>/models.py` it finds, so autogenerate sees all tables. It compares only the schemas the models declare, which leaves `public` and Postgres's own schemas alone.
+   - A module's first migration creates its schema (`op.execute("CREATE SCHEMA <module>")`) and drops it on downgrade. The init scripts' default privileges grant it to the runtime role automatically.
+   - The first revision is an empty baseline, so every database has a revision from the start.
+   - The API checks the database revision at start-up (`ensure_database_is_current`) and refuses to start if it isn't at head.
+   - The test session migrates `dmc_test` to head. Tests also run downgrade to base and upgrade again, and `alembic check` fails if a model changed without a migration. That is how CI covers ARCHITECTURE §13's upgrade-and-downgrade gate.
+7. **CI** starts Postgres with the same `infra/compose.yaml` and init scripts as local development, rather than a separately configured service container.
 
 ## Consequences
 

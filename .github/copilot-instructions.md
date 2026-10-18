@@ -21,7 +21,8 @@ docs/        ADRs (PRD.md, ARCHITECTURE.md and DESIGN.md are at the root)
 ## Commands
 Fill in as the project is scaffolded.
 - Frontend (pnpm): `npm run dev`, `npm run test`, `npm run lint`, `npm run build`, `npm run e2e`
-- Backend (from `backend/`, uv): `uv sync`, `uv run uvicorn app.main:app --reload`, `uv run pytest`, `uv run ruff check .`, `uv run ruff format --check .`, `uv run lint-imports`
+- Database (from `infra/`): `docker compose up -d --wait db`
+- Backend (from `backend/`, uv): `uv sync`, `uv run dmc-migrate upgrade`, `uv run uvicorn app.main:app --reload`, `uv run pytest`, `uv run ruff check .`, `uv run ruff format --check .`, `uv run lint-imports`
 - API sync (spec export + hey-api client): `npm run api:sync` from `frontend/`
 - Everything: `docker compose up` from `infra/`
 

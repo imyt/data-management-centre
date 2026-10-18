@@ -1,6 +1,7 @@
 from collections.abc import Iterator
 
 import pytest
+from alembic import command
 from fastapi.testclient import TestClient
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from sqlalchemy import Connection, Engine, create_engine
@@ -8,6 +9,7 @@ from sqlalchemy.exc import OperationalError
 
 from app.core.config import Settings
 from app.core.db import Database
+from app.core.migrations import alembic_config
 from app.main import create_app
 
 
@@ -27,7 +29,16 @@ def client() -> TestClient:
 
 
 @pytest.fixture(scope="session")
-def db_engine() -> Iterator[Engine]:
+def migration_url() -> str:
+    url = DatabaseUnderTest().migration_database_url
+    if not url:
+        pytest.fail("Set DMC_TEST_MIGRATION_DATABASE_URL (see backend/.env.example)")
+    return url
+
+
+@pytest.fixture(scope="session")
+def db_engine(migration_url: str) -> Iterator[Engine]:
+    """The runtime role's engine on dmc_test, after migrating dmc_test to head."""
     url = DatabaseUnderTest().database_url
     if not url:
         pytest.fail("Set DMC_TEST_DATABASE_URL (see backend/.env.example)")
@@ -39,6 +50,7 @@ def db_engine() -> Iterator[Engine]:
             f"Cannot reach the test database ({exc.orig}). "
             "Start it with `docker compose up -d --wait db` in infra/."
         )
+    command.upgrade(alembic_config(migration_url), "head")
     yield engine
     engine.dispose()
 

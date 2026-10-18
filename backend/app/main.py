@@ -13,6 +13,7 @@ from app.core import health
 from app.core.config import Settings, get_settings
 from app.core.db import Database, create_database_engine
 from app.core.handlers import REQUEST_ID_HEADER, RequestIdMiddleware, register_error_handlers
+from app.core.migrations import ensure_database_is_current
 from app.modules.examples import router as examples
 
 API_PREFIX = "/api/v1"
@@ -30,6 +31,9 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     @asynccontextmanager
     async def lifespan(_: FastAPI) -> AsyncIterator[None]:
+        if engine is not None:
+            with engine.connect() as connection:
+                ensure_database_is_current(connection)
         yield
         if engine is not None:
             engine.dispose()

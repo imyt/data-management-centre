@@ -9,6 +9,8 @@ uv run uvicorn app.main:app --reload            # http://localhost:8000/api/v1/h
 uv run pytest                                   # needs Postgres: docker compose up -d --wait db (in infra/)
 uv run ruff check . && uv run ruff format --check .
 uv run lint-imports                             # module boundaries
+uv run dmc-migrate upgrade                      # apply migrations (the API refuses to start without them)
+uv run dmc-migrate revision -m "add x" --autogenerate   # new migration from model changes
 ```
 
 Responses: every route returns `{data, allowed_actions, meta}` (`Envelope` or, for lists, `ListEnvelope` with `meta.next_cursor`) from `app/core/schemas.py`; only `/health` is exempt. Errors are RFC 9457 problem details (`application/problem+json`).

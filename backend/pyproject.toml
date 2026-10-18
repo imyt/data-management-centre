@@ -10,7 +10,11 @@ dependencies = [
     "pydantic-settings>=2",
     "sqlalchemy>=2.0.40",
     "psycopg[binary]>=3.2",
+    "alembic>=1.15",
 ]
+
+[project.scripts]
+dmc-migrate = "app.core.migrations:main"
 
 [dependency-groups]
 dev = ["pytest", "httpx", "ruff", "import-linter"]
