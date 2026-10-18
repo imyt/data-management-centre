@@ -19,12 +19,16 @@ class Settings(BaseSettings):
 
     environment: Environment = "local"
     log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR"] = "INFO"
+    # Unset: plain text in local, JSON lines everywhere else (ARCHITECTURE.md §12).
+    log_format: Literal["json", "plain"] | None = None
     cors_origins: Annotated[list[str], NoDecode] = []
     # SQLAlchemy URLs, e.g. postgresql+psycopg://dmc_app:…@localhost:5432/dmc
     database_url: str | None = None
     migration_database_url: str | None = None
     # dev: a persona named in the X-DMC-Dev-User header (ADR 0007). oidc: bearer tokens (Phase 4).
     auth_mode: Literal["dev", "oidc"] = "dev"
+    # The git SHA this build came from, reported by GET /api/v1/meta. Unset: asks git, if present.
+    commit: str | None = None
 
     @field_validator("cors_origins", mode="before")
     @classmethod
@@ -32,6 +36,12 @@ class Settings(BaseSettings):
         if isinstance(value, str):
             return [origin.strip() for origin in value.split(",") if origin.strip()]
         return value
+
+    @property
+    def effective_log_format(self) -> Literal["json", "plain"]:
+        if self.log_format:
+            return self.log_format
+        return "plain" if self.environment == "local" else "json"
 
     @model_validator(mode="after")
     def _deployed_needs_a_database(self) -> Self:

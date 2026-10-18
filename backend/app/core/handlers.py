@@ -20,6 +20,7 @@ from app.core.errors import (
     PermissionDeniedError,
     UnauthenticatedError,
 )
+from app.core.logs import log_context
 from app.core.schemas import PROBLEM_JSON, ProblemDetail, ValidationIssue
 
 logger = logging.getLogger(__name__)
@@ -46,7 +47,8 @@ _RESERVED_MEMBERS = frozenset(ProblemDetail.model_fields)
 
 
 class RequestIdMiddleware:
-    """Takes X-Request-ID from the request (or makes one) and echoes it on the response."""
+    """Takes X-Request-ID from the request (or makes one), echoes it on the response and adds it
+    to every log record written while the request runs."""
 
     def __init__(self, app: ASGIApp) -> None:
         self.app = app
@@ -65,7 +67,8 @@ class RequestIdMiddleware:
                 message.setdefault("headers", []).append((header, request_id.encode("latin-1")))
             await send(message)
 
-        await self.app(scope, receive, send_with_id)
+        with log_context(request_id=request_id):
+            await self.app(scope, receive, send_with_id)
 
 
 def problem_type(code: str) -> str:

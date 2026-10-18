@@ -92,6 +92,7 @@ _ERROR_DESCRIPTIONS = {
     409: "Conflict",
     422: "Validation error",
     501: "Not implemented",
+    503: "Service unavailable",
 }
 
 

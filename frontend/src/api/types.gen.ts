@@ -70,6 +70,20 @@ export type HealthRead = {
 };
 
 /**
+ * HealthReadyRead
+ */
+export type HealthReadyRead = {
+    /**
+     * Status
+     */
+    status: 'ok';
+    /**
+     * Database
+     */
+    database: 'ok';
+};
+
+/**
  * ListMeta
  *
  * Meta for a list: freshness plus cursor paging.
@@ -119,6 +133,32 @@ export type Meta = {
      * When the data should be treated as stale.
      */
     stale_after: string | null;
+};
+
+/**
+ * MetaRead
+ */
+export type MetaRead = {
+    /**
+     * Environment
+     */
+    environment: 'local' | 'test' | 'dev' | 'staging' | 'production';
+    /**
+     * Version
+     */
+    version: string;
+    /**
+     * Commit
+     *
+     * Short git SHA of the build, or `unknown`.
+     */
+    commit: string;
+    /**
+     * Contract
+     *
+     * `sha256:<hex>` of the OpenAPI contract this API serves.
+     */
+    contract: string;
 };
 
 /**
@@ -283,6 +323,47 @@ export type GetHealthResponses = {
 };
 
 export type GetHealthResponse = GetHealthResponses[keyof GetHealthResponses];
+
+export type GetHealthReadyData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/health/ready';
+};
+
+export type GetHealthReadyErrors = {
+    /**
+     * Service unavailable
+     */
+    503: ProblemDetail;
+};
+
+export type GetHealthReadyError = GetHealthReadyErrors[keyof GetHealthReadyErrors];
+
+export type GetHealthReadyResponses = {
+    /**
+     * Successful Response
+     */
+    200: HealthReadyRead;
+};
+
+export type GetHealthReadyResponse = GetHealthReadyResponses[keyof GetHealthReadyResponses];
+
+export type GetMetaData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/meta';
+};
+
+export type GetMetaResponses = {
+    /**
+     * Successful Response
+     */
+    200: MetaRead;
+};
+
+export type GetMetaResponse = GetMetaResponses[keyof GetMetaResponses];
 
 export type ListExamplesData = {
     body?: never;

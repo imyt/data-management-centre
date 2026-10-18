@@ -26,6 +26,58 @@
         }
       }
     },
+    "/api/v1/health/ready": {
+      "get": {
+        "tags": [
+          "platform"
+        ],
+        "summary": "Readiness check: the API can reach its database",
+        "operationId": "getHealthReady",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthReadyRead"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service unavailable",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/meta": {
+      "get": {
+        "tags": [
+          "platform"
+        ],
+        "summary": "Environment, build and contract hash",
+        "operationId": "getMeta",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MetaRead"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/examples": {
       "get": {
         "tags": [
@@ -329,6 +381,26 @@
         ],
         "title": "HealthRead"
       },
+      "HealthReadyRead": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "const": "ok",
+            "title": "Status"
+          },
+          "database": {
+            "type": "string",
+            "const": "ok",
+            "title": "Database"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status",
+          "database"
+        ],
+        "title": "HealthReadyRead"
+      },
       "ListMeta": {
         "properties": {
           "evaluated_at": {
@@ -428,6 +500,52 @@
         ],
         "title": "Meta",
         "description": "Freshness of the data in a response, when the data was derived by an evaluation."
+      },
+      "MetaRead": {
+        "properties": {
+          "environment": {
+            "type": "string",
+            "enum": [
+              "local",
+              "test",
+              "dev",
+              "staging",
+              "production"
+            ],
+            "title": "Environment"
+          },
+          "version": {
+            "type": "string",
+            "title": "Version",
+            "examples": [
+              "0.1.0"
+            ]
+          },
+          "commit": {
+            "type": "string",
+            "title": "Commit",
+            "description": "Short git SHA of the build, or `unknown`.",
+            "examples": [
+              "24a18c3"
+            ]
+          },
+          "contract": {
+            "type": "string",
+            "title": "Contract",
+            "description": "`sha256:<hex>` of the OpenAPI contract this API serves.",
+            "examples": [
+              "sha256:9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08"
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "environment",
+          "version",
+          "commit",
+          "contract"
+        ],
+        "title": "MetaRead"
       },
       "ProblemDetail": {
         "properties": {

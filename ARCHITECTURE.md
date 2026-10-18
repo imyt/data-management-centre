@@ -285,7 +285,8 @@ In-app inbox items for anything awaiting a user; email digests by default; immed
 
 ## 12. Observability
 
-- Structured JSON logs with request and job ids.
+- Structured JSON logs, one object per line, on stdout (`app/core/logs.py`). Every record carries the fields bound with `log_context`: `request_id` for API requests (from `X-Request-ID`) and `job_id` for background work. One access record per request with method, path, status and `duration_ms`. Locally (`DMC_ENVIRONMENT=local`) logs are plain text unless `DMC_LOG_FORMAT=json`.
+- `GET /api/v1/health` is liveness (the process answers); `GET /api/v1/health/ready` is readiness (it can reach its database, else `503`). `GET /api/v1/meta` reports environment, version, commit and contract hash (ADR 0004 §5, ADR 0008).
 - Metrics: API latency, job queue depth and age, evaluation duration and error rate per rule type, harvest success per store, stale result count.
 - Health endpoints for API and worker; connector health surfaced in Controls.
 

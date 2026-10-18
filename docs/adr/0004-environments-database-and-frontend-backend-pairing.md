@@ -72,7 +72,8 @@ The API exposes an unauthenticated `meta` endpoint (`operation_id: getMeta`), ne
 - `contract` is the hash of the `contracts/openapi.json` the API was built from. The frontend build embeds the hash of the spec its client was generated from.
 - On load, the frontend calls `meta`. If the hashes differ, it shows a banner that can't be dismissed: "DMC has been updated. Reload to continue." This catches a stale cached bundle and half-finished rollouts.
 - Outside production, `PortalHeader` shows the environment name as a persistent badge, so nobody mistakes staging for production.
-- Like `health`, `meta` is a platform endpoint and is exempt from the response envelope (`ARCHITECTURE.md` §8). The envelope contract test lists both as the only exceptions.
+- Like `health`, `meta` is a platform endpoint and is exempt from the response envelope (`ARCHITECTURE.md` §8). The envelope contract test lists them, and the readiness probe `health/ready`, as the only exceptions.
+- How both sides compute the hash: [ADR 0008](0008-contract-hash.md).
 
 ### 6. Environment-aware configuration and its guardrails
 

@@ -1,6 +1,5 @@
 """App factory. Mounts the core and module routers under /api/v1."""
 
-import logging
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from importlib.metadata import version
@@ -9,11 +8,12 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.routing import APIRoute
 
-from app.core import health
+from app.core import health, meta
 from app.core.auth import configure_authentication
 from app.core.config import Settings, get_settings
 from app.core.db import Database, create_database_engine
 from app.core.handlers import REQUEST_ID_HEADER, RequestIdMiddleware, register_error_handlers
+from app.core.logs import AccessLogMiddleware, configure_logging
 from app.core.migrations import ensure_database_is_current
 from app.modules.examples import router as examples
 from app.modules.identity import router as identity
@@ -29,7 +29,7 @@ def _require_operation_id(route: APIRoute) -> str:
 
 def create_app(settings: Settings | None = None) -> FastAPI:
     settings = settings or get_settings()
-    logging.basicConfig(level=settings.log_level)
+    configure_logging(settings.log_level, settings.effective_log_format)
     engine = create_database_engine(settings.database_url) if settings.database_url else None
 
     @asynccontextmanager
@@ -47,6 +47,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         generate_unique_id_function=_require_operation_id,
         lifespan=lifespan,
     )
+    app.state.settings = settings
     app.state.database = Database(engine) if engine is not None else None
     if settings.cors_origins:
         app.add_middleware(
@@ -56,11 +57,14 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             allow_headers=["*"],
             expose_headers=[REQUEST_ID_HEADER],
         )
+    # Added last, so outermost: the request ID is bound before the access log is written.
+    app.add_middleware(AccessLogMiddleware)
     app.add_middleware(RequestIdMiddleware)
     register_error_handlers(app)
     configure_authentication(app, settings, IdentityDirectory())
 
     app.include_router(health.router, prefix=API_PREFIX)
+    app.include_router(meta.router, prefix=API_PREFIX)
     app.include_router(examples.router, prefix=API_PREFIX)
     app.include_router(identity.router, prefix=API_PREFIX)
     return app

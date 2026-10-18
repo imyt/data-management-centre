@@ -13,7 +13,9 @@ uv run dmc-migrate upgrade                      # apply migrations (the API refu
 uv run dmc-migrate revision -m "add x" --autogenerate   # new migration from model changes
 ```
 
-Responses: every route returns `{data, allowed_actions, meta}` (`Envelope` or, for lists, `ListEnvelope` with `meta.next_cursor`) from `app/core/schemas.py`; only `/health` is exempt. Errors are RFC 9457 problem details (`application/problem+json`).
+Responses: every route returns `{data, allowed_actions, meta}` (`Envelope` or, for lists, `ListEnvelope` with `meta.next_cursor`) from `app/core/schemas.py`. Only the platform endpoints are exempt: `/health` (liveness), `/health/ready` (readiness: the database answers, else 503) and `/meta` (environment, version, commit and contract hash for the frontend's pairing check; ADR 0004 §5, ADR 0008). Errors are RFC 9457 problem details (`application/problem+json`).
+
+Logs: JSON lines on stdout, plain text locally (`DMC_LOG_FORMAT` overrides). Each record carries `request_id` during a request; background work adds its own fields with `with log_context(job_id=str(job.id)):` from `app/core/logs.py`. One `dmc.access` record per request: method, path, status, `duration_ms`.
 
 After any API change, run `npm run api:sync` from `frontend/`. It exports `contracts/openapi.json` and regenerates `frontend/src/api/`. Commit both together.
 

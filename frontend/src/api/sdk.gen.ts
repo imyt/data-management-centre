@@ -2,7 +2,7 @@
 
 import type { Client, ClientMeta, Options as Options2, RequestResult, TDataShape } from './client';
 import { client } from './client.gen';
-import type { GetExampleData, GetExampleErrors, GetExampleResponses, GetHealthData, GetHealthResponses, GetMeData, GetMeErrors, GetMeResponses, ListDevUsersData, ListDevUsersErrors, ListDevUsersResponses, ListExamplesData, ListExamplesErrors, ListExamplesResponses } from './types.gen';
+import type { GetExampleData, GetExampleErrors, GetExampleResponses, GetHealthData, GetHealthReadyData, GetHealthReadyErrors, GetHealthReadyResponses, GetHealthResponses, GetMeData, GetMeErrors, GetMeResponses, GetMetaData, GetMetaResponses, ListDevUsersData, ListDevUsersErrors, ListDevUsersResponses, ListExamplesData, ListExamplesErrors, ListExamplesResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -22,6 +22,16 @@ export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends 
  * Liveness check
  */
 export const getHealth = <ThrowOnError extends boolean = false>(options?: Options<GetHealthData, ThrowOnError>): RequestResult<GetHealthResponses, unknown, ThrowOnError> => (options?.client ?? client).get<GetHealthResponses, unknown, ThrowOnError>({ url: '/api/v1/health', ...options });
+
+/**
+ * Readiness check: the API can reach its database
+ */
+export const getHealthReady = <ThrowOnError extends boolean = false>(options?: Options<GetHealthReadyData, ThrowOnError>): RequestResult<GetHealthReadyResponses, GetHealthReadyErrors, ThrowOnError> => (options?.client ?? client).get<GetHealthReadyResponses, GetHealthReadyErrors, ThrowOnError>({ url: '/api/v1/health/ready', ...options });
+
+/**
+ * Environment, build and contract hash
+ */
+export const getMeta = <ThrowOnError extends boolean = false>(options?: Options<GetMetaData, ThrowOnError>): RequestResult<GetMetaResponses, unknown, ThrowOnError> => (options?.client ?? client).get<GetMetaResponses, unknown, ThrowOnError>({ url: '/api/v1/meta', ...options });
 
 /**
  * List examples

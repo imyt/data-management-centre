@@ -3,8 +3,8 @@
 import { type DefaultError, type InfiniteData, infiniteQueryOptions, queryOptions } from '@tanstack/react-query';
 
 import { client } from '../client.gen';
-import { getExample, getHealth, getMe, listDevUsers, listExamples, type Options } from '../sdk.gen';
-import type { GetExampleData, GetExampleError, GetExampleResponse, GetHealthData, GetHealthResponse, GetMeData, GetMeError, GetMeResponse, ListDevUsersData, ListDevUsersError, ListDevUsersResponse, ListExamplesData, ListExamplesError, ListExamplesResponse } from '../types.gen';
+import { getExample, getHealth, getHealthReady, getMe, getMeta, listDevUsers, listExamples, type Options } from '../sdk.gen';
+import type { GetExampleData, GetExampleError, GetExampleResponse, GetHealthData, GetHealthReadyData, GetHealthReadyError, GetHealthReadyResponse, GetHealthResponse, GetMeData, GetMeError, GetMeResponse, GetMetaData, GetMetaResponse, ListDevUsersData, ListDevUsersError, ListDevUsersResponse, ListExamplesData, ListExamplesError, ListExamplesResponse } from '../types.gen';
 
 export type QueryKey<TOptions extends Options> = [
     Pick<TOptions, 'baseUrl' | 'body' | 'headers' | 'path' | 'query'> & {
@@ -55,6 +55,42 @@ export const getHealthOptions = (options?: Options<GetHealthData>) => queryOptio
         return data;
     },
     queryKey: getHealthQueryKey(options)
+});
+
+export const getHealthReadyQueryKey = (options?: Options<GetHealthReadyData>) => createQueryKey('getHealthReady', options);
+
+/**
+ * Readiness check: the API can reach its database
+ */
+export const getHealthReadyOptions = (options?: Options<GetHealthReadyData>) => queryOptions<GetHealthReadyResponse, GetHealthReadyError, GetHealthReadyResponse, ReturnType<typeof getHealthReadyQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await getHealthReady({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: getHealthReadyQueryKey(options)
+});
+
+export const getMetaQueryKey = (options?: Options<GetMetaData>) => createQueryKey('getMeta', options);
+
+/**
+ * Environment, build and contract hash
+ */
+export const getMetaOptions = (options?: Options<GetMetaData>) => queryOptions<GetMetaResponse, DefaultError, GetMetaResponse, ReturnType<typeof getMetaQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await getMeta({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: getMetaQueryKey(options)
 });
 
 export const listExamplesQueryKey = (options?: Options<ListExamplesData>) => createQueryKey('listExamples', options);

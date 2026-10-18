@@ -15,7 +15,8 @@ def _api_routes() -> list[APIRoute]:
 # Operations whose responses are not resources and so skip the envelope. Keep this list short.
 EXEMPT = {
     "getHealth",  # liveness probe, read by infrastructure
-    # "getMeta" joins when the meta endpoint lands.
+    "getHealthReady",  # readiness probe, read by infrastructure
+    "getMeta",  # pairing check, read before the app knows it talks to the right API (ADR 0004 §5)
 }
 
 
