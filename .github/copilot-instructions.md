@@ -20,8 +20,8 @@ docs/        PRD, architecture, ADRs
 
 ## Commands
 Fill in as the project is scaffolded.
-- Frontend: `npm run dev`, `npm run test`, `npm run lint`, `npm run build`, `npm run e2e`
-- Backend: `uvicorn app.main:app --reload`, `pytest`, `ruff check .`, `alembic upgrade head`
+- Frontend (pnpm): `npm run dev`, `npm run test`, `npm run lint`, `npm run build`, `npm run e2e`
+- Backend (from `backend/`, uv): `uv sync`, `uv run uvicorn dmc_api.main:app --reload`, `uv run pytest`, `uv run ruff check .`, `uv run ruff format --check .`, `uv run lint-imports`
 - API sync (spec export + hey-api client): `npm run api:sync` from `frontend/`
 - Everything: `docker compose up` from `infra/`
 
