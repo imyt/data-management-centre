@@ -23,7 +23,8 @@ Internal governance control plane for data controls. Single tenant. React fronte
 
 ## Ways of working
 
-- Commit and push directly to `main`; no feature branches or pull requests. Keep commits small and conventional, and leave `main` green.
+- Parallel work runs in git worktrees, one per task. Each lands on `main` without a pull request: `git fetch origin && git rebase origin/main`, run the checks, then `git push origin HEAD:main` (retry the fetch and rebase if the push is rejected). Keep commits small and conventional, and leave `main` green.
+- After a rebase, `uv run dmc-migrate history` must show a single head. If another task's migration landed first, point your revision's `down_revision` at it. If `contracts/openapi.json` or `frontend/src/api/` conflict, re-run `npm run api:sync`.
 - Work in thin vertical slices: data model, API, UI and a test for one capability at a time.
 - Use the domain vocabulary exactly: applied control (not obligation), Know, Assess, Act, Assure.
 - An action is done only when a later evaluation verifies it.

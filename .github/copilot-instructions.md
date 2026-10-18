@@ -28,7 +28,8 @@ Fill in as the project is scaffolded.
 
 ## Conventions
 - Conventional commits (`feat(frontend): ...`, `fix(backend): ...`). Scope = folder.
-- Commit and push directly to `main`; no feature branches or PRs. Keep commits small, and leave `main` green after each one.
+- Parallel work runs in git worktrees, one per task. Each lands on `main` without a pull request: `git fetch origin && git rebase origin/main`, run the checks, then `git push origin HEAD:main` (retry the fetch and rebase if the push is rejected). Keep commits small and conventional, and leave `main` green.
+- After a rebase, `uv run dmc-migrate history` must show a single head. If another task's migration landed first, point your revision's `down_revision` at it. If `contracts/openapi.json` or `frontend/src/api/` conflict, re-run `npm run api:sync`.
 - Build in vertical slices: one feature end to end (data model, API, UI, tests), following `docs/ROADMAP.md`.
 - Every slice includes tests; user-facing changes include all UI states (loading, empty, error).
 - Permissions are enforced in the backend. The UI only reflects them.

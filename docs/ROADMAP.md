@@ -137,7 +137,7 @@ Each decision is recorded in `PRD.md`, `ARCHITECTURE.md` or `DESIGN.md` in the s
 
 ## Working rules for every slice
 
-- Work is committed and pushed directly to `main`, in small conventional commits. A slice may take several commits, and each one leaves `main` green.
+- Work lands directly on `main` without pull requests, in small conventional commits; parallel tasks each run in their own git worktree and rebase onto `main` before pushing (`CLAUDE.md`). Each commit leaves `main` green.
 - A slice includes: migration, module code behind its `service.py`, API with an explicit `operation_id` and the response envelope, `npm run api:sync`, a feature screen built only from `components/patterns` with every state (loading, empty, error, no access, not found), and tests.
 - Every write goes through a service that checks role and scope, writes the audit event (with a reason for risk decisions), and emits outbox events in the same transaction.
 - Seed data grows with each slice, so Milestone A can always be shown from a fresh `docker compose up`.
