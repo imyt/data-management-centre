@@ -16,5 +16,39 @@
         "allowConstantExport": true
       }
     ]
-  }
+  },
+  "overrides": [
+    {
+      "files": ["src/features/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "paths": [
+              { "name": "radix-ui", "message": "Screens import UI only from @/components/patterns (frontend/CLAUDE.md)." },
+              { "name": "cmdk", "message": "Screens import UI only from @/components/patterns (frontend/CLAUDE.md)." },
+              { "name": "sonner", "message": "Screens import UI only from @/components/patterns (frontend/CLAUDE.md)." },
+              { "name": "react-resizable-panels", "message": "Screens import UI only from @/components/patterns (frontend/CLAUDE.md)." }
+            ],
+            "patterns": [
+              {
+                "group": ["@/components/ui", "@/components/ui/**", "**/components/ui", "**/components/ui/**"],
+                "message": "Screens import UI only from @/components/patterns (frontend/CLAUDE.md). Add a missing pattern there."
+              },
+              {
+                "group": ["@/components/patterns/**", "**/components/patterns/**"],
+                "message": "Import from the @/components/patterns barrel, not a pattern file."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["src/features/gallery/**"],
+      "rules": {
+        "no-restricted-imports": "off"
+      }
+    }
+  ]
 }

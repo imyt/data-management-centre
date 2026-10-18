@@ -1,5 +1,8 @@
 import { defineConfig, devices } from "@playwright/test"
 
+// E2E_PORT lets a second checkout run e2e while another dev server holds 5173.
+const port = Number(process.env.E2E_PORT ?? 5173)
+
 // Gallery screenshots and axe checks (frontend.instructions.md: Tests).
 // Layouts are checked at the three DESIGN.md sizes.
 export default defineConfig({
@@ -12,7 +15,7 @@ export default defineConfig({
     toHaveScreenshot: { maxDiffPixelRatio: 0.002, animations: "disabled", caret: "hide" },
   },
   use: {
-    baseURL: "http://localhost:5173",
+    baseURL: `http://localhost:${port}`,
     reducedMotion: "reduce",
     trace: "on-first-retry",
   },
@@ -22,8 +25,8 @@ export default defineConfig({
     { name: "ultrawide", use: { ...devices["Desktop Chrome"], viewport: { width: 3440, height: 1440 } } },
   ],
   webServer: {
-    command: "npm run dev",
-    url: "http://localhost:5173/dev/components",
+    command: `npm run dev -- --port ${port}`,
+    url: `http://localhost:${port}/gallery`,
     reuseExistingServer: !process.env.CI,
   },
 })

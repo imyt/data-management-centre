@@ -6,8 +6,8 @@ type Theme = (typeof THEMES)[number]
 
 async function openGallery(page: Page, theme: Theme) {
   await page.addInitScript((t) => localStorage.setItem("dmc-theme", t), theme)
-  await page.goto("/dev/components")
-  await expect(page.getByRole("heading", { level: 1, name: "Component gallery" })).toBeVisible()
+  await page.goto("/gallery")
+  await expect(page.getByRole("heading", { level: 1, name: "Gallery" })).toBeVisible()
   await page.evaluate(() => document.fonts.ready)
 }
 
@@ -86,12 +86,16 @@ for (const theme of THEMES) {
 test("focus ring is the 2px accent outline on every control", async ({ page }) => {
   await openGallery(page, "light")
   await page.keyboard.press("Tab")
-  const outline = await page.evaluate(() => {
-    const el = document.activeElement as HTMLElement
-    const style = getComputedStyle(el)
-    return { style: style.outlineStyle, width: style.outlineWidth, offset: style.outlineOffset }
-  })
-  expect(outline).toEqual({ style: "solid", width: "2px", offset: "2px" })
+  // The first stop is AppShell's skip link, which moves on screen as it takes focus; poll until it settles.
+  await expect(page.getByRole("link", { name: "Skip to content" })).toBeFocused()
+  await expect
+    .poll(() =>
+      page.evaluate(() => {
+        const style = getComputedStyle(document.activeElement as HTMLElement)
+        return { style: style.outlineStyle, width: style.outlineWidth, offset: style.outlineOffset }
+      })
+    )
+    .toEqual({ style: "solid", width: "2px", offset: "2px" })
 })
 
 test("every section shows all seven states", async ({ page }) => {
@@ -100,4 +104,40 @@ test("every section shows all seven states", async ({ page }) => {
     els.map((el) => [el.getAttribute("data-gallery-entry"), el.querySelectorAll("[data-gallery-state]").length])
   )
   for (const [id, count] of counts) expect(count, `${id} states`).toBe(7)
+})
+
+test("DetailSplit keeps the selection in the URL and guards unsaved changes", async ({ page }) => {
+  await openGallery(page, "light")
+  const section = page.locator('[data-gallery-entry="detail-split"]')
+  await section.getByRole("link", { name: /Payroll ledger/ }).click()
+  await expect(page).toHaveURL(/\?asset=AST-10511/)
+  await expect(page.getByRole("heading", { level: 2, name: "Payroll ledger" })).toBeVisible()
+
+  await page.getByRole("textbox", { name: "Notes" }).fill("Draft note")
+  await page.getByRole("button", { name: "Close details" }).click()
+  const guard = page.getByRole("alertdialog", { name: "Discard unsaved changes?" })
+  await expect(guard).toBeVisible()
+  await guard.getByRole("button", { name: "Discard changes" }).click()
+  await expect(page).not.toHaveURL(/asset=/)
+  await expect(page.getByRole("heading", { level: 2, name: "Payroll ledger" })).toHaveCount(0)
+})
+
+test("DetailSplit opens from a deep link and shows not found for a missing item", async ({ page }) => {
+  // Below 1536px the detail opens as a modal sheet, which hides the gallery heading from the
+  // accessibility tree, so skip openGallery's heading check.
+  await page.goto("/gallery?asset=AST-99999")
+  // Docked panel at 1536px and wider, sheet below.
+  const detail = page
+    .getByRole("complementary", { name: "Asset details" })
+    .or(page.getByRole("dialog", { name: "Asset details" }))
+  await expect(detail.getByText("This asset doesn’t exist")).toBeVisible()
+})
+
+test("StageTracker moves between stages with arrow keys", async ({ page }) => {
+  await openGallery(page, "light")
+  const tablist = page.locator('[data-gallery-entry="stage-tracker"] [data-gallery-state="default"]').getByRole("tablist")
+  await tablist.getByRole("tab", { name: /Assess/ }).focus()
+  await page.keyboard.press("ArrowRight")
+  await expect(tablist.getByRole("tab", { name: /Act/ })).toHaveAttribute("aria-selected", "true")
+  await expect(tablist.getByRole("tab", { name: /Act/ })).toBeFocused()
 })
