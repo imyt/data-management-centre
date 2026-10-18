@@ -26,5 +26,11 @@ class ConflictError(DomainError):
     code = "conflict"
 
 
+class UnauthenticatedError(DomainError):
+    """The caller could not be identified."""
+
+    code = "unauthenticated"
+
+
 class PermissionDeniedError(DomainError):
     code = "permission_denied"

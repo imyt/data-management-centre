@@ -10,6 +10,8 @@ Environment = Literal["local", "test", "dev", "staging", "production"]
 
 # Deployed environments must be fully configured at start-up (ADR 0004 §6).
 DEPLOYED: frozenset[Environment] = frozenset({"dev", "staging", "production"})
+# Dev authentication, seed data and debug payloads are refused here (ADR 0004 §6).
+PROTECTED: frozenset[Environment] = frozenset({"staging", "production"})
 
 
 class Settings(BaseSettings):
@@ -21,6 +23,8 @@ class Settings(BaseSettings):
     # SQLAlchemy URLs, e.g. postgresql+psycopg://dmc_app:…@localhost:5432/dmc
     database_url: str | None = None
     migration_database_url: str | None = None
+    # dev: a persona named in the X-DMC-Dev-User header (ADR 0007). oidc: bearer tokens (Phase 4).
+    auth_mode: Literal["dev", "oidc"] = "dev"
 
     @field_validator("cors_origins", mode="before")
     @classmethod
@@ -33,6 +37,14 @@ class Settings(BaseSettings):
     def _deployed_needs_a_database(self) -> Self:
         if self.environment in DEPLOYED and not self.database_url:
             raise ValueError(f"DMC_DATABASE_URL is required in the {self.environment} environment")
+        return self
+
+    @model_validator(mode="after")
+    def _no_dev_auth_when_protected(self) -> Self:
+        if self.environment in PROTECTED and self.auth_mode == "dev":
+            raise ValueError(
+                f"DMC_AUTH_MODE=dev is not allowed in the {self.environment} environment"
+            )
         return self
 
 

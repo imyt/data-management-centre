@@ -18,6 +18,7 @@ from app.core.errors import (
     InvalidInputError,
     NotFoundError,
     PermissionDeniedError,
+    UnauthenticatedError,
 )
 from app.core.schemas import PROBLEM_JSON, ProblemDetail, ValidationIssue
 
@@ -29,6 +30,7 @@ _DOMAIN_STATUS: dict[type[DomainError], int] = {
     NotFoundError: status.HTTP_404_NOT_FOUND,
     InvalidInputError: status.HTTP_400_BAD_REQUEST,
     ConflictError: status.HTTP_409_CONFLICT,
+    UnauthenticatedError: status.HTTP_401_UNAUTHORIZED,
     PermissionDeniedError: status.HTTP_403_FORBIDDEN,
 }
 
@@ -36,6 +38,7 @@ _DOMAIN_TITLE: dict[str, str] = {
     NotFoundError.code: "Not found",
     InvalidInputError.code: "Invalid input",
     ConflictError.code: "Conflict",
+    UnauthenticatedError.code: "Not signed in",
     PermissionDeniedError.code: "Permission denied",
 }
 

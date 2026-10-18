@@ -86,10 +86,12 @@ class ProblemDetail(BaseModel):
 
 _ERROR_DESCRIPTIONS = {
     400: "Invalid input",
+    401: "Not signed in",
     403: "Permission denied",
     404: "Not found",
     409: "Conflict",
     422: "Validation error",
+    501: "Not implemented",
 }
 
 
