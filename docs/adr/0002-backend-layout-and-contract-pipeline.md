@@ -1,6 +1,6 @@
 # ADR 0002: Backend layout and the contract pipeline
 
-- Status: accepted
+- Status: accepted; decisions 1 to 3 superseded by [ADR 0003](0003-single-backend-app-with-modules.md)
 - Date: 2026-10-18
 
 ## Context

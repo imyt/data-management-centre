@@ -16,7 +16,7 @@ Internal governance control plane for data controls. Single tenant. React fronte
 ## Commands
 
 - Frontend (pnpm): `cd frontend && npm run dev | lint | test | build | e2e`
-- Backend (uv): `cd backend && uv sync`, then `uv run uvicorn dmc_api.main:app --reload`, `uv run pytest`, `uv run ruff check .`, `uv run ruff format --check .`, `uv run lint-imports`
+- Backend (uv): `cd backend && uv sync`, then `uv run uvicorn app.main:app --reload`, `uv run pytest`, `uv run ruff check .`, `uv run ruff format --check .`, `uv run lint-imports`
 - API contract: after any API change, run `npm run api:sync` in `frontend/` and commit `contracts/openapi.json` and `frontend/src/api/` together
 
 ## Ways of working
