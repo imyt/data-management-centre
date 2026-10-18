@@ -3,7 +3,14 @@ name = "dmc-backend"
 version = "0.1.0"
 description = "DMC backend: FastAPI app with a shared core and one package per domain module"
 requires-python = ">=3.12"
-dependencies = ["fastapi>=0.115", "uvicorn[standard]>=0.30", "pydantic>=2", "pydantic-settings>=2"]
+dependencies = [
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.30",
+    "pydantic>=2",
+    "pydantic-settings>=2",
+    "sqlalchemy>=2.0.40",
+    "psycopg[binary]>=3.2",
+]
 
 [dependency-groups]
 dev = ["pytest", "httpx", "ruff", "import-linter"]

@@ -76,7 +76,7 @@ The API exposes an unauthenticated `meta` endpoint (`operation_id: getMeta`), ne
 ### 6. Environment-aware configuration and its guardrails
 
 - `DMC_ENVIRONMENT` gains `dev` alongside `local`, `test`, `staging` and `production`.
-- Settings validation fails at start-up for unsafe combinations: dev authentication, seed data or debug payload logging in `staging` or `production`; and a missing database URL anywhere except unit tests.
+- Settings validation fails at start-up for unsafe combinations: dev authentication, seed data or debug payload logging in `staging` or `production`; and a missing database URL in `dev`, `staging` or `production`. Locally, the first request that needs the database fails with a message naming `DMC_DATABASE_URL`, so tools like the OpenAPI export still run without one.
 - Secrets come from the corporate secrets store as environment variables. `.env` files are for local use only, and every variable stays listed in `.env.example`.
 
 ### 7. Authentication during development: a dev identity provider behind the real interface
