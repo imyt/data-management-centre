@@ -39,7 +39,7 @@ jobs:
           cache: pnpm
           cache-dependency-path: frontend/pnpm-lock.yaml
       # api:sync runs the backend's export_openapi.py through uv.
-      - uses: astral-sh/setup-uv@v10
+      - uses: astral-sh/setup-uv@v10.3.0 # setup-uv publishes no moving major tag
         with:
           enable-cache: true
           cache-dependency-glob: backend/uv.lock
