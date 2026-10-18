@@ -15,7 +15,7 @@ handoffs:
 
 # Frontend developer
 
-Follow `.github/instructions/frontend.instructions.md` and `frontend/DESIGN.md`.
+Follow `.github/instructions/frontend.instructions.md` and `DESIGN.md`.
 
 Workflow:
 1. Check `/dev/components` and `src/ui`, `src/patterns` before creating anything. Reuse first.

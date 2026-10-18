@@ -5,10 +5,10 @@ A data-dense, workflow-driven web platform (desktop only). Modular monorepo that
 
 ```
 backend/     API, auth/RBAC, business logic, migrations
-frontend/    React app + design system (see frontend/DESIGN.md)
+frontend/    React app + design system (see DESIGN.md)
 infra/       Docker Compose, IaC, CI helpers
 contracts/   openapi.json (exported from FastAPI), the ONLY link between backend and frontend
-docs/        PRD, architecture, ADRs
+docs/        ADRs (PRD.md, ARCHITECTURE.md and DESIGN.md are at the root)
 ```
 
 ## Hard rules
@@ -21,7 +21,7 @@ docs/        PRD, architecture, ADRs
 ## Commands
 Fill in as the project is scaffolded.
 - Frontend (pnpm): `npm run dev`, `npm run test`, `npm run lint`, `npm run build`, `npm run e2e`
-- Backend (from `backend/`, uv): `uv sync`, `uv run uvicorn dmc_api.main:app --reload`, `uv run pytest`, `uv run ruff check .`, `uv run ruff format --check .`, `uv run lint-imports`
+- Backend (from `backend/`, uv): `uv sync`, `uv run uvicorn app.main:app --reload`, `uv run pytest`, `uv run ruff check .`, `uv run ruff format --check .`, `uv run lint-imports`
 - API sync (spec export + hey-api client): `npm run api:sync` from `frontend/`
 - Everything: `docker compose up` from `infra/`
 
@@ -39,5 +39,5 @@ Fill in as the project is scaffolded.
 4. If you made a design decision, add a short note in `docs/adr/`.
 
 ## Frontend and backend work
-- Frontend: follow `.github/instructions/frontend.instructions.md` and `frontend/DESIGN.md`.
+- Frontend: follow `.github/instructions/frontend.instructions.md` and `DESIGN.md`.
 - Backend: follow `.github/instructions/backend.instructions.md`.

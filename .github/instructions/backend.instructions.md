@@ -4,29 +4,30 @@ applyTo: "backend/**"
 
 # Backend instructions
 
-FastAPI, Python 3.12+, Pydantic v2, SQLAlchemy 2.0 (async), Alembic, pytest. A uv workspace: one package per bounded context (architecture §14), and three tiers inside each package. Layout decision: `docs/adr/0002-backend-layout-and-contract-pipeline.md`.
+FastAPI, Python 3.12+, Pydantic v2, SQLAlchemy 2.0 (async), Alembic, pytest. One app, `backend/app`, with a shared `core/` and one package per domain module (ARCHITECTURE.md §4 and §5), and three tiers inside each module. Layout decision: `docs/adr/0003-single-backend-app-with-modules.md`.
 
 ## Structure
 ```
 backend/
-  pyproject.toml          uv workspace root: dev tools, ruff, pytest, import-linter contracts
+  pyproject.toml          one project: dependencies, ruff, pytest, import-linter contracts
   .env.example            every DMC_* variable
-  apps/api/src/dmc_api/   main.py (app factory, router wiring), settings.py, errors.py (domain error -> HTTP)
-  packages/
-    dmc_common/           base: errors, pagination, ErrorResponse, Page
-    dmc_platform/         health (later auth, audit, outbox)
-    dmc_<context>/        added when a slice needs it (registry, operations, ...)
-      src/dmc_<context>/
-        public.py         the ONLY module other packages may import (interfaces, DTOs)
-        api/              tier 1: routers, one file per resource (assets.py)
-        application/      tier 2: services (asset_service.py)
-        infrastructure/   tier 3: repositories and SQLAlchemy models (asset_repository.py)
-        domain/           entities and rules (asset.py)
-        schemas.py        Pydantic Create / Update / Read models
-      tests/              service tests with fake repositories
+  app/
+    main.py               app factory, router wiring
+    openapi.py            renders the spec for scripts/export_openapi.py
+    core/                 config, errors (domain errors), handlers (error -> HTTP, request ID),
+                          schemas (ErrorResponse, Page), pagination, health
+    modules/<module>/     added with its first slice (identity, inventory, policy, ...)
+      service.py          tier 2, and the ONLY file other modules may import (interfaces, DTOs)
+      router.py           tier 1: HTTP only
+      repository.py       tier 3: queries
+      models.py           SQLAlchemy models (with the first table)
+      domain.py           entities and rules
+      schemas.py          Pydantic Create / Update / Read models
+  migrations/             Alembic (with the first slice that persists data)
   scripts/export_openapi.py
+  tests/core/  tests/modules/<module>/
 ```
-Name files by resource, consistently across layers: `api/assets.py`, `application/asset_service.py`, `infrastructure/asset_repository.py`, `domain/asset.py`. Packages import downwards only (architecture §14.3), and only through another package's `public.py`; `lint-imports` enforces it. `apps/api` may import each package's `api` routers for wiring.
+A module that grows past one resource splits a tier file into a folder (`router/assets.py`), named by resource. Core never imports a module; modules reach each other only through `service.py`; `lint-imports` enforces both. Only `app/main.py` imports routers, for wiring.
 
 ## The three tiers (dependency flows one way)
 `router -> service -> repository -> models`
