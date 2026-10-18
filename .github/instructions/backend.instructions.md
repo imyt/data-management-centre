@@ -4,26 +4,29 @@ applyTo: "backend/**"
 
 # Backend instructions
 
-FastAPI, Python 3.12+, Pydantic v2, SQLAlchemy 2.0 (async), Alembic, pytest. Three-tier architecture organized by layer. Features exist only in the frontend; the backend is not split by feature.
+FastAPI, Python 3.12+, Pydantic v2, SQLAlchemy 2.0 (async), Alembic, pytest. A uv workspace: one package per bounded context (architecture §14), and three tiers inside each package. Layout decision: `docs/adr/0002-backend-layout-and-contract-pipeline.md`.
 
-## Structure (organized by layer)
+## Structure
 ```
 backend/
-  app/
-    main.py               app factory, router registration
-    core/                 config (pydantic-settings), db session, security, errors, logging, deps
-    api/v1/               tier 1: routers, one file per resource (assets.py, terms.py)
-    services/             tier 2: business logic (asset_service.py, audit.py, workflow.py)
-    repositories/         tier 3: data access (base.py, asset_repository.py)
-    models/               SQLAlchemy models (asset.py)
-    schemas/              Pydantic Create / Update / Read models (asset.py, common.py)
-  migrations/             Alembic
-  scripts/                export_openapi.py
-  tests/
-    unit/services/        fake repositories
-    integration/          repositories and API against a real database
+  pyproject.toml          uv workspace root: dev tools, ruff, pytest, import-linter contracts
+  .env.example            every DMC_* variable
+  apps/api/src/dmc_api/   main.py (app factory, router wiring), settings.py, errors.py (domain error -> HTTP)
+  packages/
+    dmc_common/           base: errors, pagination, ErrorResponse, Page
+    dmc_platform/         health (later auth, audit, outbox)
+    dmc_<context>/        added when a slice needs it (registry, operations, ...)
+      src/dmc_<context>/
+        public.py         the ONLY module other packages may import (interfaces, DTOs)
+        api/              tier 1: routers, one file per resource (assets.py)
+        application/      tier 2: services (asset_service.py)
+        infrastructure/   tier 3: repositories and SQLAlchemy models (asset_repository.py)
+        domain/           entities and rules (asset.py)
+        schemas.py        Pydantic Create / Update / Read models
+      tests/              service tests with fake repositories
+  scripts/export_openapi.py
 ```
-Name files by resource, consistently across layers: `api/v1/assets.py`, `services/asset_service.py`, `repositories/asset_repository.py`, `models/asset.py`, `schemas/asset.py`.
+Name files by resource, consistently across layers: `api/assets.py`, `application/asset_service.py`, `infrastructure/asset_repository.py`, `domain/asset.py`. Packages import downwards only (architecture §14.3), and only through another package's `public.py`; `lint-imports` enforces it. `apps/api` may import each package's `api` routers for wiring.
 
 ## The three tiers (dependency flows one way)
 `router -> service -> repository -> models`
