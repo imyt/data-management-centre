@@ -15,7 +15,7 @@ export const galleryEntries: GalleryEntry[] = [...patternEntries, ...uiEntries]
 const NAV: NavGroup[] = [{ label: "Design system", items: [{ label: "Gallery", to: "/gallery", icon: LayoutGridIcon }] }]
 
 const SECTION_ROUTES = {
-  inbox: "/inbox",
+  inbox: "/",
   assets: "/assets",
   applications: "/applications",
   controls: "/controls",
