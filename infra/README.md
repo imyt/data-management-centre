@@ -18,3 +18,9 @@ On first start, `db/init/` creates:
 | `dmc` | Application database |
 | `dmc_test` | Database used by the backend tests |
 | `estate` | Sample application data store that harvest reads |
+
+Parallel worktrees each get their own test database, so their test runs and migrations never collide:
+
+```bash
+./db/create-database.sh dmc_test_<task>    # then point DMC_TEST_* in that worktree's backend/.env at it
+```
