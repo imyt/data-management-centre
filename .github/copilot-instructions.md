@@ -27,8 +27,9 @@ Fill in as the project is scaffolded.
 
 ## Conventions
 - Conventional commits (`feat(frontend): ...`, `fix(backend): ...`). Scope = folder.
-- Build in vertical slices: one feature end to end (data model, API, UI, tests) per PR.
-- Small PRs. Every PR includes tests; user-facing changes include all UI states (loading, empty, error).
+- Commit and push directly to `main`; no feature branches or PRs. Keep commits small, and leave `main` green after each one.
+- Build in vertical slices: one feature end to end (data model, API, UI, tests), following `docs/ROADMAP.md`.
+- Every slice includes tests; user-facing changes include all UI states (loading, empty, error).
 - Permissions are enforced in the backend. The UI only reflects them.
 - Prefer boring, well-known solutions. Ask before adding a new dependency.
 

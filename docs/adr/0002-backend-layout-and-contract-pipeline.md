@@ -1,6 +1,6 @@
 # ADR 0002: Backend layout and the contract pipeline
 
-- Status: accepted; decisions 1 to 3 superseded by [ADR 0003](0003-single-backend-app-with-modules.md)
+- Status: accepted; decisions 1 to 3 superseded by [ADR 0003](0003-single-backend-app-with-modules.md); the `VITE_API_BASE_URL` part of decision 6 is replaced by [ADR 0004](0004-environments-database-and-frontend-backend-pairing.md) once that is accepted
 - Date: 2026-10-18
 
 ## Context

@@ -28,7 +28,7 @@ flowchart LR
 
 | Component | Responsibility |
 |---|---|
-| Frontend | All UI. Static build served behind the corporate gateway |
+| Frontend | All UI. Static build served behind the corporate gateway, which routes `/api/` to the API of the same environment (ADR 0004) |
 | Backend API | REST API, authorisation, validation, queries |
 | Worker | Harvest, scans, flow observation, evaluations, exports, notifications, scheduled sweeps |
 | PostgreSQL | System of record: inventory, policies, results, workflow, audit, job queue |
@@ -41,7 +41,7 @@ flowchart LR
 | Frontend | React, TypeScript, Vite, Tailwind CSS v4, shadcn/ui, TanStack Query for server state, URL search params for view state |
 | Backend | Python, FastAPI, Pydantic v2, SQLAlchemy 2, Alembic |
 | Jobs | Postgres job table with `SELECT … FOR UPDATE SKIP LOCKED`; scheduler in the worker |
-| Database | PostgreSQL, one schema per backend module |
+| Database | PostgreSQL 18, one schema per backend module; Docker Compose locally, managed Postgres in deployed environments (ADR 0004) |
 | Auth | OIDC with the corporate identity provider |
 | Testing | Vitest and Playwright (with axe) on the frontend; pytest on the backend |
 

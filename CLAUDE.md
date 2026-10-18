@@ -7,6 +7,7 @@ Internal governance control plane for data controls. Single tenant. React fronte
 - `PRD.md`: what DMC does and for whom.
 - `ARCHITECTURE.md`: system design.
 - `DESIGN.md`: UI principles, identity, patterns.
+- `docs/ROADMAP.md`: build order. `docs/adr/`: technical decisions.
 
 ## Layout
 
@@ -21,6 +22,7 @@ Internal governance control plane for data controls. Single tenant. React fronte
 
 ## Ways of working
 
+- Commit and push directly to `main`; no feature branches or pull requests. Keep commits small and conventional, and leave `main` green.
 - Work in thin vertical slices: data model, API, UI and a test for one capability at a time.
 - Use the domain vocabulary exactly: applied control (not obligation), Know, Assess, Act, Assure.
 - An action is done only when a later evaluation verifies it.
