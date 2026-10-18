@@ -12,6 +12,17 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
 import { Button } from "@/components/ui/button"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command"
 import {
@@ -34,6 +45,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Separator } from "@/components/ui/separator"
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
@@ -780,6 +792,63 @@ export const uiEntries: GalleryEntry[] = [
         </Button>
       ),
       empty: { na: "no toast without a message." },
+    },
+  },
+  {
+    id: "alert-dialog",
+    name: "AlertDialog",
+    layer: "ui",
+    summary: "Asks before losing work. No close button and no outside click: the user picks an answer. Risk decisions use ConfirmWithReason instead.",
+    states: {
+      default: (
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <Button variant="secondary">Close with unsaved changes</Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Discard unsaved changes?</AlertDialogTitle>
+              <AlertDialogDescription>Your edits to this item will be lost.</AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Keep editing</AlertDialogCancel>
+              <AlertDialogAction variant="destructive">Discard changes</AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      ),
+      hover: { na: "see the trigger's button states." },
+      focus: { na: "focus starts on Cancel and returns to the trigger on close." },
+      disabled: { na: "hide the trigger, or disable it with a reason." },
+      loading: { na: "the answer acts immediately; long work moves to a toast or a job." },
+      error: { na: "errors from the action show after it closes, as a toast." },
+      empty: { na: "always has a title, a consequence and two answers." },
+    },
+  },
+  {
+    id: "resizable",
+    name: "Resizable",
+    layer: "ui",
+    wide: true,
+    summary: "Panels with a drag handle. Arrow keys resize from the handle. Screens get it through DetailSplit.",
+    states: {
+      default: (
+        <ResizablePanelGroup orientation="horizontal" className="h-32 w-full rounded-md border">
+          <ResizablePanel id="gallery-resizable-list" defaultSize="60%" minSize="30%">
+            <p className="p-4 text-sm text-muted-foreground">List</p>
+          </ResizablePanel>
+          <ResizableHandle withHandle aria-label="Resize detail" />
+          <ResizablePanel id="gallery-resizable-detail" minSize="25%">
+            <p className="p-4 text-sm text-muted-foreground">Detail</p>
+          </ResizablePanel>
+        </ResizablePanelGroup>
+      ),
+      hover: { na: "the handle shows a resize cursor (see default)." },
+      focus: { na: "Tab to the handle in default; the global focus ring applies." },
+      disabled: { na: "a panel that cannot resize has no handle." },
+      loading: { na: "panels hold their own loading states." },
+      error: { na: "panels hold their own error states." },
+      empty: { na: "an empty panel is removed, not shown blank." },
     },
   },
 ]
