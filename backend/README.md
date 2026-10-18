@@ -11,6 +11,7 @@ uv run pytest                                   # needs Postgres: docker compose
 uv run ruff check . && uv run ruff format --check .
 uv run lint-imports                             # module boundaries
 uv run dmc-migrate upgrade                      # apply migrations (the API refuses to start without them)
+uv run dmc-seed                                 # create the dev personas (refused in staging and production)
 uv run dmc-migrate revision -m "add x" --autogenerate   # new migration from model changes
 ```
 

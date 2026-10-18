@@ -268,8 +268,8 @@ Main resources: `applications`, `environments`, `data-stores`, `assets`, `data-e
 
 ## 9. Security and privacy
 
-- OIDC login; roles and scopes from identity provider groups.
-- Authorisation in the service layer on every request: role permits the operation, scope permits the subject. The API computes `allowed_actions` from the same rules.
+- OIDC login; roles and scopes from identity provider groups. Until then, and locally, dev authentication picks a seeded persona per role; both produce the same principal (ADR 0007).
+- Authorisation in the service layer on every request: role permits the operation, scope permits the subject. The API computes `allowed_actions` from the same rules (`require` and `allowed_actions` over one `Permission` list per module, ADR 0007).
 - Connector credentials live in the corporate secrets store; DMC stores only references.
 - Harvest reads metadata and aggregate statistics; sampling of values is opt-in per store, masked at rest, and every reveal is logged.
 - Audit events are append-only and hash-chained (`prev_hash`, `hash`) so tampering is detectable. Evidence is stored with SHA-256 hashes.

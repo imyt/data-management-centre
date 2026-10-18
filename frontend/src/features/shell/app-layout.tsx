@@ -10,6 +10,7 @@ import {
 import { Outlet, useLocation } from "react-router"
 
 import {
+  AccountMenu,
   AppShell,
   PortalHeader,
   UpdateBanner,
@@ -18,6 +19,7 @@ import {
   type Section,
 } from "@/components/patterns"
 
+import { useIdentity } from "./use-identity"
 import { usePairing } from "./use-pairing"
 
 const SECTION_ROUTES: Record<Section, string> = {
@@ -37,7 +39,7 @@ const SECTION_PAGES: Record<Section, { label: string; icon: LucideIcon }> = {
   reports: { label: "Posture", icon: LayoutDashboardIcon },
 }
 
-// Domains come with the identity module (roadmap 0.7); until then the only scope is everything.
+// Domains come with reference data (slice 1); until then the only scope is everything.
 const SCOPES: ScopeOption[] = [{ id: "all", label: "All domains" }]
 
 function sectionFor(pathname: string): Section {
@@ -52,6 +54,7 @@ export function AppLayout() {
   const section = sectionFor(pathname)
   const [scope, setScope] = React.useState(SCOPES[0].id)
   const pairing = usePairing()
+  const identity = useIdentity()
 
   const page = SECTION_PAGES[section]
   const nav: NavGroup[] = [{ items: [{ label: page.label, to: SECTION_ROUTES[section], icon: page.icon }] }]
@@ -70,6 +73,7 @@ export function AppLayout() {
             posture={null}
             postureTo={SECTION_ROUTES.reports}
             environment={pairing.environmentBadge}
+            userMenu={<AccountMenu {...identity} />}
           />
         </>
       }

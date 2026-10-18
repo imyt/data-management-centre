@@ -1,4 +1,5 @@
 // The only import surface for screens in src/features (enforced in .oxlintrc.json).
+export { AccountMenu, type AccountUser, type PersonaOption } from "./account-menu"
 export { AppShell, type NavGroup, type NavItem } from "./app-shell"
 export { ConfirmWithReason } from "./confirm-with-reason"
 export {

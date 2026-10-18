@@ -6,6 +6,7 @@ import { Link } from "react-router"
 import { z } from "zod"
 
 import {
+  AccountMenu,
   ConfirmWithReason,
   createDataTableColumns,
   DataTable,
@@ -339,6 +340,26 @@ function AssetDetail({ id }: { id: string }) {
 }
 
 /* ---------- small demos ---------- */
+
+const PERSONAS = [
+  { id: "priya.raman", name: "Priya Raman", role: "Data Owner" },
+  { id: "marcus.webb", name: "Marcus Webb", role: "Application Owner" },
+  { id: "hannah.becker", name: "Hannah Becker", role: "Governance team" },
+  { id: "sofia.marin", name: "Sofia Marin", role: "Auditor" },
+]
+
+function AccountDemo() {
+  const [persona, setPersona] = React.useState("priya.raman")
+  const current = PERSONAS.find((p) => p.id === persona) ?? PERSONAS[0]
+  return (
+    <AccountMenu
+      user={{ name: current.name, role: current.role }}
+      personas={PERSONAS}
+      persona={persona}
+      onPersonaChange={setPersona}
+    />
+  )
+}
 
 function ScopeDemo() {
   const [scope, setScope] = React.useState("finance")
@@ -792,3 +813,21 @@ export const patternEntries: GalleryEntry[] = [
     },
   },
 ]
+
+// Appended after every other entry (see gallery-page.tsx).
+export const accountMenuEntry: GalleryEntry = {
+  id: "account-menu",
+  name: "AccountMenu",
+  layer: "patterns",
+  summary:
+    "Who you are acting as, with your roles. With dev authentication it lists the seeded personas to switch to; in production it has no switcher.",
+  states: {
+    default: <AccountDemo />,
+    hover: <AccountMenu user={{ name: "Priya Raman", role: "Data Owner" }} />,
+    focus: <AccountMenu user={{ name: "Priya Raman", role: "Data Owner" }} />,
+    disabled: { na: "the account menu is always available." },
+    loading: <AccountMenu loading />,
+    error: <AccountMenu user={null} />,
+    empty: { na: "every signed-in user has a name and at least one role." },
+  },
+}

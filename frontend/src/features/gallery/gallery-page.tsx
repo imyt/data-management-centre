@@ -5,12 +5,15 @@ import { AppShell, PortalHeader, type NavGroup } from "@/components/patterns"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
-import { patternEntries } from "@/features/gallery/entries/pattern-entries"
+import { accountMenuEntry, patternEntries } from "@/features/gallery/entries/pattern-entries"
 import { uiEntries } from "@/features/gallery/entries/ui-entries"
 import { Specimen, type GalleryEntry } from "@/features/gallery/specimen"
 import { useTheme } from "@/lib/theme"
 
-export const galleryEntries: GalleryEntry[] = [...patternEntries, ...uiEntries]
+// Sections are fractional pixels tall (text line heights), so inserting one, or a contents link that
+// wraps, moves every later section to a new sub-pixel offset and churns its screenshot. Until the
+// line heights are whole pixels, new entries go last and stay out of the contents row.
+export const galleryEntries: GalleryEntry[] = [...patternEntries, ...uiEntries, accountMenuEntry]
 
 const NAV: NavGroup[] = [{ label: "Design system", items: [{ label: "Gallery", to: "/gallery", icon: LayoutGridIcon }] }]
 
@@ -90,7 +93,7 @@ export function GalleryPage() {
             <h1 className="text-xl leading-tight font-semibold tracking-tight">Gallery</h1>
             <p className="text-sm text-muted-foreground">
               Every pattern in every state. Screens build from <span className="mono">@/components/patterns</span>.{" "}
-              <span className="mono tabular-nums">{patternEntries.length}</span> patterns,{" "}
+              <span className="mono tabular-nums">{patternEntries.length + 1}</span> patterns,{" "}
               <span className="mono tabular-nums">{uiEntries.length}</span> ui primitives.
             </p>
           </div>

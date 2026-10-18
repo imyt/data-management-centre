@@ -70,6 +70,8 @@ for (const theme of THEMES) {
     test("every section, all states", async ({ page }, testInfo) => {
       // Section shots are layout-independent, so take them once, at 1920 wide.
       test.skip(testInfo.project.name !== "desktop", "section screenshots run in the desktop project only")
+      // Taller than any section, so none is clipped by the viewport or overlapped by the sticky header.
+      await page.setViewportSize({ width: 1920, height: 2160 })
       await openGallery(page, theme)
       await forceInteractionStates(page)
       const ids = await page.locator("[data-gallery-entry]").evaluateAll((els) =>
