@@ -4,7 +4,7 @@ import uuid
 from typing import Any
 
 from sqlalchemy import Select, func, or_, select
-from sqlalchemy.orm import Session, selectinload
+from sqlalchemy.orm import Session, joinedload, selectinload
 
 from app.modules.inventory.models import (
     AppEnvironment,
@@ -237,3 +237,37 @@ class InventoryRepository:
     def flush_asset_part(self, entity: Asset | DataElement | AssetOwnership) -> None:
         self._session.flush()
         self._session.refresh(entity)
+
+    # --- Subjects, for policy
+
+    def assets_for_facts(self, ids: list[uuid.UUID] | None) -> list[Asset]:
+        statement = (
+            select(Asset)
+            .options(selectinload(Asset.data_elements), selectinload(Asset.ownerships))
+            .execution_options(populate_existing=True)
+            .order_by(Asset.name, Asset.id)
+        )
+        if ids is not None:
+            statement = statement.where(Asset.id.in_(ids))
+        return list(self._session.scalars(statement))
+
+    def data_stores_for_facts(self, ids: list[uuid.UUID] | None) -> list[DataStore]:
+        statement = (
+            select(DataStore)
+            .options(joinedload(DataStore.environment).joinedload(AppEnvironment.application))
+            .execution_options(populate_existing=True)
+            .order_by(DataStore.name, DataStore.id)
+        )
+        if ids is not None:
+            statement = statement.where(DataStore.id.in_(ids))
+        return list(self._session.scalars(statement))
+
+    def applications_for_facts(self, ids: list[uuid.UUID] | None) -> list[Application]:
+        statement = (
+            select(Application)
+            .execution_options(populate_existing=True)
+            .order_by(Application.name, Application.id)
+        )
+        if ids is not None:
+            statement = statement.where(Application.id.in_(ids))
+        return list(self._session.scalars(statement))

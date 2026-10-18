@@ -7,6 +7,7 @@ from app.core.db import Database
 from app.estate import TABLES, load_estate
 from app.modules.identity.service import User
 from app.modules.inventory.service import InventoryService
+from app.modules.policy.service import PolicyService
 
 
 def test_estate_loads_once_and_has_rows_older_than_the_retention_windows(
@@ -53,6 +54,25 @@ def test_sample_application_points_at_the_estate_and_is_registered_once(
         (store,) = application.environments[0].data_stores
     assert store.name == "estate"
     assert store.connection_ref == seed.ESTATE_CONNECTION_REF
+
+
+def test_the_starter_control_library_is_added_once_and_applied(
+    database: Database, personas: dict[str, User]
+) -> None:
+    with database.transaction() as session:
+        seed.seed_sample_application(session)
+        first = seed.seed_policies(session)
+        again = seed.seed_policies(session)
+
+    assert first == 3 and again == 0
+    with database.transaction() as session:
+        principal = personas["hannah.becker"].principal()
+        service = PolicyService(session)
+        codes = [c.code for c in service.list_controls(limit=10, cursor=None).items]
+        applied = service.list_applied_controls(principal, limit=10, cursor=None)
+    assert codes == ["KNOW-01", "KNOW-02", "RET-01"]
+    # The sample application's production store is selected by KNOW-01 by attribute alone.
+    assert [(a.control.code, a.subject.type) for a in applied.items] == [("KNOW-01", "data_store")]
 
 
 @pytest.mark.parametrize("environment", ["staging", "production"])

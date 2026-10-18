@@ -53,8 +53,37 @@ from app.modules.inventory.schemas import (
     DataStoreCreate,
     EnvironmentCreate,
 )
+from app.modules.inventory.subjects import (
+    SUBJECT_CHANGED as SUBJECT_CHANGED,
+)
+from app.modules.inventory.subjects import (
+    AttributeSpec as AttributeSpec,
+)
+from app.modules.inventory.subjects import (
+    AttributeValue as AttributeValue,
+)
+from app.modules.inventory.subjects import (
+    SubjectCatalog as SubjectCatalog,
+)
+from app.modules.inventory.subjects import (
+    SubjectFacts as SubjectFacts,
+)
+from app.modules.inventory.subjects import (
+    SubjectType as SubjectType,
+)
+from app.modules.inventory.subjects import (
+    ValueOption as ValueOption,
+)
 
 DATA_STORE_CREATED = "inventory.data_store_created"
+
+
+def _subject_changed(session: Session, subject_type: SubjectType, subject_id: uuid.UUID) -> None:
+    """Tell policy to re-derive the applied controls of a subject whose attributes changed."""
+    publish(
+        session, SUBJECT_CHANGED, {"subject_type": subject_type.value, "subject_id": subject_id}
+    )
+
 
 # Who may register and change applications (PRD §2). Changes also need the domain in scope.
 _REGISTRARS = {Role.APPLICATION_OWNER, Role.GOVERNANCE}
@@ -214,6 +243,7 @@ class InventoryService:
             subject_id=application.id,
             after=_application_snapshot(application),
         )
+        _subject_changed(self._session, SubjectType.APPLICATION, application.id)
         return self._get(application.id)
 
     def update_application(
@@ -250,6 +280,7 @@ class InventoryService:
             before={k: before[k] for k in changed},
             after={k: after[k] for k in changed},
         )
+        _subject_changed(self._session, SubjectType.APPLICATION, application.id)
         return self._get(application.id)
 
     def add_environment(
@@ -298,6 +329,7 @@ class InventoryService:
             DATA_STORE_CREATED,
             {"data_store_id": store.id, "application_id": environment.application_id},
         )
+        _subject_changed(self._session, SubjectType.DATA_STORE, store.id)
         return store
 
     # --- Data stores, for connectors
@@ -469,6 +501,7 @@ def _decode_name_cursor(cursor: str) -> tuple[str, uuid.UUID]:
 
 class AssetService:
     def __init__(self, session: Session) -> None:
+        self._session = session
         self._repository = InventoryRepository(session)
         self._audit = AuditService(session)
         self._identity = IdentityService(session)
@@ -543,6 +576,7 @@ class AssetService:
             subject_id=asset.id,
             after=_asset_snapshot(asset),
         )
+        _subject_changed(self._session, SubjectType.ASSET, asset.id)
         return self.get_asset(principal, asset.id)
 
     def update_asset(
@@ -581,6 +615,7 @@ class AssetService:
                 before={k: before[k] for k in changed},
                 after={k: after[k] for k in changed},
             )
+            _subject_changed(self._session, SubjectType.ASSET, asset.id)
         return self.get_asset(principal, asset.id)
 
     def _check_declaration(
@@ -642,6 +677,7 @@ class AssetService:
             subject_id=asset.id,
             after={"data_element_id": element.id, **_element_snapshot(element)},
         )
+        _subject_changed(self._session, SubjectType.ASSET, asset.id)
         return element
 
     def update_data_element(
@@ -682,6 +718,7 @@ class AssetService:
             before={"data_element_id": element.id, **{k: before[k] for k in changed}},
             after={"data_element_id": element.id, **{k: after[k] for k in changed}},
         )
+        _subject_changed(self._session, SubjectType.ASSET, element.asset_id)
         return element
 
     def _require_unique_element(
@@ -737,6 +774,7 @@ class AssetService:
                 reason=reason,
                 after=_ownership_snapshot(ownership),
             )
+            _subject_changed(self._session, SubjectType.ASSET, asset.id)
             return self.get_asset(principal, asset.id)
         if current.user_id == user_id:
             raise InvalidInputError(
@@ -761,6 +799,7 @@ class AssetService:
             reason_required=True,
         )
         self._repository.flush_asset_part(current)
+        _subject_changed(self._session, SubjectType.ASSET, asset.id)
         return self.get_asset(principal, asset.id)
 
     def confirm(self, principal: Principal, asset_id: uuid.UUID, role: OwnershipRole) -> AssetView:

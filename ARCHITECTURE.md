@@ -141,10 +141,10 @@ Reference data: `domain`, `data_category`, `region`, `retention_policy` (with `r
 
 | Table | Key fields |
 |---|---|
-| `policy` | name, statement, owner (governance team) |
-| `control` | `policy_id`, name, description, `rule_type`, `control_owner_id`, evidence_requirement |
-| `rule_version` | `control_id`, version, params (JSON), selector (JSON), created_at; immutable |
-| `applied_control` | `control_id`, subject_type, subject_id, `accountable_id` (Data Owner), `responsible_id` (Application Owner), derived_from, effective_status, `latest_result_id` |
+| `policy` | code, name, statement, `owner_id` (governance team) |
+| `control` | `policy_id`, code, name, description, `rule_type`, `control_owner_id`, evidence_requirement, status (active, retired), retired_reason |
+| `rule_version` | `control_id`, version, params (JSON), selector (JSON), change_reason, created_by, created_at; immutable (a trigger refuses changes), the highest version is current |
+| `applied_control` | `control_id`, `rule_version_id` (last derived under), subject_type, subject_id, subject name and domain, `accountable_id`, `responsible_id`, status (active, retired), `reason` and `derived_from` (the "Why?"), retired_at, retired_reason. One active row per control and subject; retired rows stay as history (ADR 0010). `latest_result_id` arrives with evaluation |
 | `evidence_source` | type (config_scan, iam_export, log_sample, dq_engine, manual), `connector_ref`, schedule, health |
 | `evaluation_run` | trigger (event, schedule, on_demand), started_at, finished_at, counts |
 | `evaluation_result` | see 7.5; append-only |
@@ -181,7 +181,7 @@ Facts are recorded inventory state: harvest snapshots, declarations, scanner out
 ### 7.2 Rules
 
 - A control has a `rule_type` with a registered Python evaluator, and versioned `params` and `selector` stored as JSON.
-- A selector matches subjects by attributes, for example:
+- A selector matches subjects by attributes (asset, data store or application; ADR 0010), for example:
 
 ```json
 { "subject": "asset", "where": { "is_stored": true, "data_category.in": ["personal", "payment"] } }
@@ -207,7 +207,7 @@ Initial rule types:
 
 ### 7.3 Derivation
 
-When a subject's attributes or links change, the `policy` module re-runs selectors for that subject and creates or retires applied controls. An applied control is never deleted; it is retired with a reason so history stays intact.
+When a subject's attributes or links change, inventory publishes `inventory.subject_changed` and the `policy` module re-runs selectors for that subject and creates or retires applied controls. When a control's rule changes (a new version, retirement), a job re-derives the control for every subject. An applied control is never deleted; it is retired with a reason so history stays intact. Each carries its stored reason and the attribute values it was derived from. Evaluation reads applied controls through `PolicyService.active_applied_controls` and the `policy.applied_control_derived` and `policy.applied_control_retired` events.
 
 ### 7.4 Continuous evaluation
 

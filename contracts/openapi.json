@@ -2243,6 +2243,1292 @@
         }
       }
     },
+    "/api/v1/policy/vocabulary": {
+      "get": {
+        "tags": [
+          "policy"
+        ],
+        "summary": "List the rule types and the attributes selectors may use",
+        "operationId": "getPolicyVocabulary",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VocabularyResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/policies": {
+      "get": {
+        "tags": [
+          "policy"
+        ],
+        "summary": "List policies",
+        "operationId": "listPolicies",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PolicyList"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "policy"
+        ],
+        "summary": "Add a policy",
+        "operationId": "createPolicy",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PolicyCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PolicyResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Permission denied",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/policies/{policy_id}": {
+      "get": {
+        "tags": [
+          "policy"
+        ],
+        "summary": "Get a policy",
+        "operationId": "getPolicy",
+        "parameters": [
+          {
+            "name": "policy_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Policy Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PolicyResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "policy"
+        ],
+        "summary": "Update a policy",
+        "operationId": "updatePolicy",
+        "parameters": [
+          {
+            "name": "policy_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Policy Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PolicyUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PolicyResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Permission denied",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/controls": {
+      "get": {
+        "tags": [
+          "policy"
+        ],
+        "summary": "List the control library",
+        "operationId": "listControls",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 25,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor"
+            }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 200
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Matches name or code, ignoring case.",
+              "title": "Q"
+            },
+            "description": "Matches name or code, ignoring case."
+          },
+          {
+            "name": "policy_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Policy Id"
+            }
+          },
+          {
+            "name": "rule_type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Rule Type"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/ControlStatus"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ControlPage"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "policy"
+        ],
+        "summary": "Add a control to the library",
+        "operationId": "createControl",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ControlCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ControlResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Permission denied",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/controls/preview-selector": {
+      "post": {
+        "tags": [
+          "policy"
+        ],
+        "summary": "Count the subjects a selector matches",
+        "operationId": "previewSelector",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SelectorPreviewRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SelectorPreviewResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Permission denied",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/controls/{control_id}": {
+      "get": {
+        "tags": [
+          "policy"
+        ],
+        "summary": "Get a control with its rule versions",
+        "operationId": "getControl",
+        "parameters": [
+          {
+            "name": "control_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Control Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ControlResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "policy"
+        ],
+        "summary": "Update a control's description, owner or evidence requirement",
+        "operationId": "updateControl",
+        "parameters": [
+          {
+            "name": "control_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Control Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ControlUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ControlResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Permission denied",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/controls/{control_id}/rule-versions": {
+      "post": {
+        "tags": [
+          "policy"
+        ],
+        "summary": "Publish a new version of a control's rule",
+        "operationId": "publishRuleVersion",
+        "parameters": [
+          {
+            "name": "control_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Control Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RuleVersionCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ControlResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Permission denied",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/controls/{control_id}/retire": {
+      "post": {
+        "tags": [
+          "policy"
+        ],
+        "summary": "Retire a control",
+        "operationId": "retireControl",
+        "parameters": [
+          {
+            "name": "control_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Control Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RetireControl"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ControlResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Permission denied",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/controls/{control_id}/recompute": {
+      "post": {
+        "tags": [
+          "policy"
+        ],
+        "summary": "Re-derive a control's applied controls",
+        "operationId": "recomputeControl",
+        "parameters": [
+          {
+            "name": "control_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Control Id"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Permission denied",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/applied-controls": {
+      "get": {
+        "tags": [
+          "policy"
+        ],
+        "summary": "List applied controls",
+        "operationId": "listAppliedControls",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 25,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor"
+            }
+          },
+          {
+            "name": "control_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Control Id"
+            }
+          },
+          {
+            "name": "subject_type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/SubjectType"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Subject Type"
+            }
+          },
+          {
+            "name": "subject_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Subject Id"
+            }
+          },
+          {
+            "name": "rule_type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Rule Type"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/AppliedControlStatus"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Defaults to active; retired ones are the history.",
+              "default": "active",
+              "title": "Status"
+            },
+            "description": "Defaults to active; retired ones are the history."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppliedControlPage"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/applied-controls/{applied_control_id}": {
+      "get": {
+        "tags": [
+          "policy"
+        ],
+        "summary": "Get an applied control and why it applies",
+        "operationId": "getAppliedControl",
+        "parameters": [
+          {
+            "name": "applied_control_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Applied Control Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppliedControlResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Permission denied",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/inbox": {
       "get": {
         "tags": [
@@ -2706,6 +3992,167 @@
         "type": "object",
         "title": "ApplicationUpdate",
         "description": "Only the fields sent are changed."
+      },
+      "AppliedControlPage": {
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/AppliedControlRead"
+            },
+            "type": "array",
+            "title": "Data"
+          },
+          "allowed_actions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Allowed Actions",
+            "description": "Actions the caller may take on `data` right now."
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ListMeta"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data",
+          "allowed_actions",
+          "meta"
+        ],
+        "title": "AppliedControlPage"
+      },
+      "AppliedControlRead": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "control": {
+            "$ref": "#/components/schemas/ControlRef"
+          },
+          "subject": {
+            "$ref": "#/components/schemas/SubjectRef"
+          },
+          "accountable": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/UserRef"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The Data Owner (assets) or Application Owner."
+          },
+          "responsible": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/UserRef"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The Data Steward (assets) or technical owner."
+          },
+          "status": {
+            "$ref": "#/components/schemas/AppliedControlStatus"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason",
+            "description": "Why this control applies to this subject. Shown by `Why?`."
+          },
+          "rule_version": {
+            "type": "integer",
+            "title": "Rule Version"
+          },
+          "derived_from": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Derived From"
+          },
+          "derived_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Derived At"
+          },
+          "retired_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Retired At"
+          },
+          "retired_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Retired Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "control",
+          "subject",
+          "accountable",
+          "responsible",
+          "status",
+          "reason",
+          "rule_version",
+          "derived_from",
+          "derived_at",
+          "retired_at",
+          "retired_reason"
+        ],
+        "title": "AppliedControlRead"
+      },
+      "AppliedControlResponse": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/AppliedControlRead"
+          },
+          "allowed_actions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Allowed Actions",
+            "description": "Actions the caller may take on `data` right now."
+          },
+          "meta": {
+            "$ref": "#/components/schemas/Meta"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data",
+          "allowed_actions",
+          "meta"
+        ],
+        "title": "AppliedControlResponse"
+      },
+      "AppliedControlStatus": {
+        "type": "string",
+        "enum": [
+          "active",
+          "retired"
+        ],
+        "title": "AppliedControlStatus",
+        "description": "An applied control is never deleted: it stays `retired` so its history remains."
       },
       "AssetCreate": {
         "properties": {
@@ -3213,6 +4660,536 @@
           "user_id"
         ],
         "title": "AssignOwnership"
+      },
+      "AttributeRead": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "kind": {
+            "type": "string",
+            "title": "Kind",
+            "description": "`boolean` or `choice`."
+          },
+          "options": {
+            "items": {
+              "$ref": "#/components/schemas/ValueOptionRead"
+            },
+            "type": "array",
+            "title": "Options"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "label",
+          "kind",
+          "options"
+        ],
+        "title": "AttributeRead"
+      },
+      "ConditionRead": {
+        "properties": {
+          "attribute": {
+            "type": "string",
+            "title": "Attribute"
+          },
+          "attribute_label": {
+            "type": "string",
+            "title": "Attribute Label"
+          },
+          "operator": {
+            "type": "string",
+            "title": "Operator",
+            "description": "`equals`, `in` or `not_in`."
+          },
+          "values": {
+            "items": {
+              "$ref": "#/components/schemas/ValueOptionRead"
+            },
+            "type": "array",
+            "title": "Values"
+          },
+          "text": {
+            "type": "string",
+            "title": "Text",
+            "description": "The whole condition as a phrase."
+          }
+        },
+        "type": "object",
+        "required": [
+          "attribute",
+          "attribute_label",
+          "operator",
+          "values",
+          "text"
+        ],
+        "title": "ConditionRead",
+        "description": "One condition of a selector in words the UI can show."
+      },
+      "ControlCreate": {
+        "properties": {
+          "policy_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Policy Id"
+          },
+          "code": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{1,39}$",
+            "title": "Code"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 4000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "rule_type": {
+            "type": "string",
+            "title": "Rule Type",
+            "description": "See `GET /policy/vocabulary`."
+          },
+          "control_owner_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Control Owner Id"
+          },
+          "evidence_requirement": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 4000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Evidence Requirement",
+            "description": "What evidence shows the control is met."
+          },
+          "params": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Params"
+          },
+          "selector": {
+            "$ref": "#/components/schemas/SelectorBody"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "policy_id",
+          "code",
+          "name",
+          "rule_type",
+          "selector"
+        ],
+        "title": "ControlCreate"
+      },
+      "ControlDetail": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "policy": {
+            "$ref": "#/components/schemas/PolicyRef"
+          },
+          "rule_type": {
+            "type": "string",
+            "title": "Rule Type"
+          },
+          "rule_type_label": {
+            "type": "string",
+            "title": "Rule Type Label"
+          },
+          "subject_type": {
+            "type": "string",
+            "title": "Subject Type",
+            "description": "What the control applies to."
+          },
+          "control_owner": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/UserRef"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "evidence_requirement": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Evidence Requirement"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ControlStatus"
+          },
+          "retired_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Retired Reason"
+          },
+          "current_version": {
+            "$ref": "#/components/schemas/RuleVersionRead"
+          },
+          "applied_count": {
+            "type": "integer",
+            "title": "Applied Count",
+            "description": "Active applied controls derived from this control."
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          },
+          "versions": {
+            "items": {
+              "$ref": "#/components/schemas/RuleVersionRead"
+            },
+            "type": "array",
+            "title": "Versions",
+            "description": "Newest first."
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "code",
+          "name",
+          "description",
+          "policy",
+          "rule_type",
+          "rule_type_label",
+          "subject_type",
+          "control_owner",
+          "evidence_requirement",
+          "status",
+          "retired_reason",
+          "current_version",
+          "applied_count",
+          "updated_at",
+          "versions"
+        ],
+        "title": "ControlDetail"
+      },
+      "ControlPage": {
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/ControlSummary"
+            },
+            "type": "array",
+            "title": "Data"
+          },
+          "allowed_actions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Allowed Actions",
+            "description": "Actions the caller may take on `data` right now."
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ListMeta"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data",
+          "allowed_actions",
+          "meta"
+        ],
+        "title": "ControlPage"
+      },
+      "ControlRef": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "rule_type": {
+            "type": "string",
+            "title": "Rule Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "code",
+          "name",
+          "rule_type"
+        ],
+        "title": "ControlRef"
+      },
+      "ControlResponse": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/ControlDetail"
+          },
+          "allowed_actions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Allowed Actions",
+            "description": "Actions the caller may take on `data` right now."
+          },
+          "meta": {
+            "$ref": "#/components/schemas/Meta"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data",
+          "allowed_actions",
+          "meta"
+        ],
+        "title": "ControlResponse"
+      },
+      "ControlStatus": {
+        "type": "string",
+        "enum": [
+          "active",
+          "retired"
+        ],
+        "title": "ControlStatus"
+      },
+      "ControlSummary": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "policy": {
+            "$ref": "#/components/schemas/PolicyRef"
+          },
+          "rule_type": {
+            "type": "string",
+            "title": "Rule Type"
+          },
+          "rule_type_label": {
+            "type": "string",
+            "title": "Rule Type Label"
+          },
+          "subject_type": {
+            "type": "string",
+            "title": "Subject Type",
+            "description": "What the control applies to."
+          },
+          "control_owner": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/UserRef"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "evidence_requirement": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Evidence Requirement"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ControlStatus"
+          },
+          "retired_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Retired Reason"
+          },
+          "current_version": {
+            "$ref": "#/components/schemas/RuleVersionRead"
+          },
+          "applied_count": {
+            "type": "integer",
+            "title": "Applied Count",
+            "description": "Active applied controls derived from this control."
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "code",
+          "name",
+          "description",
+          "policy",
+          "rule_type",
+          "rule_type_label",
+          "subject_type",
+          "control_owner",
+          "evidence_requirement",
+          "status",
+          "retired_reason",
+          "current_version",
+          "applied_count",
+          "updated_at"
+        ],
+        "title": "ControlSummary"
+      },
+      "ControlUpdate": {
+        "properties": {
+          "name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 4000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "control_owner_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Control Owner Id"
+          },
+          "evidence_requirement": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 4000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Evidence Requirement"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "ControlUpdate",
+        "description": "Only the fields sent are changed. The rule changes through a new version."
       },
       "CreateAssets": {
         "properties": {
@@ -4633,6 +6610,58 @@
         "title": "OwnershipStatus",
         "description": "pending → confirmed or disputed. A reassignment starts again at pending."
       },
+      "ParamRead": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "kind": {
+            "type": "string",
+            "title": "Kind",
+            "description": "`integer` or `choices`."
+          },
+          "default": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              }
+            ],
+            "title": "Default"
+          },
+          "minimum": {
+            "type": "integer",
+            "title": "Minimum"
+          },
+          "choices": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Choices"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "label",
+          "kind",
+          "default",
+          "minimum",
+          "choices"
+        ],
+        "title": "ParamRead"
+      },
       "PhysicalObjectPage": {
         "properties": {
           "data": {
@@ -4764,6 +6793,231 @@
           "meta"
         ],
         "title": "PhysicalObjectResponse"
+      },
+      "PolicyCreate": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{1,39}$",
+            "title": "Code",
+            "description": "Short unique code, e.g. `RET`. Letters, digits, `.`, - and _."
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "statement": {
+            "type": "string",
+            "maxLength": 4000,
+            "minLength": 1,
+            "title": "Statement",
+            "description": "What the organisation commits to."
+          },
+          "owner_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Owner Id",
+            "description": "The governance owner."
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "code",
+          "name",
+          "statement"
+        ],
+        "title": "PolicyCreate"
+      },
+      "PolicyList": {
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/PolicyRead"
+            },
+            "type": "array",
+            "title": "Data"
+          },
+          "allowed_actions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Allowed Actions",
+            "description": "Actions the caller may take on `data` right now."
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ListMeta"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data",
+          "allowed_actions",
+          "meta"
+        ],
+        "title": "PolicyList"
+      },
+      "PolicyRead": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "statement": {
+            "type": "string",
+            "title": "Statement"
+          },
+          "owner": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/UserRef"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "control_count": {
+            "type": "integer",
+            "title": "Control Count",
+            "description": "Active controls under this policy."
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "code",
+          "name",
+          "statement",
+          "owner",
+          "control_count",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "PolicyRead"
+      },
+      "PolicyRef": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "code",
+          "name"
+        ],
+        "title": "PolicyRef"
+      },
+      "PolicyResponse": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/PolicyRead"
+          },
+          "allowed_actions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Allowed Actions",
+            "description": "Actions the caller may take on `data` right now."
+          },
+          "meta": {
+            "$ref": "#/components/schemas/Meta"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data",
+          "allowed_actions",
+          "meta"
+        ],
+        "title": "PolicyResponse"
+      },
+      "PolicyUpdate": {
+        "properties": {
+          "name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "statement": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 4000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Statement"
+          },
+          "owner_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Owner Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "PolicyUpdate",
+        "description": "Only the fields sent are changed."
       },
       "ProblemDetail": {
         "properties": {
@@ -4998,6 +7252,23 @@
         ],
         "title": "RetentionPolicyRead"
       },
+      "RetireControl": {
+        "properties": {
+          "reason": {
+            "type": "string",
+            "maxLength": 2000,
+            "minLength": 1,
+            "title": "Reason",
+            "description": "Why the control is retired. Recorded in the audit trail."
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "reason"
+        ],
+        "title": "RetireControl"
+      },
       "Role": {
         "type": "string",
         "enum": [
@@ -5011,6 +7282,241 @@
         ],
         "title": "Role",
         "description": "The roles in PRD.md §2."
+      },
+      "RuleTypeRead": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "subjects": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Subjects"
+          },
+          "params": {
+            "items": {
+              "$ref": "#/components/schemas/ParamRead"
+            },
+            "type": "array",
+            "title": "Params"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "label",
+          "description",
+          "subjects",
+          "params"
+        ],
+        "title": "RuleTypeRead"
+      },
+      "RuleVersionCreate": {
+        "properties": {
+          "params": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Params"
+          },
+          "selector": {
+            "$ref": "#/components/schemas/SelectorBody"
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 2000,
+            "minLength": 1,
+            "title": "Reason",
+            "description": "Why the rule changes. Recorded in the audit trail."
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "selector",
+          "reason"
+        ],
+        "title": "RuleVersionCreate",
+        "description": "A new version of a control's rule. Replaces the current one for every subject."
+      },
+      "RuleVersionRead": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "version": {
+            "type": "integer",
+            "title": "Version"
+          },
+          "params": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Params"
+          },
+          "selector": {
+            "$ref": "#/components/schemas/SelectorBody"
+          },
+          "conditions": {
+            "items": {
+              "$ref": "#/components/schemas/ConditionRead"
+            },
+            "type": "array",
+            "title": "Conditions"
+          },
+          "change_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Change Reason"
+          },
+          "created_by": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/UserRef"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "version",
+          "params",
+          "selector",
+          "conditions",
+          "change_reason",
+          "created_by",
+          "created_at"
+        ],
+        "title": "RuleVersionRead"
+      },
+      "SelectorBody": {
+        "properties": {
+          "subject": {
+            "type": "string",
+            "title": "Subject",
+            "description": "`asset`, `data_store` or `application`."
+          },
+          "where": {
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                }
+              ]
+            },
+            "type": "object",
+            "title": "Where"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "subject"
+        ],
+        "title": "SelectorBody",
+        "description": "Which subjects a control applies to, by attribute.\n\n`where` maps an attribute to a value (equals), or `attribute.in` / `attribute.not_in` to a\nlist of values; every condition must hold. See `GET /policy/vocabulary` for the attributes."
+      },
+      "SelectorPreview": {
+        "properties": {
+          "count": {
+            "type": "integer",
+            "title": "Count",
+            "description": "Subjects the selector matches right now."
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total",
+            "description": "Subjects of that type."
+          },
+          "sample": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Sample",
+            "description": "Names of a few of them."
+          }
+        },
+        "type": "object",
+        "required": [
+          "count",
+          "total",
+          "sample"
+        ],
+        "title": "SelectorPreview"
+      },
+      "SelectorPreviewRequest": {
+        "properties": {
+          "selector": {
+            "$ref": "#/components/schemas/SelectorBody"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "selector"
+        ],
+        "title": "SelectorPreviewRequest"
+      },
+      "SelectorPreviewResponse": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/SelectorPreview"
+          },
+          "allowed_actions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Allowed Actions",
+            "description": "Actions the caller may take on `data` right now."
+          },
+          "meta": {
+            "$ref": "#/components/schemas/Meta"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data",
+          "allowed_actions",
+          "meta"
+        ],
+        "title": "SelectorPreviewResponse"
       },
       "SnapshotRead": {
         "properties": {
@@ -5072,6 +7578,65 @@
           "failed"
         ],
         "title": "SnapshotStatus"
+      },
+      "SubjectRef": {
+        "properties": {
+          "type": {
+            "type": "string",
+            "title": "Type"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          }
+        },
+        "type": "object",
+        "required": [
+          "type",
+          "id",
+          "name"
+        ],
+        "title": "SubjectRef"
+      },
+      "SubjectType": {
+        "type": "string",
+        "enum": [
+          "asset",
+          "data_store",
+          "application"
+        ],
+        "title": "SubjectType"
+      },
+      "SubjectTypeRead": {
+        "properties": {
+          "type": {
+            "type": "string",
+            "title": "Type"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "attributes": {
+            "items": {
+              "$ref": "#/components/schemas/AttributeRead"
+            },
+            "type": "array",
+            "title": "Attributes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "type",
+          "label",
+          "attributes"
+        ],
+        "title": "SubjectTypeRead"
       },
       "UserPage": {
         "properties": {
@@ -5232,6 +7797,74 @@
         ],
         "title": "ValidationIssue",
         "description": "One field that failed request validation."
+      },
+      "ValueOptionRead": {
+        "properties": {
+          "value": {
+            "type": "string",
+            "title": "Value"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          }
+        },
+        "type": "object",
+        "required": [
+          "value",
+          "label"
+        ],
+        "title": "ValueOptionRead"
+      },
+      "Vocabulary": {
+        "properties": {
+          "rule_types": {
+            "items": {
+              "$ref": "#/components/schemas/RuleTypeRead"
+            },
+            "type": "array",
+            "title": "Rule Types"
+          },
+          "subject_types": {
+            "items": {
+              "$ref": "#/components/schemas/SubjectTypeRead"
+            },
+            "type": "array",
+            "title": "Subject Types"
+          }
+        },
+        "type": "object",
+        "required": [
+          "rule_types",
+          "subject_types"
+        ],
+        "title": "Vocabulary",
+        "description": "What policies and controls are written in: rule types, and the attributes selectors use."
+      },
+      "VocabularyResponse": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Vocabulary"
+          },
+          "allowed_actions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Allowed Actions",
+            "description": "Actions the caller may take on `data` right now."
+          },
+          "meta": {
+            "$ref": "#/components/schemas/Meta"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data",
+          "allowed_actions",
+          "meta"
+        ],
+        "title": "VocabularyResponse"
       }
     }
   }

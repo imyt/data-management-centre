@@ -3,8 +3,8 @@
 import { type DefaultError, type InfiniteData, infiniteQueryOptions, queryOptions, type UseMutationOptions } from '@tanstack/react-query';
 
 import { client } from '../client.gen';
-import { assignOwnership, confirmOwnership, createApplication, createAsset, createAssetsFromTables, createDataElement, createDataStore, createEnvironment, disputeOwnership, getApplication, getAsset, getExample, getHarvestStatus, getHealth, getHealthReady, getJob, getMe, getMeta, listApplications, listAssets, listDataCategories, listDevUsers, listDomains, listExamples, listInbox, listPhysicalObjects, listPurposes, listRegions, listRetentionPolicies, listUsers, mapTable, type Options, runHarvest, updateApplication, updateAsset, updateDataElement } from '../sdk.gen';
-import type { AssignOwnershipData, AssignOwnershipError, AssignOwnershipResponse, ConfirmOwnershipData, ConfirmOwnershipError, ConfirmOwnershipResponse, CreateApplicationData, CreateApplicationError, CreateApplicationResponse, CreateAssetData, CreateAssetError, CreateAssetResponse, CreateAssetsFromTablesData, CreateAssetsFromTablesError, CreateAssetsFromTablesResponse, CreateDataElementData, CreateDataElementError, CreateDataElementResponse, CreateDataStoreData, CreateDataStoreError, CreateDataStoreResponse, CreateEnvironmentData, CreateEnvironmentError, CreateEnvironmentResponse, DisputeOwnershipData, DisputeOwnershipError, DisputeOwnershipResponse, GetApplicationData, GetApplicationError, GetApplicationResponse, GetAssetData, GetAssetError, GetAssetResponse, GetExampleData, GetExampleError, GetExampleResponse, GetHarvestStatusData, GetHarvestStatusError, GetHarvestStatusResponse, GetHealthData, GetHealthReadyData, GetHealthReadyError, GetHealthReadyResponse, GetHealthResponse, GetJobData, GetJobError, GetJobResponse, GetMeData, GetMeError, GetMeResponse, GetMetaData, GetMetaResponse, ListApplicationsData, ListApplicationsError, ListApplicationsResponse, ListAssetsData, ListAssetsError, ListAssetsResponse, ListDataCategoriesData, ListDataCategoriesResponse, ListDevUsersData, ListDevUsersError, ListDevUsersResponse, ListDomainsData, ListDomainsResponse, ListExamplesData, ListExamplesError, ListExamplesResponse, ListInboxData, ListInboxError, ListInboxResponse, ListPhysicalObjectsData, ListPhysicalObjectsError, ListPhysicalObjectsResponse, ListPurposesData, ListPurposesResponse, ListRegionsData, ListRegionsResponse, ListRetentionPoliciesData, ListRetentionPoliciesResponse, ListUsersData, ListUsersError, ListUsersResponse, MapTableData, MapTableError, MapTableResponse, RunHarvestData, RunHarvestError, RunHarvestResponse, UpdateApplicationData, UpdateApplicationError, UpdateApplicationResponse, UpdateAssetData, UpdateAssetError, UpdateAssetResponse, UpdateDataElementData, UpdateDataElementError, UpdateDataElementResponse } from '../types.gen';
+import { assignOwnership, confirmOwnership, createApplication, createAsset, createAssetsFromTables, createControl, createDataElement, createDataStore, createEnvironment, createPolicy, disputeOwnership, getApplication, getAppliedControl, getAsset, getControl, getExample, getHarvestStatus, getHealth, getHealthReady, getJob, getMe, getMeta, getPolicy, getPolicyVocabulary, listApplications, listAppliedControls, listAssets, listControls, listDataCategories, listDevUsers, listDomains, listExamples, listInbox, listPhysicalObjects, listPolicies, listPurposes, listRegions, listRetentionPolicies, listUsers, mapTable, type Options, previewSelector, publishRuleVersion, recomputeControl, retireControl, runHarvest, updateApplication, updateAsset, updateControl, updateDataElement, updatePolicy } from '../sdk.gen';
+import type { AssignOwnershipData, AssignOwnershipError, AssignOwnershipResponse, ConfirmOwnershipData, ConfirmOwnershipError, ConfirmOwnershipResponse, CreateApplicationData, CreateApplicationError, CreateApplicationResponse, CreateAssetData, CreateAssetError, CreateAssetResponse, CreateAssetsFromTablesData, CreateAssetsFromTablesError, CreateAssetsFromTablesResponse, CreateControlData, CreateControlError, CreateControlResponse, CreateDataElementData, CreateDataElementError, CreateDataElementResponse, CreateDataStoreData, CreateDataStoreError, CreateDataStoreResponse, CreateEnvironmentData, CreateEnvironmentError, CreateEnvironmentResponse, CreatePolicyData, CreatePolicyError, CreatePolicyResponse, DisputeOwnershipData, DisputeOwnershipError, DisputeOwnershipResponse, GetApplicationData, GetApplicationError, GetApplicationResponse, GetAppliedControlData, GetAppliedControlError, GetAppliedControlResponse, GetAssetData, GetAssetError, GetAssetResponse, GetControlData, GetControlError, GetControlResponse, GetExampleData, GetExampleError, GetExampleResponse, GetHarvestStatusData, GetHarvestStatusError, GetHarvestStatusResponse, GetHealthData, GetHealthReadyData, GetHealthReadyError, GetHealthReadyResponse, GetHealthResponse, GetJobData, GetJobError, GetJobResponse, GetMeData, GetMeError, GetMeResponse, GetMetaData, GetMetaResponse, GetPolicyData, GetPolicyError, GetPolicyResponse, GetPolicyVocabularyData, GetPolicyVocabularyError, GetPolicyVocabularyResponse, ListApplicationsData, ListApplicationsError, ListApplicationsResponse, ListAppliedControlsData, ListAppliedControlsError, ListAppliedControlsResponse, ListAssetsData, ListAssetsError, ListAssetsResponse, ListControlsData, ListControlsError, ListControlsResponse, ListDataCategoriesData, ListDataCategoriesResponse, ListDevUsersData, ListDevUsersError, ListDevUsersResponse, ListDomainsData, ListDomainsResponse, ListExamplesData, ListExamplesError, ListExamplesResponse, ListInboxData, ListInboxError, ListInboxResponse, ListPhysicalObjectsData, ListPhysicalObjectsError, ListPhysicalObjectsResponse, ListPoliciesData, ListPoliciesError, ListPoliciesResponse, ListPurposesData, ListPurposesResponse, ListRegionsData, ListRegionsResponse, ListRetentionPoliciesData, ListRetentionPoliciesResponse, ListUsersData, ListUsersError, ListUsersResponse, MapTableData, MapTableError, MapTableResponse, PreviewSelectorData, PreviewSelectorError, PreviewSelectorResponse, PublishRuleVersionData, PublishRuleVersionError, PublishRuleVersionResponse, RecomputeControlData, RecomputeControlError, RecomputeControlResponse, RetireControlData, RetireControlError, RetireControlResponse, RunHarvestData, RunHarvestError, RunHarvestResponse, UpdateApplicationData, UpdateApplicationError, UpdateApplicationResponse, UpdateAssetData, UpdateAssetError, UpdateAssetResponse, UpdateControlData, UpdateControlError, UpdateControlResponse, UpdateDataElementData, UpdateDataElementError, UpdateDataElementResponse, UpdatePolicyData, UpdatePolicyError, UpdatePolicyResponse } from '../types.gen';
 
 export type QueryKey<TOptions extends Options> = [
     Pick<TOptions, 'baseUrl' | 'body' | 'headers' | 'path' | 'query'> & {
@@ -791,6 +791,328 @@ export const createAssetsFromTablesMutation = (options?: Partial<Options<CreateA
     };
     return mutationOptions;
 };
+
+export const getPolicyVocabularyQueryKey = (options?: Options<GetPolicyVocabularyData>) => createQueryKey('getPolicyVocabulary', options);
+
+/**
+ * List the rule types and the attributes selectors may use
+ */
+export const getPolicyVocabularyOptions = (options?: Options<GetPolicyVocabularyData>) => queryOptions<GetPolicyVocabularyResponse, GetPolicyVocabularyError, GetPolicyVocabularyResponse, ReturnType<typeof getPolicyVocabularyQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await getPolicyVocabulary({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: getPolicyVocabularyQueryKey(options)
+});
+
+export const listPoliciesQueryKey = (options?: Options<ListPoliciesData>) => createQueryKey('listPolicies', options);
+
+/**
+ * List policies
+ */
+export const listPoliciesOptions = (options?: Options<ListPoliciesData>) => queryOptions<ListPoliciesResponse, ListPoliciesError, ListPoliciesResponse, ReturnType<typeof listPoliciesQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await listPolicies({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: listPoliciesQueryKey(options)
+});
+
+/**
+ * Add a policy
+ */
+export const createPolicyMutation = (options?: Partial<Options<CreatePolicyData>>): UseMutationOptions<CreatePolicyResponse, CreatePolicyError, Options<CreatePolicyData>> => {
+    const mutationOptions: UseMutationOptions<CreatePolicyResponse, CreatePolicyError, Options<CreatePolicyData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await createPolicy({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+export const getPolicyQueryKey = (options: Options<GetPolicyData>) => createQueryKey('getPolicy', options);
+
+/**
+ * Get a policy
+ */
+export const getPolicyOptions = (options: Options<GetPolicyData>) => queryOptions<GetPolicyResponse, GetPolicyError, GetPolicyResponse, ReturnType<typeof getPolicyQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await getPolicy({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: getPolicyQueryKey(options)
+});
+
+/**
+ * Update a policy
+ */
+export const updatePolicyMutation = (options?: Partial<Options<UpdatePolicyData>>): UseMutationOptions<UpdatePolicyResponse, UpdatePolicyError, Options<UpdatePolicyData>> => {
+    const mutationOptions: UseMutationOptions<UpdatePolicyResponse, UpdatePolicyError, Options<UpdatePolicyData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await updatePolicy({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+export const listControlsQueryKey = (options?: Options<ListControlsData>) => createQueryKey('listControls', options);
+
+/**
+ * List the control library
+ */
+export const listControlsOptions = (options?: Options<ListControlsData>) => queryOptions<ListControlsResponse, ListControlsError, ListControlsResponse, ReturnType<typeof listControlsQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await listControls({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: listControlsQueryKey(options)
+});
+
+export const listControlsInfiniteQueryKey = (options?: Options<ListControlsData>): QueryKey<Options<ListControlsData>> => createQueryKey('listControls', options, true);
+
+/**
+ * List the control library
+ */
+export const listControlsInfiniteOptions = (options?: Options<ListControlsData>) => {
+    const opts = infiniteQueryOptions<ListControlsResponse, ListControlsError, InfiniteData<ListControlsResponse>, QueryKey<Options<ListControlsData>>, string | null | Pick<QueryKey<Options<ListControlsData>>[0], 'body' | 'headers' | 'path' | 'query'>>(
+    // @ts-ignore
+    {
+        queryFn: async ({ pageParam, queryKey, signal }) => {
+            // @ts-ignore
+            const page: Pick<QueryKey<Options<ListControlsData>>[0], 'body' | 'headers' | 'path' | 'query'> = typeof pageParam === 'object' ? pageParam : {
+                query: {
+                    cursor: pageParam
+                }
+            };
+            const params = createInfiniteParams(queryKey, page);
+            const { data } = await listControls({
+                ...options,
+                ...params,
+                signal,
+                throwOnError: true
+            });
+            return data;
+        },
+        queryKey: listControlsInfiniteQueryKey(options)
+    });
+    return opts as Omit<typeof opts, 'initialData'>;
+};
+
+/**
+ * Add a control to the library
+ */
+export const createControlMutation = (options?: Partial<Options<CreateControlData>>): UseMutationOptions<CreateControlResponse, CreateControlError, Options<CreateControlData>> => {
+    const mutationOptions: UseMutationOptions<CreateControlResponse, CreateControlError, Options<CreateControlData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await createControl({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+/**
+ * Count the subjects a selector matches
+ */
+export const previewSelectorMutation = (options?: Partial<Options<PreviewSelectorData>>): UseMutationOptions<PreviewSelectorResponse, PreviewSelectorError, Options<PreviewSelectorData>> => {
+    const mutationOptions: UseMutationOptions<PreviewSelectorResponse, PreviewSelectorError, Options<PreviewSelectorData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await previewSelector({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+export const getControlQueryKey = (options: Options<GetControlData>) => createQueryKey('getControl', options);
+
+/**
+ * Get a control with its rule versions
+ */
+export const getControlOptions = (options: Options<GetControlData>) => queryOptions<GetControlResponse, GetControlError, GetControlResponse, ReturnType<typeof getControlQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await getControl({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: getControlQueryKey(options)
+});
+
+/**
+ * Update a control's description, owner or evidence requirement
+ */
+export const updateControlMutation = (options?: Partial<Options<UpdateControlData>>): UseMutationOptions<UpdateControlResponse, UpdateControlError, Options<UpdateControlData>> => {
+    const mutationOptions: UseMutationOptions<UpdateControlResponse, UpdateControlError, Options<UpdateControlData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await updateControl({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+/**
+ * Publish a new version of a control's rule
+ */
+export const publishRuleVersionMutation = (options?: Partial<Options<PublishRuleVersionData>>): UseMutationOptions<PublishRuleVersionResponse, PublishRuleVersionError, Options<PublishRuleVersionData>> => {
+    const mutationOptions: UseMutationOptions<PublishRuleVersionResponse, PublishRuleVersionError, Options<PublishRuleVersionData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await publishRuleVersion({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+/**
+ * Retire a control
+ */
+export const retireControlMutation = (options?: Partial<Options<RetireControlData>>): UseMutationOptions<RetireControlResponse, RetireControlError, Options<RetireControlData>> => {
+    const mutationOptions: UseMutationOptions<RetireControlResponse, RetireControlError, Options<RetireControlData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await retireControl({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+/**
+ * Re-derive a control's applied controls
+ */
+export const recomputeControlMutation = (options?: Partial<Options<RecomputeControlData>>): UseMutationOptions<RecomputeControlResponse, RecomputeControlError, Options<RecomputeControlData>> => {
+    const mutationOptions: UseMutationOptions<RecomputeControlResponse, RecomputeControlError, Options<RecomputeControlData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await recomputeControl({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+export const listAppliedControlsQueryKey = (options?: Options<ListAppliedControlsData>) => createQueryKey('listAppliedControls', options);
+
+/**
+ * List applied controls
+ */
+export const listAppliedControlsOptions = (options?: Options<ListAppliedControlsData>) => queryOptions<ListAppliedControlsResponse, ListAppliedControlsError, ListAppliedControlsResponse, ReturnType<typeof listAppliedControlsQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await listAppliedControls({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: listAppliedControlsQueryKey(options)
+});
+
+export const listAppliedControlsInfiniteQueryKey = (options?: Options<ListAppliedControlsData>): QueryKey<Options<ListAppliedControlsData>> => createQueryKey('listAppliedControls', options, true);
+
+/**
+ * List applied controls
+ */
+export const listAppliedControlsInfiniteOptions = (options?: Options<ListAppliedControlsData>) => {
+    const opts = infiniteQueryOptions<ListAppliedControlsResponse, ListAppliedControlsError, InfiniteData<ListAppliedControlsResponse>, QueryKey<Options<ListAppliedControlsData>>, string | null | Pick<QueryKey<Options<ListAppliedControlsData>>[0], 'body' | 'headers' | 'path' | 'query'>>(
+    // @ts-ignore
+    {
+        queryFn: async ({ pageParam, queryKey, signal }) => {
+            // @ts-ignore
+            const page: Pick<QueryKey<Options<ListAppliedControlsData>>[0], 'body' | 'headers' | 'path' | 'query'> = typeof pageParam === 'object' ? pageParam : {
+                query: {
+                    cursor: pageParam
+                }
+            };
+            const params = createInfiniteParams(queryKey, page);
+            const { data } = await listAppliedControls({
+                ...options,
+                ...params,
+                signal,
+                throwOnError: true
+            });
+            return data;
+        },
+        queryKey: listAppliedControlsInfiniteQueryKey(options)
+    });
+    return opts as Omit<typeof opts, 'initialData'>;
+};
+
+export const getAppliedControlQueryKey = (options: Options<GetAppliedControlData>) => createQueryKey('getAppliedControl', options);
+
+/**
+ * Get an applied control and why it applies
+ */
+export const getAppliedControlOptions = (options: Options<GetAppliedControlData>) => queryOptions<GetAppliedControlResponse, GetAppliedControlError, GetAppliedControlResponse, ReturnType<typeof getAppliedControlQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await getAppliedControl({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: getAppliedControlQueryKey(options)
+});
 
 export const listInboxQueryKey = (options?: Options<ListInboxData>) => createQueryKey('listInbox', options);
 

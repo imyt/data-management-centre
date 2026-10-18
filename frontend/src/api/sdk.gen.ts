@@ -2,7 +2,7 @@
 
 import type { Client, ClientMeta, Options as Options2, RequestResult, TDataShape } from './client';
 import { client } from './client.gen';
-import type { AssignOwnershipData, AssignOwnershipErrors, AssignOwnershipResponses, ConfirmOwnershipData, ConfirmOwnershipErrors, ConfirmOwnershipResponses, CreateApplicationData, CreateApplicationErrors, CreateApplicationResponses, CreateAssetData, CreateAssetErrors, CreateAssetResponses, CreateAssetsFromTablesData, CreateAssetsFromTablesErrors, CreateAssetsFromTablesResponses, CreateDataElementData, CreateDataElementErrors, CreateDataElementResponses, CreateDataStoreData, CreateDataStoreErrors, CreateDataStoreResponses, CreateEnvironmentData, CreateEnvironmentErrors, CreateEnvironmentResponses, DisputeOwnershipData, DisputeOwnershipErrors, DisputeOwnershipResponses, GetApplicationData, GetApplicationErrors, GetApplicationResponses, GetAssetData, GetAssetErrors, GetAssetResponses, GetExampleData, GetExampleErrors, GetExampleResponses, GetHarvestStatusData, GetHarvestStatusErrors, GetHarvestStatusResponses, GetHealthData, GetHealthReadyData, GetHealthReadyErrors, GetHealthReadyResponses, GetHealthResponses, GetJobData, GetJobErrors, GetJobResponses, GetMeData, GetMeErrors, GetMeResponses, GetMetaData, GetMetaResponses, ListApplicationsData, ListApplicationsErrors, ListApplicationsResponses, ListAssetsData, ListAssetsErrors, ListAssetsResponses, ListDataCategoriesData, ListDataCategoriesResponses, ListDevUsersData, ListDevUsersErrors, ListDevUsersResponses, ListDomainsData, ListDomainsResponses, ListExamplesData, ListExamplesErrors, ListExamplesResponses, ListInboxData, ListInboxErrors, ListInboxResponses, ListPhysicalObjectsData, ListPhysicalObjectsErrors, ListPhysicalObjectsResponses, ListPurposesData, ListPurposesResponses, ListRegionsData, ListRegionsResponses, ListRetentionPoliciesData, ListRetentionPoliciesResponses, ListUsersData, ListUsersErrors, ListUsersResponses, MapTableData, MapTableErrors, MapTableResponses, RunHarvestData, RunHarvestErrors, RunHarvestResponses, UpdateApplicationData, UpdateApplicationErrors, UpdateApplicationResponses, UpdateAssetData, UpdateAssetErrors, UpdateAssetResponses, UpdateDataElementData, UpdateDataElementErrors, UpdateDataElementResponses } from './types.gen';
+import type { AssignOwnershipData, AssignOwnershipErrors, AssignOwnershipResponses, ConfirmOwnershipData, ConfirmOwnershipErrors, ConfirmOwnershipResponses, CreateApplicationData, CreateApplicationErrors, CreateApplicationResponses, CreateAssetData, CreateAssetErrors, CreateAssetResponses, CreateAssetsFromTablesData, CreateAssetsFromTablesErrors, CreateAssetsFromTablesResponses, CreateControlData, CreateControlErrors, CreateControlResponses, CreateDataElementData, CreateDataElementErrors, CreateDataElementResponses, CreateDataStoreData, CreateDataStoreErrors, CreateDataStoreResponses, CreateEnvironmentData, CreateEnvironmentErrors, CreateEnvironmentResponses, CreatePolicyData, CreatePolicyErrors, CreatePolicyResponses, DisputeOwnershipData, DisputeOwnershipErrors, DisputeOwnershipResponses, GetApplicationData, GetApplicationErrors, GetApplicationResponses, GetAppliedControlData, GetAppliedControlErrors, GetAppliedControlResponses, GetAssetData, GetAssetErrors, GetAssetResponses, GetControlData, GetControlErrors, GetControlResponses, GetExampleData, GetExampleErrors, GetExampleResponses, GetHarvestStatusData, GetHarvestStatusErrors, GetHarvestStatusResponses, GetHealthData, GetHealthReadyData, GetHealthReadyErrors, GetHealthReadyResponses, GetHealthResponses, GetJobData, GetJobErrors, GetJobResponses, GetMeData, GetMeErrors, GetMeResponses, GetMetaData, GetMetaResponses, GetPolicyData, GetPolicyErrors, GetPolicyResponses, GetPolicyVocabularyData, GetPolicyVocabularyErrors, GetPolicyVocabularyResponses, ListApplicationsData, ListApplicationsErrors, ListApplicationsResponses, ListAppliedControlsData, ListAppliedControlsErrors, ListAppliedControlsResponses, ListAssetsData, ListAssetsErrors, ListAssetsResponses, ListControlsData, ListControlsErrors, ListControlsResponses, ListDataCategoriesData, ListDataCategoriesResponses, ListDevUsersData, ListDevUsersErrors, ListDevUsersResponses, ListDomainsData, ListDomainsResponses, ListExamplesData, ListExamplesErrors, ListExamplesResponses, ListInboxData, ListInboxErrors, ListInboxResponses, ListPhysicalObjectsData, ListPhysicalObjectsErrors, ListPhysicalObjectsResponses, ListPoliciesData, ListPoliciesErrors, ListPoliciesResponses, ListPurposesData, ListPurposesResponses, ListRegionsData, ListRegionsResponses, ListRetentionPoliciesData, ListRetentionPoliciesResponses, ListUsersData, ListUsersErrors, ListUsersResponses, MapTableData, MapTableErrors, MapTableResponses, PreviewSelectorData, PreviewSelectorErrors, PreviewSelectorResponses, PublishRuleVersionData, PublishRuleVersionErrors, PublishRuleVersionResponses, RecomputeControlData, RecomputeControlErrors, RecomputeControlResponses, RetireControlData, RetireControlErrors, RetireControlResponses, RunHarvestData, RunHarvestErrors, RunHarvestResponses, UpdateApplicationData, UpdateApplicationErrors, UpdateApplicationResponses, UpdateAssetData, UpdateAssetErrors, UpdateAssetResponses, UpdateControlData, UpdateControlErrors, UpdateControlResponses, UpdateDataElementData, UpdateDataElementErrors, UpdateDataElementResponses, UpdatePolicyData, UpdatePolicyErrors, UpdatePolicyResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -277,6 +277,130 @@ export const createAssetsFromTables = <ThrowOnError extends boolean = false>(opt
         ...options.headers
     }
 });
+
+/**
+ * List the rule types and the attributes selectors may use
+ */
+export const getPolicyVocabulary = <ThrowOnError extends boolean = false>(options?: Options<GetPolicyVocabularyData, ThrowOnError>): RequestResult<GetPolicyVocabularyResponses, GetPolicyVocabularyErrors, ThrowOnError> => (options?.client ?? client).get<GetPolicyVocabularyResponses, GetPolicyVocabularyErrors, ThrowOnError>({ url: '/api/v1/policy/vocabulary', ...options });
+
+/**
+ * List policies
+ */
+export const listPolicies = <ThrowOnError extends boolean = false>(options?: Options<ListPoliciesData, ThrowOnError>): RequestResult<ListPoliciesResponses, ListPoliciesErrors, ThrowOnError> => (options?.client ?? client).get<ListPoliciesResponses, ListPoliciesErrors, ThrowOnError>({ url: '/api/v1/policies', ...options });
+
+/**
+ * Add a policy
+ */
+export const createPolicy = <ThrowOnError extends boolean = false>(options: Options<CreatePolicyData, ThrowOnError>): RequestResult<CreatePolicyResponses, CreatePolicyErrors, ThrowOnError> => (options.client ?? client).post<CreatePolicyResponses, CreatePolicyErrors, ThrowOnError>({
+    url: '/api/v1/policies',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Get a policy
+ */
+export const getPolicy = <ThrowOnError extends boolean = false>(options: Options<GetPolicyData, ThrowOnError>): RequestResult<GetPolicyResponses, GetPolicyErrors, ThrowOnError> => (options.client ?? client).get<GetPolicyResponses, GetPolicyErrors, ThrowOnError>({ url: '/api/v1/policies/{policy_id}', ...options });
+
+/**
+ * Update a policy
+ */
+export const updatePolicy = <ThrowOnError extends boolean = false>(options: Options<UpdatePolicyData, ThrowOnError>): RequestResult<UpdatePolicyResponses, UpdatePolicyErrors, ThrowOnError> => (options.client ?? client).patch<UpdatePolicyResponses, UpdatePolicyErrors, ThrowOnError>({
+    url: '/api/v1/policies/{policy_id}',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * List the control library
+ */
+export const listControls = <ThrowOnError extends boolean = false>(options?: Options<ListControlsData, ThrowOnError>): RequestResult<ListControlsResponses, ListControlsErrors, ThrowOnError> => (options?.client ?? client).get<ListControlsResponses, ListControlsErrors, ThrowOnError>({ url: '/api/v1/controls', ...options });
+
+/**
+ * Add a control to the library
+ */
+export const createControl = <ThrowOnError extends boolean = false>(options: Options<CreateControlData, ThrowOnError>): RequestResult<CreateControlResponses, CreateControlErrors, ThrowOnError> => (options.client ?? client).post<CreateControlResponses, CreateControlErrors, ThrowOnError>({
+    url: '/api/v1/controls',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Count the subjects a selector matches
+ */
+export const previewSelector = <ThrowOnError extends boolean = false>(options: Options<PreviewSelectorData, ThrowOnError>): RequestResult<PreviewSelectorResponses, PreviewSelectorErrors, ThrowOnError> => (options.client ?? client).post<PreviewSelectorResponses, PreviewSelectorErrors, ThrowOnError>({
+    url: '/api/v1/controls/preview-selector',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Get a control with its rule versions
+ */
+export const getControl = <ThrowOnError extends boolean = false>(options: Options<GetControlData, ThrowOnError>): RequestResult<GetControlResponses, GetControlErrors, ThrowOnError> => (options.client ?? client).get<GetControlResponses, GetControlErrors, ThrowOnError>({ url: '/api/v1/controls/{control_id}', ...options });
+
+/**
+ * Update a control's description, owner or evidence requirement
+ */
+export const updateControl = <ThrowOnError extends boolean = false>(options: Options<UpdateControlData, ThrowOnError>): RequestResult<UpdateControlResponses, UpdateControlErrors, ThrowOnError> => (options.client ?? client).patch<UpdateControlResponses, UpdateControlErrors, ThrowOnError>({
+    url: '/api/v1/controls/{control_id}',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Publish a new version of a control's rule
+ */
+export const publishRuleVersion = <ThrowOnError extends boolean = false>(options: Options<PublishRuleVersionData, ThrowOnError>): RequestResult<PublishRuleVersionResponses, PublishRuleVersionErrors, ThrowOnError> => (options.client ?? client).post<PublishRuleVersionResponses, PublishRuleVersionErrors, ThrowOnError>({
+    url: '/api/v1/controls/{control_id}/rule-versions',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Retire a control
+ */
+export const retireControl = <ThrowOnError extends boolean = false>(options: Options<RetireControlData, ThrowOnError>): RequestResult<RetireControlResponses, RetireControlErrors, ThrowOnError> => (options.client ?? client).post<RetireControlResponses, RetireControlErrors, ThrowOnError>({
+    url: '/api/v1/controls/{control_id}/retire',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Re-derive a control's applied controls
+ */
+export const recomputeControl = <ThrowOnError extends boolean = false>(options: Options<RecomputeControlData, ThrowOnError>): RequestResult<RecomputeControlResponses, RecomputeControlErrors, ThrowOnError> => (options.client ?? client).post<RecomputeControlResponses, RecomputeControlErrors, ThrowOnError>({ url: '/api/v1/controls/{control_id}/recompute', ...options });
+
+/**
+ * List applied controls
+ */
+export const listAppliedControls = <ThrowOnError extends boolean = false>(options?: Options<ListAppliedControlsData, ThrowOnError>): RequestResult<ListAppliedControlsResponses, ListAppliedControlsErrors, ThrowOnError> => (options?.client ?? client).get<ListAppliedControlsResponses, ListAppliedControlsErrors, ThrowOnError>({ url: '/api/v1/applied-controls', ...options });
+
+/**
+ * Get an applied control and why it applies
+ */
+export const getAppliedControl = <ThrowOnError extends boolean = false>(options: Options<GetAppliedControlData, ThrowOnError>): RequestResult<GetAppliedControlResponses, GetAppliedControlErrors, ThrowOnError> => (options.client ?? client).get<GetAppliedControlResponses, GetAppliedControlErrors, ThrowOnError>({ url: '/api/v1/applied-controls/{applied_control_id}', ...options });
 
 /**
  * List what is waiting on the current user

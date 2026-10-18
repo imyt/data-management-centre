@@ -194,6 +194,93 @@ export type ApplicationUpdate = {
 };
 
 /**
+ * AppliedControlPage
+ */
+export type AppliedControlPage = {
+    /**
+     * Data
+     */
+    data: Array<AppliedControlRead>;
+    /**
+     * Allowed Actions
+     *
+     * Actions the caller may take on `data` right now.
+     */
+    allowed_actions: Array<string>;
+    meta: ListMeta;
+};
+
+/**
+ * AppliedControlRead
+ */
+export type AppliedControlRead = {
+    /**
+     * Id
+     */
+    id: string;
+    control: ControlRef;
+    subject: SubjectRef;
+    /**
+     * The Data Owner (assets) or Application Owner.
+     */
+    accountable: UserRef | null;
+    /**
+     * The Data Steward (assets) or technical owner.
+     */
+    responsible: UserRef | null;
+    status: AppliedControlStatus;
+    /**
+     * Reason
+     *
+     * Why this control applies to this subject. Shown by `Why?`.
+     */
+    reason: string;
+    /**
+     * Rule Version
+     */
+    rule_version: number;
+    /**
+     * Derived From
+     */
+    derived_from: {
+        [key: string]: unknown;
+    };
+    /**
+     * Derived At
+     */
+    derived_at: string;
+    /**
+     * Retired At
+     */
+    retired_at: string | null;
+    /**
+     * Retired Reason
+     */
+    retired_reason: string | null;
+};
+
+/**
+ * AppliedControlResponse
+ */
+export type AppliedControlResponse = {
+    data: AppliedControlRead;
+    /**
+     * Allowed Actions
+     *
+     * Actions the caller may take on `data` right now.
+     */
+    allowed_actions: Array<string>;
+    meta: Meta;
+};
+
+/**
+ * AppliedControlStatus
+ *
+ * An applied control is never deleted: it stays `retired` so its history remains.
+ */
+export type AppliedControlStatus = 'active' | 'retired';
+
+/**
  * AssetCreate
  */
 export type AssetCreate = {
@@ -401,6 +488,311 @@ export type AssignOwnership = {
      * Required when replacing an existing assignment.
      */
     reason?: string | null;
+};
+
+/**
+ * AttributeRead
+ */
+export type AttributeRead = {
+    /**
+     * Name
+     */
+    name: string;
+    /**
+     * Label
+     */
+    label: string;
+    /**
+     * Kind
+     *
+     * `boolean` or `choice`.
+     */
+    kind: string;
+    /**
+     * Options
+     */
+    options: Array<ValueOptionRead>;
+};
+
+/**
+ * ConditionRead
+ *
+ * One condition of a selector in words the UI can show.
+ */
+export type ConditionRead = {
+    /**
+     * Attribute
+     */
+    attribute: string;
+    /**
+     * Attribute Label
+     */
+    attribute_label: string;
+    /**
+     * Operator
+     *
+     * `equals`, `in` or `not_in`.
+     */
+    operator: string;
+    /**
+     * Values
+     */
+    values: Array<ValueOptionRead>;
+    /**
+     * Text
+     *
+     * The whole condition as a phrase.
+     */
+    text: string;
+};
+
+/**
+ * ControlCreate
+ */
+export type ControlCreate = {
+    /**
+     * Policy Id
+     */
+    policy_id: string;
+    /**
+     * Code
+     */
+    code: string;
+    /**
+     * Name
+     */
+    name: string;
+    /**
+     * Description
+     */
+    description?: string | null;
+    /**
+     * Rule Type
+     *
+     * See `GET /policy/vocabulary`.
+     */
+    rule_type: string;
+    /**
+     * Control Owner Id
+     */
+    control_owner_id?: string | null;
+    /**
+     * Evidence Requirement
+     *
+     * What evidence shows the control is met.
+     */
+    evidence_requirement?: string | null;
+    /**
+     * Params
+     */
+    params?: {
+        [key: string]: unknown;
+    };
+    selector: SelectorBody;
+};
+
+/**
+ * ControlDetail
+ */
+export type ControlDetail = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Code
+     */
+    code: string;
+    /**
+     * Name
+     */
+    name: string;
+    /**
+     * Description
+     */
+    description: string | null;
+    policy: PolicyRef;
+    /**
+     * Rule Type
+     */
+    rule_type: string;
+    /**
+     * Rule Type Label
+     */
+    rule_type_label: string;
+    /**
+     * Subject Type
+     *
+     * What the control applies to.
+     */
+    subject_type: string;
+    control_owner: UserRef | null;
+    /**
+     * Evidence Requirement
+     */
+    evidence_requirement: string | null;
+    status: ControlStatus;
+    /**
+     * Retired Reason
+     */
+    retired_reason: string | null;
+    current_version: RuleVersionRead;
+    /**
+     * Applied Count
+     *
+     * Active applied controls derived from this control.
+     */
+    applied_count: number;
+    /**
+     * Updated At
+     */
+    updated_at: string;
+    /**
+     * Versions
+     *
+     * Newest first.
+     */
+    versions: Array<RuleVersionRead>;
+};
+
+/**
+ * ControlPage
+ */
+export type ControlPage = {
+    /**
+     * Data
+     */
+    data: Array<ControlSummary>;
+    /**
+     * Allowed Actions
+     *
+     * Actions the caller may take on `data` right now.
+     */
+    allowed_actions: Array<string>;
+    meta: ListMeta;
+};
+
+/**
+ * ControlRef
+ */
+export type ControlRef = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Code
+     */
+    code: string;
+    /**
+     * Name
+     */
+    name: string;
+    /**
+     * Rule Type
+     */
+    rule_type: string;
+};
+
+/**
+ * ControlResponse
+ */
+export type ControlResponse = {
+    data: ControlDetail;
+    /**
+     * Allowed Actions
+     *
+     * Actions the caller may take on `data` right now.
+     */
+    allowed_actions: Array<string>;
+    meta: Meta;
+};
+
+/**
+ * ControlStatus
+ */
+export type ControlStatus = 'active' | 'retired';
+
+/**
+ * ControlSummary
+ */
+export type ControlSummary = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Code
+     */
+    code: string;
+    /**
+     * Name
+     */
+    name: string;
+    /**
+     * Description
+     */
+    description: string | null;
+    policy: PolicyRef;
+    /**
+     * Rule Type
+     */
+    rule_type: string;
+    /**
+     * Rule Type Label
+     */
+    rule_type_label: string;
+    /**
+     * Subject Type
+     *
+     * What the control applies to.
+     */
+    subject_type: string;
+    control_owner: UserRef | null;
+    /**
+     * Evidence Requirement
+     */
+    evidence_requirement: string | null;
+    status: ControlStatus;
+    /**
+     * Retired Reason
+     */
+    retired_reason: string | null;
+    current_version: RuleVersionRead;
+    /**
+     * Applied Count
+     *
+     * Active applied controls derived from this control.
+     */
+    applied_count: number;
+    /**
+     * Updated At
+     */
+    updated_at: string;
+};
+
+/**
+ * ControlUpdate
+ *
+ * Only the fields sent are changed. The rule changes through a new version.
+ */
+export type ControlUpdate = {
+    /**
+     * Name
+     */
+    name?: string | null;
+    /**
+     * Description
+     */
+    description?: string | null;
+    /**
+     * Control Owner Id
+     */
+    control_owner_id?: string | null;
+    /**
+     * Evidence Requirement
+     */
+    evidence_requirement?: string | null;
 };
 
 /**
@@ -1234,6 +1626,38 @@ export type OwnershipRole = 'owner' | 'steward';
 export type OwnershipStatus = 'pending' | 'confirmed' | 'disputed';
 
 /**
+ * ParamRead
+ */
+export type ParamRead = {
+    /**
+     * Name
+     */
+    name: string;
+    /**
+     * Label
+     */
+    label: string;
+    /**
+     * Kind
+     *
+     * `integer` or `choices`.
+     */
+    kind: string;
+    /**
+     * Default
+     */
+    default: number | Array<string>;
+    /**
+     * Minimum
+     */
+    minimum: number;
+    /**
+     * Choices
+     */
+    choices: Array<string>;
+};
+
+/**
  * PhysicalObjectPage
  */
 export type PhysicalObjectPage = {
@@ -1301,6 +1725,140 @@ export type PhysicalObjectResponse = {
      */
     allowed_actions: Array<string>;
     meta: Meta;
+};
+
+/**
+ * PolicyCreate
+ */
+export type PolicyCreate = {
+    /**
+     * Code
+     *
+     * Short unique code, e.g. `RET`. Letters, digits, `.`, - and _.
+     */
+    code: string;
+    /**
+     * Name
+     */
+    name: string;
+    /**
+     * Statement
+     *
+     * What the organisation commits to.
+     */
+    statement: string;
+    /**
+     * Owner Id
+     *
+     * The governance owner.
+     */
+    owner_id?: string | null;
+};
+
+/**
+ * PolicyList
+ */
+export type PolicyList = {
+    /**
+     * Data
+     */
+    data: Array<PolicyRead>;
+    /**
+     * Allowed Actions
+     *
+     * Actions the caller may take on `data` right now.
+     */
+    allowed_actions: Array<string>;
+    meta: ListMeta;
+};
+
+/**
+ * PolicyRead
+ */
+export type PolicyRead = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Code
+     */
+    code: string;
+    /**
+     * Name
+     */
+    name: string;
+    /**
+     * Statement
+     */
+    statement: string;
+    owner: UserRef | null;
+    /**
+     * Control Count
+     *
+     * Active controls under this policy.
+     */
+    control_count: number;
+    /**
+     * Created At
+     */
+    created_at: string;
+    /**
+     * Updated At
+     */
+    updated_at: string;
+};
+
+/**
+ * PolicyRef
+ */
+export type PolicyRef = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Code
+     */
+    code: string;
+    /**
+     * Name
+     */
+    name: string;
+};
+
+/**
+ * PolicyResponse
+ */
+export type PolicyResponse = {
+    data: PolicyRead;
+    /**
+     * Allowed Actions
+     *
+     * Actions the caller may take on `data` right now.
+     */
+    allowed_actions: Array<string>;
+    meta: Meta;
+};
+
+/**
+ * PolicyUpdate
+ *
+ * Only the fields sent are changed.
+ */
+export type PolicyUpdate = {
+    /**
+     * Name
+     */
+    name?: string | null;
+    /**
+     * Statement
+     */
+    statement?: string | null;
+    /**
+     * Owner Id
+     */
+    owner_id?: string | null;
 };
 
 /**
@@ -1459,11 +2017,172 @@ export type RetentionPolicyRead = {
 };
 
 /**
+ * RetireControl
+ */
+export type RetireControl = {
+    /**
+     * Reason
+     *
+     * Why the control is retired. Recorded in the audit trail.
+     */
+    reason: string;
+};
+
+/**
  * Role
  *
  * The roles in PRD.md §2.
  */
 export type Role = 'data_owner' | 'application_owner' | 'data_steward' | 'process_owner' | 'governance' | 'leadership' | 'auditor';
+
+/**
+ * RuleTypeRead
+ */
+export type RuleTypeRead = {
+    /**
+     * Key
+     */
+    key: string;
+    /**
+     * Label
+     */
+    label: string;
+    /**
+     * Description
+     */
+    description: string;
+    /**
+     * Subjects
+     */
+    subjects: Array<string>;
+    /**
+     * Params
+     */
+    params: Array<ParamRead>;
+};
+
+/**
+ * RuleVersionCreate
+ *
+ * A new version of a control's rule. Replaces the current one for every subject.
+ */
+export type RuleVersionCreate = {
+    /**
+     * Params
+     */
+    params?: {
+        [key: string]: unknown;
+    };
+    selector: SelectorBody;
+    /**
+     * Reason
+     *
+     * Why the rule changes. Recorded in the audit trail.
+     */
+    reason: string;
+};
+
+/**
+ * RuleVersionRead
+ */
+export type RuleVersionRead = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Version
+     */
+    version: number;
+    /**
+     * Params
+     */
+    params: {
+        [key: string]: unknown;
+    };
+    selector: SelectorBody;
+    /**
+     * Conditions
+     */
+    conditions: Array<ConditionRead>;
+    /**
+     * Change Reason
+     */
+    change_reason: string | null;
+    created_by: UserRef | null;
+    /**
+     * Created At
+     */
+    created_at: string;
+};
+
+/**
+ * SelectorBody
+ *
+ * Which subjects a control applies to, by attribute.
+ *
+ * `where` maps an attribute to a value (equals), or `attribute.in` / `attribute.not_in` to a
+ * list of values; every condition must hold. See `GET /policy/vocabulary` for the attributes.
+ */
+export type SelectorBody = {
+    /**
+     * Subject
+     *
+     * `asset`, `data_store` or `application`.
+     */
+    subject: string;
+    /**
+     * Where
+     */
+    where?: {
+        [key: string]: boolean | string | Array<string>;
+    };
+};
+
+/**
+ * SelectorPreview
+ */
+export type SelectorPreview = {
+    /**
+     * Count
+     *
+     * Subjects the selector matches right now.
+     */
+    count: number;
+    /**
+     * Total
+     *
+     * Subjects of that type.
+     */
+    total: number;
+    /**
+     * Sample
+     *
+     * Names of a few of them.
+     */
+    sample: Array<string>;
+};
+
+/**
+ * SelectorPreviewRequest
+ */
+export type SelectorPreviewRequest = {
+    selector: SelectorBody;
+};
+
+/**
+ * SelectorPreviewResponse
+ */
+export type SelectorPreviewResponse = {
+    data: SelectorPreview;
+    /**
+     * Allowed Actions
+     *
+     * Actions the caller may take on `data` right now.
+     */
+    allowed_actions: Array<string>;
+    meta: Meta;
+};
 
 /**
  * SnapshotRead
@@ -1504,6 +2223,47 @@ export type SnapshotRead = {
  * SnapshotStatus
  */
 export type SnapshotStatus = 'succeeded' | 'failed';
+
+/**
+ * SubjectRef
+ */
+export type SubjectRef = {
+    /**
+     * Type
+     */
+    type: string;
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Name
+     */
+    name: string;
+};
+
+/**
+ * SubjectType
+ */
+export type SubjectType = 'asset' | 'data_store' | 'application';
+
+/**
+ * SubjectTypeRead
+ */
+export type SubjectTypeRead = {
+    /**
+     * Type
+     */
+    type: string;
+    /**
+     * Label
+     */
+    label: string;
+    /**
+     * Attributes
+     */
+    attributes: Array<AttributeRead>;
+};
 
 /**
  * UserPage
@@ -1604,6 +2364,50 @@ export type ValidationIssue = {
      * Stable, machine-readable kind of failure.
      */
     type: string;
+};
+
+/**
+ * ValueOptionRead
+ */
+export type ValueOptionRead = {
+    /**
+     * Value
+     */
+    value: string;
+    /**
+     * Label
+     */
+    label: string;
+};
+
+/**
+ * Vocabulary
+ *
+ * What policies and controls are written in: rule types, and the attributes selectors use.
+ */
+export type Vocabulary = {
+    /**
+     * Rule Types
+     */
+    rule_types: Array<RuleTypeRead>;
+    /**
+     * Subject Types
+     */
+    subject_types: Array<SubjectTypeRead>;
+};
+
+/**
+ * VocabularyResponse
+ */
+export type VocabularyResponse = {
+    data: Vocabulary;
+    /**
+     * Allowed Actions
+     *
+     * Actions the caller may take on `data` right now.
+     */
+    allowed_actions: Array<string>;
+    meta: Meta;
 };
 
 export type GetHealthData = {
@@ -2814,6 +3618,659 @@ export type CreateAssetsFromTablesResponses = {
 };
 
 export type CreateAssetsFromTablesResponse = CreateAssetsFromTablesResponses[keyof CreateAssetsFromTablesResponses];
+
+export type GetPolicyVocabularyData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/policy/vocabulary';
+};
+
+export type GetPolicyVocabularyErrors = {
+    /**
+     * Not signed in
+     */
+    401: ProblemDetail;
+};
+
+export type GetPolicyVocabularyError = GetPolicyVocabularyErrors[keyof GetPolicyVocabularyErrors];
+
+export type GetPolicyVocabularyResponses = {
+    /**
+     * Successful Response
+     */
+    200: VocabularyResponse;
+};
+
+export type GetPolicyVocabularyResponse = GetPolicyVocabularyResponses[keyof GetPolicyVocabularyResponses];
+
+export type ListPoliciesData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/policies';
+};
+
+export type ListPoliciesErrors = {
+    /**
+     * Not signed in
+     */
+    401: ProblemDetail;
+};
+
+export type ListPoliciesError = ListPoliciesErrors[keyof ListPoliciesErrors];
+
+export type ListPoliciesResponses = {
+    /**
+     * Successful Response
+     */
+    200: PolicyList;
+};
+
+export type ListPoliciesResponse = ListPoliciesResponses[keyof ListPoliciesResponses];
+
+export type CreatePolicyData = {
+    body: PolicyCreate;
+    path?: never;
+    query?: never;
+    url: '/api/v1/policies';
+};
+
+export type CreatePolicyErrors = {
+    /**
+     * Invalid input
+     */
+    400: ProblemDetail;
+    /**
+     * Not signed in
+     */
+    401: ProblemDetail;
+    /**
+     * Permission denied
+     */
+    403: ProblemDetail;
+    /**
+     * Conflict
+     */
+    409: ProblemDetail;
+    /**
+     * Validation error
+     */
+    422: ProblemDetail;
+};
+
+export type CreatePolicyError = CreatePolicyErrors[keyof CreatePolicyErrors];
+
+export type CreatePolicyResponses = {
+    /**
+     * Successful Response
+     */
+    201: PolicyResponse;
+};
+
+export type CreatePolicyResponse = CreatePolicyResponses[keyof CreatePolicyResponses];
+
+export type GetPolicyData = {
+    body?: never;
+    path: {
+        /**
+         * Policy Id
+         */
+        policy_id: string;
+    };
+    query?: never;
+    url: '/api/v1/policies/{policy_id}';
+};
+
+export type GetPolicyErrors = {
+    /**
+     * Not signed in
+     */
+    401: ProblemDetail;
+    /**
+     * Not found
+     */
+    404: ProblemDetail;
+    /**
+     * Validation error
+     */
+    422: ProblemDetail;
+};
+
+export type GetPolicyError = GetPolicyErrors[keyof GetPolicyErrors];
+
+export type GetPolicyResponses = {
+    /**
+     * Successful Response
+     */
+    200: PolicyResponse;
+};
+
+export type GetPolicyResponse = GetPolicyResponses[keyof GetPolicyResponses];
+
+export type UpdatePolicyData = {
+    body: PolicyUpdate;
+    path: {
+        /**
+         * Policy Id
+         */
+        policy_id: string;
+    };
+    query?: never;
+    url: '/api/v1/policies/{policy_id}';
+};
+
+export type UpdatePolicyErrors = {
+    /**
+     * Invalid input
+     */
+    400: ProblemDetail;
+    /**
+     * Not signed in
+     */
+    401: ProblemDetail;
+    /**
+     * Permission denied
+     */
+    403: ProblemDetail;
+    /**
+     * Not found
+     */
+    404: ProblemDetail;
+    /**
+     * Validation error
+     */
+    422: ProblemDetail;
+};
+
+export type UpdatePolicyError = UpdatePolicyErrors[keyof UpdatePolicyErrors];
+
+export type UpdatePolicyResponses = {
+    /**
+     * Successful Response
+     */
+    200: PolicyResponse;
+};
+
+export type UpdatePolicyResponse = UpdatePolicyResponses[keyof UpdatePolicyResponses];
+
+export type ListControlsData = {
+    body?: never;
+    path?: never;
+    query?: {
+        /**
+         * Limit
+         */
+        limit?: number;
+        /**
+         * Cursor
+         */
+        cursor?: string | null;
+        /**
+         * Q
+         *
+         * Matches name or code, ignoring case.
+         */
+        q?: string | null;
+        /**
+         * Policy Id
+         */
+        policy_id?: string | null;
+        /**
+         * Rule Type
+         */
+        rule_type?: string | null;
+        /**
+         * Status
+         */
+        status?: ControlStatus | null;
+    };
+    url: '/api/v1/controls';
+};
+
+export type ListControlsErrors = {
+    /**
+     * Invalid input
+     */
+    400: ProblemDetail;
+    /**
+     * Not signed in
+     */
+    401: ProblemDetail;
+    /**
+     * Validation error
+     */
+    422: ProblemDetail;
+};
+
+export type ListControlsError = ListControlsErrors[keyof ListControlsErrors];
+
+export type ListControlsResponses = {
+    /**
+     * Successful Response
+     */
+    200: ControlPage;
+};
+
+export type ListControlsResponse = ListControlsResponses[keyof ListControlsResponses];
+
+export type CreateControlData = {
+    body: ControlCreate;
+    path?: never;
+    query?: never;
+    url: '/api/v1/controls';
+};
+
+export type CreateControlErrors = {
+    /**
+     * Invalid input
+     */
+    400: ProblemDetail;
+    /**
+     * Not signed in
+     */
+    401: ProblemDetail;
+    /**
+     * Permission denied
+     */
+    403: ProblemDetail;
+    /**
+     * Conflict
+     */
+    409: ProblemDetail;
+    /**
+     * Validation error
+     */
+    422: ProblemDetail;
+};
+
+export type CreateControlError = CreateControlErrors[keyof CreateControlErrors];
+
+export type CreateControlResponses = {
+    /**
+     * Successful Response
+     */
+    201: ControlResponse;
+};
+
+export type CreateControlResponse = CreateControlResponses[keyof CreateControlResponses];
+
+export type PreviewSelectorData = {
+    body: SelectorPreviewRequest;
+    path?: never;
+    query?: never;
+    url: '/api/v1/controls/preview-selector';
+};
+
+export type PreviewSelectorErrors = {
+    /**
+     * Invalid input
+     */
+    400: ProblemDetail;
+    /**
+     * Not signed in
+     */
+    401: ProblemDetail;
+    /**
+     * Permission denied
+     */
+    403: ProblemDetail;
+    /**
+     * Validation error
+     */
+    422: ProblemDetail;
+};
+
+export type PreviewSelectorError = PreviewSelectorErrors[keyof PreviewSelectorErrors];
+
+export type PreviewSelectorResponses = {
+    /**
+     * Successful Response
+     */
+    200: SelectorPreviewResponse;
+};
+
+export type PreviewSelectorResponse = PreviewSelectorResponses[keyof PreviewSelectorResponses];
+
+export type GetControlData = {
+    body?: never;
+    path: {
+        /**
+         * Control Id
+         */
+        control_id: string;
+    };
+    query?: never;
+    url: '/api/v1/controls/{control_id}';
+};
+
+export type GetControlErrors = {
+    /**
+     * Not signed in
+     */
+    401: ProblemDetail;
+    /**
+     * Not found
+     */
+    404: ProblemDetail;
+    /**
+     * Validation error
+     */
+    422: ProblemDetail;
+};
+
+export type GetControlError = GetControlErrors[keyof GetControlErrors];
+
+export type GetControlResponses = {
+    /**
+     * Successful Response
+     */
+    200: ControlResponse;
+};
+
+export type GetControlResponse = GetControlResponses[keyof GetControlResponses];
+
+export type UpdateControlData = {
+    body: ControlUpdate;
+    path: {
+        /**
+         * Control Id
+         */
+        control_id: string;
+    };
+    query?: never;
+    url: '/api/v1/controls/{control_id}';
+};
+
+export type UpdateControlErrors = {
+    /**
+     * Invalid input
+     */
+    400: ProblemDetail;
+    /**
+     * Not signed in
+     */
+    401: ProblemDetail;
+    /**
+     * Permission denied
+     */
+    403: ProblemDetail;
+    /**
+     * Not found
+     */
+    404: ProblemDetail;
+    /**
+     * Conflict
+     */
+    409: ProblemDetail;
+    /**
+     * Validation error
+     */
+    422: ProblemDetail;
+};
+
+export type UpdateControlError = UpdateControlErrors[keyof UpdateControlErrors];
+
+export type UpdateControlResponses = {
+    /**
+     * Successful Response
+     */
+    200: ControlResponse;
+};
+
+export type UpdateControlResponse = UpdateControlResponses[keyof UpdateControlResponses];
+
+export type PublishRuleVersionData = {
+    body: RuleVersionCreate;
+    path: {
+        /**
+         * Control Id
+         */
+        control_id: string;
+    };
+    query?: never;
+    url: '/api/v1/controls/{control_id}/rule-versions';
+};
+
+export type PublishRuleVersionErrors = {
+    /**
+     * Invalid input
+     */
+    400: ProblemDetail;
+    /**
+     * Not signed in
+     */
+    401: ProblemDetail;
+    /**
+     * Permission denied
+     */
+    403: ProblemDetail;
+    /**
+     * Not found
+     */
+    404: ProblemDetail;
+    /**
+     * Conflict
+     */
+    409: ProblemDetail;
+    /**
+     * Validation error
+     */
+    422: ProblemDetail;
+};
+
+export type PublishRuleVersionError = PublishRuleVersionErrors[keyof PublishRuleVersionErrors];
+
+export type PublishRuleVersionResponses = {
+    /**
+     * Successful Response
+     */
+    201: ControlResponse;
+};
+
+export type PublishRuleVersionResponse = PublishRuleVersionResponses[keyof PublishRuleVersionResponses];
+
+export type RetireControlData = {
+    body: RetireControl;
+    path: {
+        /**
+         * Control Id
+         */
+        control_id: string;
+    };
+    query?: never;
+    url: '/api/v1/controls/{control_id}/retire';
+};
+
+export type RetireControlErrors = {
+    /**
+     * Invalid input
+     */
+    400: ProblemDetail;
+    /**
+     * Not signed in
+     */
+    401: ProblemDetail;
+    /**
+     * Permission denied
+     */
+    403: ProblemDetail;
+    /**
+     * Not found
+     */
+    404: ProblemDetail;
+    /**
+     * Conflict
+     */
+    409: ProblemDetail;
+    /**
+     * Validation error
+     */
+    422: ProblemDetail;
+};
+
+export type RetireControlError = RetireControlErrors[keyof RetireControlErrors];
+
+export type RetireControlResponses = {
+    /**
+     * Successful Response
+     */
+    200: ControlResponse;
+};
+
+export type RetireControlResponse = RetireControlResponses[keyof RetireControlResponses];
+
+export type RecomputeControlData = {
+    body?: never;
+    path: {
+        /**
+         * Control Id
+         */
+        control_id: string;
+    };
+    query?: never;
+    url: '/api/v1/controls/{control_id}/recompute';
+};
+
+export type RecomputeControlErrors = {
+    /**
+     * Not signed in
+     */
+    401: ProblemDetail;
+    /**
+     * Permission denied
+     */
+    403: ProblemDetail;
+    /**
+     * Not found
+     */
+    404: ProblemDetail;
+    /**
+     * Conflict
+     */
+    409: ProblemDetail;
+    /**
+     * Validation error
+     */
+    422: ProblemDetail;
+};
+
+export type RecomputeControlError = RecomputeControlErrors[keyof RecomputeControlErrors];
+
+export type RecomputeControlResponses = {
+    /**
+     * Successful Response
+     */
+    202: JobResponse;
+};
+
+export type RecomputeControlResponse = RecomputeControlResponses[keyof RecomputeControlResponses];
+
+export type ListAppliedControlsData = {
+    body?: never;
+    path?: never;
+    query?: {
+        /**
+         * Limit
+         */
+        limit?: number;
+        /**
+         * Cursor
+         */
+        cursor?: string | null;
+        /**
+         * Control Id
+         */
+        control_id?: string | null;
+        /**
+         * Subject Type
+         */
+        subject_type?: SubjectType | null;
+        /**
+         * Subject Id
+         */
+        subject_id?: string | null;
+        /**
+         * Rule Type
+         */
+        rule_type?: string | null;
+        /**
+         * Status
+         *
+         * Defaults to active; retired ones are the history.
+         */
+        status?: AppliedControlStatus | null;
+    };
+    url: '/api/v1/applied-controls';
+};
+
+export type ListAppliedControlsErrors = {
+    /**
+     * Invalid input
+     */
+    400: ProblemDetail;
+    /**
+     * Not signed in
+     */
+    401: ProblemDetail;
+    /**
+     * Validation error
+     */
+    422: ProblemDetail;
+};
+
+export type ListAppliedControlsError = ListAppliedControlsErrors[keyof ListAppliedControlsErrors];
+
+export type ListAppliedControlsResponses = {
+    /**
+     * Successful Response
+     */
+    200: AppliedControlPage;
+};
+
+export type ListAppliedControlsResponse = ListAppliedControlsResponses[keyof ListAppliedControlsResponses];
+
+export type GetAppliedControlData = {
+    body?: never;
+    path: {
+        /**
+         * Applied Control Id
+         */
+        applied_control_id: string;
+    };
+    query?: never;
+    url: '/api/v1/applied-controls/{applied_control_id}';
+};
+
+export type GetAppliedControlErrors = {
+    /**
+     * Not signed in
+     */
+    401: ProblemDetail;
+    /**
+     * Permission denied
+     */
+    403: ProblemDetail;
+    /**
+     * Not found
+     */
+    404: ProblemDetail;
+    /**
+     * Validation error
+     */
+    422: ProblemDetail;
+};
+
+export type GetAppliedControlError = GetAppliedControlErrors[keyof GetAppliedControlErrors];
+
+export type GetAppliedControlResponses = {
+    /**
+     * Successful Response
+     */
+    200: AppliedControlResponse;
+};
+
+export type GetAppliedControlResponse = GetAppliedControlResponses[keyof GetAppliedControlResponses];
 
 export type ListInboxData = {
     body?: never;

@@ -21,6 +21,7 @@ from app.modules.examples import router as examples
 from app.modules.identity import router as identity
 from app.modules.identity.service import IdentityDirectory
 from app.modules.inventory import router as inventory
+from app.modules.policy import router as policy
 from app.modules.workflow import router as workflow
 
 API_PREFIX = "/api/v1"
@@ -74,6 +75,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(identity.router, prefix=API_PREFIX)
     app.include_router(inventory.router, prefix=API_PREFIX)
     app.include_router(connectors.router, prefix=API_PREFIX)
+    app.include_router(policy.router, prefix=API_PREFIX)
     app.include_router(workflow.router, prefix=API_PREFIX)
     return app
 
