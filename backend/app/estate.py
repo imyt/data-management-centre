@@ -143,4 +143,4 @@ def load_estate(connection: Connection) -> EstateLoad:
 
 
 def _is_empty(connection: Connection, table: str) -> bool:
-    return connection.execute(text(f"SELECT NOT EXISTS (SELECT 1 FROM {table})")).scalar_one()
+    return bool(connection.execute(text(f"SELECT NOT EXISTS (SELECT 1 FROM {table})")).scalar_one())
