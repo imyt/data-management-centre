@@ -9,4 +9,4 @@ Follow `../ARCHITECTURE.md`, especially sections 5 to 8.
 - Evaluations are idempotent, keyed by applied control, subject and fact snapshot.
 - Keep `error` (could not evaluate) separate from `fail`.
 - Every schema change ships with an Alembic migration.
-- Write the reason a user or the engine took a risk decision into the audit trail in the same transaction.
+- Every change and decision calls `AuditService(session).record(...)` (`app.modules.audit.service`) with the session that makes the change, so both commit together. Risk decisions pass `reason_required=True` (ADR 0006).

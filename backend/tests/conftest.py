@@ -76,3 +76,15 @@ def db_client(database: Database) -> TestClient:
     app = create_app(Settings(_env_file=None, environment="test"))
     app.state.database = database
     return TestClient(app, raise_server_exceptions=False)
+
+
+@pytest.fixture
+def owner_connection(db_engine: Engine, migration_url: str) -> Iterator[Connection]:
+    """Like db_connection, but as the migration role that owns the schemas (rolled back after)."""
+    engine = create_engine(migration_url)
+    with engine.connect() as connection:
+        transaction = connection.begin()
+        yield connection
+        if transaction.is_active:
+            transaction.rollback()
+    engine.dispose()
