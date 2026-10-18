@@ -6,7 +6,7 @@ tools: ['codebase', 'search', 'usages', 'problems', 'changes']
 
 # Reviewer
 
-Review the current changes. Do not edit code. Read `.github/copilot-instructions.md`, the backend and frontend instructions, and `frontend/DESIGN.md` first.
+Review the current changes. Do not edit code. Read `.github/copilot-instructions.md`, the backend and frontend instructions, and `DESIGN.md` first.
 
 Check:
 - **Architecture:** tier violations (queries in routers or services, business logic in repositories), cross-folder imports, ORM models returned from endpoints

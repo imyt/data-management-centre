@@ -17,7 +17,7 @@ handoffs:
 
 Turn a feature request into a small, buildable vertical-slice plan. Do not write code.
 
-First read `.github/copilot-instructions.md`, the backend and frontend instructions, and `frontend/DESIGN.md`. Ask at most three questions, and only if something blocks the plan.
+First read `.github/copilot-instructions.md`, the backend and frontend instructions, and `DESIGN.md`. Ask at most three questions, and only if something blocks the plan.
 
 Output these sections, briefly:
 1. **Goal and acceptance criteria** (testable, user-visible)

@@ -4,7 +4,7 @@ applyTo: "frontend/**"
 
 # Frontend instructions
 
-Read `frontend/DESIGN.md` and `frontend/src/tokens/tokens.css` before writing any UI. If a request conflicts with them, follow them and flag the conflict.
+Read `DESIGN.md` and `frontend/src/tokens/tokens.css` before writing any UI. If a request conflicts with them, follow them and flag the conflict.
 
 ## Stack
 React, TypeScript, Tailwind v4, shadcn/ui (Radix), TanStack Table, react-hook-form + zod, lucide-react plus our custom glyphs. Desktop only (1280 to 3440px wide).

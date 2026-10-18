@@ -5,10 +5,10 @@ A data-dense, workflow-driven web platform (desktop only). Modular monorepo that
 
 ```
 backend/     API, auth/RBAC, business logic, migrations
-frontend/    React app + design system (see frontend/DESIGN.md)
+frontend/    React app + design system (see DESIGN.md)
 infra/       Docker Compose, IaC, CI helpers
 contracts/   openapi.json (exported from FastAPI), the ONLY link between backend and frontend
-docs/        PRD, architecture, ADRs
+docs/        ADRs (PRD.md, ARCHITECTURE.md and DESIGN.md are at the root)
 ```
 
 ## Hard rules
@@ -39,5 +39,5 @@ Fill in as the project is scaffolded.
 4. If you made a design decision, add a short note in `docs/adr/`.
 
 ## Frontend and backend work
-- Frontend: follow `.github/instructions/frontend.instructions.md` and `frontend/DESIGN.md`.
+- Frontend: follow `.github/instructions/frontend.instructions.md` and `DESIGN.md`.
 - Backend: follow `.github/instructions/backend.instructions.md`.
