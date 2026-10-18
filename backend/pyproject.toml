@@ -19,7 +19,13 @@ dmc-seed = "app.seed:main"
 dmc-worker = "app.worker:main"
 
 [dependency-groups]
-dev = ["pytest", "httpx", "ruff", "import-linter"]
+dev = [
+    "pytest",
+    "httpx",
+    "ruff",
+    "import-linter",
+    "mypy>=2.4.0",
+]
 
 [build-system]
 requires = ["uv_build>=0.12,<0.13"]
@@ -58,3 +64,9 @@ protected_modules = ["app.modules.*"]
 allowed_importers = ["app.main", "app.seed", "app.worker"]
 ignore_imports = ["app.modules.** -> app.modules.*.service"]
 unmatched_ignore_imports_alerting = "none"
+
+[tool.mypy]
+python_version = "3.12"
+files = ["app", "scripts"]
+strict = true
+plugins = ["pydantic.mypy"]

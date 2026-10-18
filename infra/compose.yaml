@@ -1,4 +1,4 @@
-# Local stack (ADR 0004). Start the database with: docker compose up -d --wait db
+# Local stack (ADR 0004). `docker compose up --build` runs everything; `up -d --wait db` just the database.
 name: dmc
 
 services:
@@ -22,6 +22,73 @@ services:
       interval: 2s
       timeout: 3s
       retries: 30
+
+  # One-shot pre-deploy step (ADR 0004 §3): the migration role upgrades the schema, then exits.
+  migrate:
+    build: &backend-build
+      context: ..
+      dockerfile: backend/Dockerfile
+      args:
+        DMC_COMMIT: ${DMC_COMMIT:-}
+    image: dmc-backend
+    command: ["dmc-migrate", "upgrade"]
+    environment:
+      DMC_ENVIRONMENT: ${DMC_ENVIRONMENT:-dev}
+      DMC_DATABASE_URL: postgresql+psycopg://dmc_app:${DMC_APP_PASSWORD:-dmc_app}@db:5432/dmc
+      DMC_MIGRATION_DATABASE_URL: postgresql+psycopg://dmc_migrator:${DMC_MIGRATOR_PASSWORD:-dmc_migrator}@db:5432/dmc
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: "no"
+
+  api:
+    build: *backend-build
+    image: dmc-backend
+    environment: &backend-env
+      DMC_ENVIRONMENT: ${DMC_ENVIRONMENT:-dev}
+      # Dev authentication is allowed in dev; staging and production refuse it.
+      DMC_AUTH_MODE: dev
+      DMC_DATABASE_URL: postgresql+psycopg://dmc_app:${DMC_APP_PASSWORD:-dmc_app}@db:5432/dmc
+      # The browser reaches the API through the web container's /api/ proxy, same origin.
+      DMC_CORS_ORIGINS: ""
+    ports:
+      - "${DMC_API_PORT:-8100}:8000"
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/v1/health/ready', timeout=3)"
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+  worker:
+    build: *backend-build
+    image: dmc-backend
+    command: ["dmc-worker"]
+    environment: *backend-env
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+
+  web:
+    build:
+      context: ..
+      dockerfile: frontend/Dockerfile
+    environment:
+      DMC_API_UPSTREAM: http://api:8000
+      # Empty: same-origin /api/. Set it only where the API has its own URL (then add the web
+      # origin to the API's DMC_CORS_ORIGINS).
+      DMC_API_BASE_URL: ${DMC_API_BASE_URL:-}
+    ports:
+      - "${DMC_WEB_PORT:-8080}:80"
+    depends_on:
+      api:
+        condition: service_healthy
 
 volumes:
   db-data:

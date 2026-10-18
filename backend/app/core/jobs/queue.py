@@ -9,10 +9,10 @@ lease is still the worker's, so a job recovered from a stalled worker cannot be 
 import uuid
 from collections.abc import Collection
 from datetime import datetime, timedelta
-from typing import Any
+from typing import Any, cast
 
 from pydantic_core import to_jsonable_python
-from sqlalchemy import case, func, select, update
+from sqlalchemy import CursorResult, Result, case, func, select, update
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session
 
@@ -79,12 +79,13 @@ def cancel(session: Session, job_id: uuid.UUID) -> bool:
         .values(status=JobStatus.CANCELLED, finished_at=func.now())
         .execution_options(synchronize_session=False)
     )
-    return result.rowcount == 1  # type: ignore[attr-defined]
+    return _affected(result) == 1
 
 
 def retry_delay(attempt: int) -> timedelta:
     """Exponential backoff after the given (1-based) failed attempt: 10s, 20s, 40s … up to 1h."""
-    return min(RETRY_BASE * 2 ** (attempt - 1), RETRY_CAP)
+    delay: timedelta = RETRY_BASE * 2 ** (attempt - 1)
+    return min(delay, RETRY_CAP)
 
 
 def claim(session: Session, worker_id: str, kinds: Collection[str]) -> Job | None:
@@ -134,7 +135,7 @@ def succeed(session: Session, job_id: uuid.UUID, worker_id: str, result: Any) ->
     job.progress = 100
     job.error = None
     job.locked_by = job.locked_at = None
-    job.finished_at = func.now()  # type: ignore[assignment]
+    job.finished_at = func.now()
     session.flush()
     return True
 
@@ -151,10 +152,10 @@ def fail(
         return None
     if permanent or job.attempts >= job.max_attempts:
         status = JobStatus.FAILED
-        job.finished_at = func.now()  # type: ignore[assignment]
+        job.finished_at = func.now()
     else:
         status = JobStatus.QUEUED
-        job.run_after = func.now() + retry_delay(job.attempts)  # type: ignore[assignment]
+        job.run_after = func.now() + retry_delay(job.attempts)
     job.status = status
     job.error = error
     job.locked_by = job.locked_at = None
@@ -169,7 +170,7 @@ def refresh_lease(session: Session, job_id: uuid.UUID, worker_id: str) -> bool:
         .values(locked_at=func.now())
         .execution_options(synchronize_session=False)
     )
-    return result.rowcount == 1  # type: ignore[attr-defined]
+    return _affected(result) == 1
 
 
 def set_progress(session: Session, job_id: uuid.UUID, worker_id: str, percent: int) -> bool:
@@ -179,7 +180,7 @@ def set_progress(session: Session, job_id: uuid.UUID, worker_id: str, percent: i
         .values(progress=percent, locked_at=func.now())
         .execution_options(synchronize_session=False)
     )
-    return result.rowcount == 1  # type: ignore[attr-defined]
+    return _affected(result) == 1
 
 
 def recover_stalled(session: Session, lease: timedelta) -> list[uuid.UUID]:
@@ -204,3 +205,8 @@ def recover_stalled(session: Session, lease: timedelta) -> list[uuid.UUID]:
             .execution_options(synchronize_session=False)
         )
     )
+
+
+def _affected(result: Result[Any]) -> int:
+    """Rows matched by an UPDATE; `Result` doesn't declare `rowcount`, `CursorResult` does."""
+    return cast("CursorResult[Any]", result).rowcount

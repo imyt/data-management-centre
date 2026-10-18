@@ -26,7 +26,7 @@ API_PREFIX = "/api/v1"
 
 def _require_operation_id(route: APIRoute) -> str:
     """FastAPI calls this only for routes without an explicit operation_id: fail fast."""
-    raise RuntimeError(f"{sorted(route.methods)} {route.path} needs an explicit operation_id")
+    raise RuntimeError(f"{sorted(route.methods or ())} {route.path} needs an explicit operation_id")
 
 
 def create_app(settings: Settings | None = None) -> FastAPI:

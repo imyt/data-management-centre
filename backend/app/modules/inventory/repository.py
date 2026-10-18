@@ -1,6 +1,7 @@
 """Database access for inventory. Only the service uses it."""
 
 import uuid
+from typing import Any
 
 from sqlalchemy import Select, func, or_, select
 from sqlalchemy.orm import Session, selectinload
@@ -27,7 +28,7 @@ class InventoryRepository:
 
     # --- Reference data
 
-    def list_reference(self, model: ReferenceModel) -> list:
+    def list_reference(self, model: ReferenceModel) -> list[Any]:
         return list(self._session.scalars(select(model).order_by(model.name)))
 
     def reference_exists(self, model: ReferenceModel, item_id: uuid.UUID) -> bool:
@@ -41,7 +42,7 @@ class InventoryRepository:
         domain_id: uuid.UUID | None,
         lifecycle_status: str | None,
         scope: frozenset[uuid.UUID] | None,
-    ) -> Select[tuple[Application]]:
+    ) -> Select[Application]:
         statement = select(Application)
         if scope is not None:
             statement = statement.where(Application.domain_id.in_(scope))

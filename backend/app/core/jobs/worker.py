@@ -190,10 +190,10 @@ class Worker:
         row.attempts += 1
         if errors:
             row.last_error = "\n".join(errors)[:ERROR_LIMIT]
-            row.available_at = func.now() + queue.retry_delay(row.attempts)  # type: ignore[assignment]
+            row.available_at = func.now() + queue.retry_delay(row.attempts)
         else:
             row.last_error = None
-            row.processed_at = func.now()  # type: ignore[assignment]
+            row.processed_at = func.now()
         session.flush()
 
     # Jobs

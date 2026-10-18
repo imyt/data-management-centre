@@ -51,7 +51,7 @@ def _served_contract(request: Request) -> str:
     state = request.app.state
     if getattr(state, "contract", None) is None:
         state.contract = contract_hash(render_spec(request.app.openapi()))
-    return state.contract
+    return str(state.contract)
 
 
 @router.get(

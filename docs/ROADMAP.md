@@ -15,8 +15,8 @@ Runtime decisions (local Postgres 18, environments, how frontend and backend pai
 | Frontend | Vite + React, tokens, shadcn primitives and the DMC patterns from DESIGN.md (`AppShell`, `PortalHeader`, `DetailSplit`, `EntityHeader`, `StageTracker`, `StatusBadge`, `ExplainWhy`, `ConfirmWithReason`, states), `/gallery` with screenshot and axe tests |
 | Backend | One app with `core/` and `modules/` (ADR 0003); errors, request IDs, cursor paging; `examples` reference module; import-linter |
 | Contract | `contracts/openapi.json` and a generated hey-api client; a test fails if the spec is stale |
-| CI | Path-filtered GitHub Actions for backend and frontend |
-| Missing | Database, migrations, worker and job queue, response envelope, RFC 9457 errors, auth, audit, `infra/`, Dockerfiles, mypy |
+| CI | Path-filtered GitHub Actions for backend (Ruff, mypy, import-linter, pytest) and frontend |
+| Missing | Database, migrations, worker and job queue, response envelope, RFC 9457 errors, auth, audit, `infra/` |
 
 ---
 
@@ -36,7 +36,7 @@ Goal: everything later slices depend on, already working the way it will in ever
 | 0.8 | `GET /api/v1/meta`, contract hash; API base URL from runtime `/config.json` (same-origin by default), Vite `/api` proxy, `VITE_API_BASE_URL` removed; environment badge and update banner in `PortalHeader` | ADR 0004 §4–5 |
 | 0.9 | Frontend: settle the router (React Router 8 is installed), add the hey-api TanStack Query plugin, wire `AppShell` navigation (Inbox, Assets, Applications, Controls, Reports) with empty screens | ARCHITECTURE §10, §14 |
 | 0.10 | Structured JSON logs with request and job IDs; health for API and worker | ARCHITECTURE §12 |
-| 0.11 | mypy in CI; Dockerfiles for the backend (API and worker share one image) and the frontend (nginx serving the build and proxying `/api/`); `docker compose up` runs everything | ARCHITECTURE §13; ADR 0004 §4 |
+| 0.11 | mypy in CI; Dockerfiles for the backend (API and worker share one image) and the frontend (nginx serving the build and proxying `/api/`); `docker compose up` runs everything (done) | ARCHITECTURE §13; ADR 0004 §4 |
 | 0.12 | `dmc-seed` with personas and reference data; the `estate` sample tables | ADR 0004 §8 |
 
 **Exit:** `docker compose up` from `infra/` runs Postgres, API, worker and frontend on one origin. CI is green with Postgres. A test write produces an audit event and an outbox event in one transaction, and a job runs in the worker and reports through `/jobs/{id}`.
