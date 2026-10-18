@@ -23,6 +23,7 @@ from app.core.jobs.worker import Worker
 from app.core.logs import configure_logging
 from app.core.migrations import DatabaseOutOfDateError, ensure_database_is_current
 from app.modules.connectors import jobs as connectors
+from app.modules.evaluation import jobs as evaluation
 from app.modules.policy import jobs as policy
 
 logger = logging.getLogger("app.worker")
@@ -36,6 +37,9 @@ def build_registry() -> Registry:
         registry, interval=timedelta(seconds=get_settings().harvest_interval_seconds)
     )
     policy.register(registry)
+    evaluation.register(
+        registry, interval=timedelta(seconds=get_settings().evaluation_interval_seconds)
+    )
     return registry
 
 

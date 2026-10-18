@@ -421,6 +421,19 @@ CONFIRMATION_PERIOD = timedelta(days=14)
 
 
 @dataclass(frozen=True)
+class AssetRetention:
+    """What the evaluation engine needs to judge an asset's retention: plain data."""
+
+    asset_id: uuid.UUID
+    asset_name: str
+    domain_id: uuid.UUID
+    is_stored: bool
+    policy_code: str | None
+    policy_name: str | None
+    retention_days: int | None
+
+
+@dataclass(frozen=True)
 class AssetView:
     """An asset with the users its ownership rows refer to, resolved through identity."""
 
@@ -560,6 +573,22 @@ class AssetService:
         if asset is None:
             raise NotFoundError(f"Asset {asset_id} does not exist.", details={"id": str(asset_id)})
         return asset
+
+    def retention_of(self, asset_id: uuid.UUID) -> AssetRetention | None:
+        """An asset's declared retention, for the system (no caller): None if it is gone."""
+        asset = self._repository.get_asset(asset_id)
+        if asset is None:
+            return None
+        policy = asset.retention_policy
+        return AssetRetention(
+            asset_id=asset.id,
+            asset_name=asset.name,
+            domain_id=asset.domain_id,
+            is_stored=asset.is_stored,
+            policy_code=policy.code if policy else None,
+            policy_name=policy.name if policy else None,
+            retention_days=policy.retention_days if policy else None,
+        )
 
     # --- Declaring assets
 

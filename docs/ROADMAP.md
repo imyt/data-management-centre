@@ -59,9 +59,9 @@ Goal: everything later slices depend on, already working the way it will in ever
 | Slice | Delivers | Requirements |
 |---|---|---|
 | **5. Policies and controls** | Policies, the control library, versioned rules with selectors; applied controls derived from attributes and recomputed on change, each with a reason ("Why?" through `ExplainWhy`); Controls area | FR-P1–P4, FR-A5 |
-| **6. Evaluation engine** | Evaluation runs on events, schedules and on demand; append-only results keyed by applied control, subject, fact snapshot and rule version; `error` kept separate from `fail`; stale results flagged; first rule types `retention_window`, `harvest_fresh` and `declaration_complete`; Assess stage on asset and application detail | FR-A1–A3, FR-A7, FR-S4 |
+| **6. Evaluation engine** (done for `retention_window`) | Evaluation runs on events (applied control derived, subject changed, harvest stored), schedules and on demand, as jobs; append-only results keyed by applied control, rule version and fact hash; `error` kept separate from `fail`; stale results flagged; `retention_window` measures the oldest row of a stored asset's table through the read-only harvest role (ADR 0011); results with measured value, threshold, reason, facts and freshness on the applied control and the asset's Assess stage, with Run evaluation. Not yet: `harvest_fresh` and `declaration_complete` evaluators, and the Assess stage on application detail | FR-A1–A3, FR-A7, FR-S4 |
 
-**Exit:** a stored asset in `estate` with rows older than its retention policy shows a failing `retention_window` result, with measured value, threshold, reason, facts and freshness.
+**Exit (met for `retention_window`):** a stored asset in `estate` with rows older than its retention policy shows a failing `retention_window` result, with measured value, threshold, reason, facts and freshness. `dmc-seed` declares the sample tables as stored assets (customers and orders fail, support tickets pass).
 
 ## Phase 3: Act and Assure
 

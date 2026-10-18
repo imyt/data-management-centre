@@ -2,11 +2,12 @@ import * as React from "react"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { Link } from "react-router"
 
-import type { AppliedControlRead, ControlDetail, RuleVersionRead, SelectorPreview, SubjectType } from "@/api"
+import type { AppliedControlRead, ControlDetail, EvaluationResultRead, RuleVersionRead, SelectorPreview, SubjectType } from "@/api"
 import {
   getControlOptions,
   getPolicyVocabularyOptions,
   listAppliedControlsOptions,
+  listEvaluationResultsOptions,
   publishRuleVersionMutation,
   retireControlMutation,
 } from "@/api/@tanstack/react-query.gen"
@@ -31,6 +32,8 @@ import { subjectLabel, subjectPath, SUBJECT_TYPE_PLURAL } from "@/features/contr
 import { invalidateControlsSoon } from "@/features/controls/queries"
 import { draftFromVersion, draftProblem, selectorOf, type RuleDraft } from "@/features/controls/rule-draft"
 import { RuleEditor } from "@/features/controls/rule-editor"
+import { ResultPanel } from "@/features/evaluation/result-panel"
+import { ResultStatus } from "@/features/evaluation/result-status"
 import { formatTimestamp } from "@/lib/format"
 
 type Mode = "view" | "meta" | "rule"
@@ -207,7 +210,9 @@ function RuleSection({ control }: { control: ControlDetail }) {
 
 function AppliedSection({ control }: { control: ControlDetail }) {
   const query = useQuery(listAppliedControlsOptions({ query: { control_id: control.id, limit: 100 } }))
+  const results = useQuery(listEvaluationResultsOptions({ query: { control_id: control.id, limit: 200 } }))
   const rows = query.data?.data ?? []
+  const latest = new Map((results.data?.data ?? []).map((r) => [r.applied_control_id, r]))
   return (
     <section aria-labelledby="applied-heading" className="flex flex-col gap-3">
       <h3 id="applied-heading" className="text-base font-semibold">
@@ -231,7 +236,7 @@ function AppliedSection({ control }: { control: ControlDetail }) {
           <ul className="flex flex-col divide-y rounded-md border">
             {rows.map((applied) => (
               <li key={applied.id} className="flex flex-wrap items-center justify-between gap-2 px-3 py-2">
-                <AppliedRow applied={applied} />
+                <AppliedRow applied={applied} result={latest.get(applied.id)} resultsLoading={results.isPending} />
               </li>
             ))}
           </ul>
@@ -247,8 +252,19 @@ function AppliedSection({ control }: { control: ControlDetail }) {
 }
 
 /** A subject with the control: where it is, who is accountable, and why it applies. */
-export function AppliedRow({ applied, showControl = false }: { applied: AppliedControlRead; showControl?: boolean }) {
+export function AppliedRow({
+  applied,
+  result,
+  resultsLoading = false,
+  showControl = false,
+}: {
+  applied: AppliedControlRead
+  result?: EvaluationResultRead
+  resultsLoading?: boolean
+  showControl?: boolean
+}) {
   const path = subjectPath(applied.subject.type, applied.subject.id)
+  const [open, setOpen] = React.useState(false)
   return (
     <>
       <div className="flex min-w-0 flex-col gap-0.5">
@@ -272,12 +288,20 @@ export function AppliedRow({ applied, showControl = false }: { applied: AppliedC
         </span>
       </div>
       <span className="flex items-center gap-3">
-        <StatusBadge status="pending" label="Not evaluated yet" size="sm" />
+        {resultsLoading ? <StatusBadge status="pending" label="Loading…" size="sm" /> : <ResultStatus result={result} />}
+        <Button variant="ghost" size="sm" aria-expanded={open} onClick={() => setOpen((v) => !v)}>
+          {open ? "Hide evaluation" : "Evaluation"}
+        </Button>
         <ExplainWhy
           reason={applied.reason}
           sources={[{ label: `${applied.control.code}, rule version ${applied.rule_version}` }]}
         />
       </span>
+      {open && (
+        <div className="basis-full border-t pt-3">
+          <ResultPanel appliedControlId={applied.id} />
+        </div>
+      )}
     </>
   )
 }

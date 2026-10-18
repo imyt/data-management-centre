@@ -131,7 +131,7 @@ erDiagram
 | `integration` | source (`source_application_id` or `source_party_id`), `target_application_id`, asset_ids, method, frequency, source_region, target_region, state (declared, observed, declared_and_observed), last_observed_at |
 | `external_party` | name, region, approved_target (boolean) |
 | `harvest_snapshot` | `data_store_id`, taken_at, status (succeeded, failed), error, `requested_by` (a failed run keeps only the reason; objects stay those of the last success) |
-| `physical_object` | `snapshot_id`, kind (schema, table, column), dotted path (`public.orders.id`), name, `parent_path`, ordinal, data_type, row_count (estimated from statistics). `oldest_record_at` follows with `retention_window` (slice 6) |
+| `physical_object` | `snapshot_id`, kind (schema, table, column), dotted path (`public.orders.id`), name, `parent_path`, ordinal, data_type, row_count (estimated from statistics). The oldest record is not stored here: `retention_window` reads it on demand and keeps it in the result's facts (ADR 0011) |
 | `physical_object_mapping` | `data_store_id`, path, and `asset_id` (a table) or `data_element_id` (a column), `mapped_by_id`. Kept per path, not per snapshot, so a mapping survives the next harvest; a table or column in the last snapshot with no row is **unmapped**. The harvest tables belong to `connectors` (schema `connectors`, ids only across modules), not `inventory` |
 | `declaration` | subject (type, id), field, declared_value, `declared_by`, declared_at, expires_at, check_state (confirmed, mismatch, unverifiable, expired) |
 
@@ -146,8 +146,8 @@ Reference data: `domain`, `data_category`, `region`, `retention_policy` (with `r
 | `rule_version` | `control_id`, version, params (JSON), selector (JSON), change_reason, created_by, created_at; immutable (a trigger refuses changes), the highest version is current |
 | `applied_control` | `control_id`, `rule_version_id` (last derived under), subject_type, subject_id, subject name and domain, `accountable_id`, `responsible_id`, status (active, retired), `reason` and `derived_from` (the "Why?"), retired_at, retired_reason. One active row per control and subject; retired rows stay as history (ADR 0010). `latest_result_id` arrives with evaluation |
 | `evidence_source` | type (config_scan, iam_export, log_sample, dq_engine, manual), `connector_ref`, schedule, health |
-| `evaluation_run` | trigger (event, schedule, on_demand), started_at, finished_at, counts |
-| `evaluation_result` | see 7.5; append-only |
+| `evaluation_run` | trigger (event, schedule, on_demand), requested_by, started_at, finished_at, counts |
+| `evaluation_result` | see 7.5; append-only (a trigger refuses updates and deletes; ADR 0011) |
 | `evidence` | uri, sha256, captured_at, `evidence_source_id` |
 
 ### 6.3 Workflow and audit
@@ -217,7 +217,7 @@ When a subject's attributes or links change, inventory publishes `inventory.subj
 | Schedule | Fixed cadence per rule type | All applied controls of that type; catches drift and refreshes freshness |
 | On demand | An action is marked fixed, or a user requests re-evaluation | The action's applied controls |
 
-- Each evaluation is keyed by `(applied_control_id, subject, fact_snapshot_hash, rule_version)`. If an identical key already has a result, nothing new is written.
+- Each evaluation is keyed by `(applied_control_id, subject, fact_snapshot_hash, rule_version)`. If the latest result has an identical key, nothing new is written (ADR 0011).
 - Evaluations run in the worker as jobs; failures retry with backoff and finally record an `error` outcome.
 - `error` is never treated as `fail`. It routes to the evidence source owner.
 - Each result sets `stale_after` from the rule's freshness window.

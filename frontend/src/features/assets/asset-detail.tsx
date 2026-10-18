@@ -25,6 +25,8 @@ import { problemStatus } from "@/features/applications/problem"
 import { AssetForm } from "@/features/assets/asset-form"
 import { DataElementsSection } from "@/features/assets/data-elements-section"
 import { ASSET_TYPE } from "@/features/assets/labels"
+import { useAssessState } from "@/features/evaluation/use-assess-state"
+import { AssessSection } from "@/features/evaluation/assess-section"
 import { OwnershipSection } from "@/features/assets/ownership-section"
 
 const PANEL_ID = "asset-stage-panel"
@@ -96,12 +98,13 @@ function AssetStages({ asset, actions }: { asset: AssetDetail; actions: string[]
   const [stageParam, setStage] = useSearchParam("stage")
   const stage: Stage = isStage(stageParam) ? stageParam : "know"
   const notStarted: StageState = { summary: "Not started", tone: "progress" }
+  const assessState = useAssessState("asset", asset.id)
 
   return (
     <div className="flex flex-col gap-5">
       <StageTracker
         entityName={asset.name}
-        states={{ know: knowState(asset), assess: notStarted, act: notStarted, assure: notStarted }}
+        states={{ know: knowState(asset), assess: assessState, act: notStarted, assure: notStarted }}
         selected={stage}
         onSelect={setStage}
         panelId={PANEL_ID}
@@ -115,10 +118,7 @@ function AssetStages({ asset, actions }: { asset: AssetDetail; actions: string[]
           </div>
         )}
         {stage === "assess" && (
-          <EmptyState
-            title="No applied controls yet"
-            description="Applied controls appear here once policies select this asset."
-          />
+          <AssessSection subjectType="asset" subjectId={asset.id} />
         )}
         {stage === "act" && (
           <EmptyState title="No actions" description="Actions are raised here when an applied control fails." />

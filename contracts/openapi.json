@@ -3529,6 +3529,328 @@
         }
       }
     },
+    "/api/v1/evaluation-results": {
+      "get": {
+        "tags": [
+          "evaluation"
+        ],
+        "summary": "List evaluation results",
+        "description": "By default one result per applied control: its latest. Pass `latest_only=false` for the history. `allowed_actions` offers `run_evaluation` when the list is narrowed to one applied control or subject the caller may evaluate.",
+        "operationId": "listEvaluationResults",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor"
+            }
+          },
+          {
+            "name": "applied_control_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Applied Control Id"
+            }
+          },
+          {
+            "name": "control_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Control Id"
+            }
+          },
+          {
+            "name": "subject_type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/SubjectType"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Subject Type"
+            }
+          },
+          {
+            "name": "subject_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Subject Id"
+            }
+          },
+          {
+            "name": "outcome",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/Outcome"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Outcome"
+            }
+          },
+          {
+            "name": "latest_only",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "description": "false: every result, newest first.",
+              "default": true,
+              "title": "Latest Only"
+            },
+            "description": "false: every result, newest first."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EvaluationResultPage"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/evaluation-results/{result_id}": {
+      "get": {
+        "tags": [
+          "evaluation"
+        ],
+        "summary": "Get one evaluation result with its facts",
+        "operationId": "getEvaluationResult",
+        "parameters": [
+          {
+            "name": "result_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Result Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EvaluationResultResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Permission denied",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/evaluations": {
+      "post": {
+        "tags": [
+          "evaluation"
+        ],
+        "summary": "Evaluate an applied control, or every control on a subject, now",
+        "description": "Queues the evaluation and returns the job. A result is written only if the facts or the rule version changed since the latest one.",
+        "operationId": "runEvaluation",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EvaluationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Permission denied",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/inbox": {
       "get": {
         "tags": [
@@ -5786,6 +6108,230 @@
         ],
         "title": "EnvironmentType"
       },
+      "EvaluationRequest": {
+        "properties": {
+          "applied_control_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Applied Control Id"
+          },
+          "subject_type": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SubjectType"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "subject_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Subject Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "EvaluationRequest",
+        "description": "Which applied controls to evaluate: one, or every control on a subject."
+      },
+      "EvaluationResultPage": {
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/EvaluationResultRead"
+            },
+            "type": "array",
+            "title": "Data"
+          },
+          "allowed_actions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Allowed Actions",
+            "description": "Actions the caller may take on `data` right now."
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ListMeta"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data",
+          "allowed_actions",
+          "meta"
+        ],
+        "title": "EvaluationResultPage"
+      },
+      "EvaluationResultRead": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "applied_control_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Applied Control Id"
+          },
+          "control": {
+            "$ref": "#/components/schemas/ResultControl"
+          },
+          "subject": {
+            "$ref": "#/components/schemas/ResultSubject"
+          },
+          "outcome": {
+            "$ref": "#/components/schemas/Outcome",
+            "description": "`error` means the rule could not be evaluated; it is not a failure."
+          },
+          "measured": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Measured",
+            "description": "What was measured, in `unit`, where relevant."
+          },
+          "threshold": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Threshold",
+            "description": "The most the rule allows, in `unit`."
+          },
+          "unit": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unit"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason",
+            "description": "Plain language; shown by 'Why?'."
+          },
+          "facts": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Facts",
+            "description": "The recorded facts and versions the verdict used."
+          },
+          "evaluated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Evaluated At"
+          },
+          "stale_after": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Stale After"
+          },
+          "is_stale": {
+            "type": "boolean",
+            "title": "Is Stale",
+            "description": "True once `stale_after` has passed: evaluate again."
+          },
+          "previous_result_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Previous Result Id"
+          },
+          "transition": {
+            "type": "string",
+            "title": "Transition",
+            "description": "`first`, `unchanged` (same outcome on new facts) or `<before>_to_<after>`."
+          },
+          "run_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Run Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "applied_control_id",
+          "control",
+          "subject",
+          "outcome",
+          "measured",
+          "threshold",
+          "unit",
+          "reason",
+          "facts",
+          "evaluated_at",
+          "stale_after",
+          "is_stale",
+          "previous_result_id",
+          "transition",
+          "run_id"
+        ],
+        "title": "EvaluationResultRead",
+        "description": "What one rule said about one subject, with the facts it was judged on."
+      },
+      "EvaluationResultResponse": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/EvaluationResultRead"
+          },
+          "allowed_actions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Allowed Actions",
+            "description": "Actions the caller may take on `data` right now."
+          },
+          "meta": {
+            "$ref": "#/components/schemas/Meta"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data",
+          "allowed_actions",
+          "meta"
+        ],
+        "title": "EvaluationResultResponse"
+      },
       "ExamplePage": {
         "properties": {
           "data": {
@@ -6528,6 +7074,17 @@
         ],
         "title": "ObjectMappingRead"
       },
+      "Outcome": {
+        "type": "string",
+        "enum": [
+          "pass",
+          "fail",
+          "error",
+          "not_applicable"
+        ],
+        "title": "Outcome",
+        "description": "`error` means the rule could not be evaluated, which says nothing about compliance: it is\nnever counted as `fail`."
+      },
       "OwnershipRead": {
         "properties": {
           "role": {
@@ -7181,6 +7738,59 @@
         ],
         "title": "ReferenceRef",
         "description": "A reference-data item embedded in another resource."
+      },
+      "ResultControl": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "rule_type": {
+            "type": "string",
+            "title": "Rule Type"
+          },
+          "rule_version": {
+            "type": "integer",
+            "title": "Rule Version",
+            "description": "The version of the rule this result was judged by."
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "code",
+          "rule_type",
+          "rule_version"
+        ],
+        "title": "ResultControl"
+      },
+      "ResultSubject": {
+        "properties": {
+          "type": {
+            "$ref": "#/components/schemas/SubjectType"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          }
+        },
+        "type": "object",
+        "required": [
+          "type",
+          "id",
+          "name"
+        ],
+        "title": "ResultSubject"
       },
       "RetentionPolicyList": {
         "properties": {

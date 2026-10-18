@@ -130,9 +130,11 @@ class AppliedControlRef:
     subject_type: SubjectType
     subject_id: uuid.UUID
     subject_name: str
+    subject_domain_id: uuid.UUID
     accountable_id: uuid.UUID | None
     responsible_id: uuid.UUID | None
     reason: str
+    is_active: bool
 
 
 def _ref(applied: AppliedControl) -> AppliedControlRef:
@@ -149,9 +151,11 @@ def _ref(applied: AppliedControl) -> AppliedControlRef:
         subject_type=SubjectType(applied.subject_type),
         subject_id=applied.subject_id,
         subject_name=applied.subject_name,
+        subject_domain_id=applied.subject_domain_id,
         accountable_id=applied.accountable_id,
         responsible_id=applied.responsible_id,
         reason=applied.reason,
+        is_active=applied.status == AppliedControlStatus.ACTIVE.value,
     )
 
 

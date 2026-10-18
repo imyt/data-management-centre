@@ -16,12 +16,15 @@ from sqlalchemy.orm import Session
 from app.core.auth import Permission, Principal, Role, allowed_actions, require
 from app.core.errors import ConflictError, InvalidInputError, NotFoundError
 from app.core.jobs import Job, enqueue
+from app.core.outbox import publish
 from app.core.pagination import PageResult, decode_cursor, encode_cursor
 from app.modules.audit.service import AuditService
 from app.modules.connectors.adapters import (
     HarvestAdapter,
     HarvestError,
+    RecordAgeAdapter,
     adapter_for,
+    record_age_adapter_for,
     resolve_connection,
 )
 from app.modules.connectors.domain import ObjectKind, SnapshotStatus
@@ -35,6 +38,9 @@ from app.modules.connectors.schemas import CreateAssets, MapTable
 from app.modules.inventory.service import AssetService, DataStoreRef, InventoryService
 
 HARVEST = "connectors.harvest"
+HARVEST_SUCCEEDED = "connectors.harvest_succeeded"
+"""Outbox event: a harvest stored a new snapshot. Payload: `data_store_id`, `snapshot_id`. What
+rules measure may have changed, so evaluations of the assets mapped in the store run again."""
 SYSTEM_ACTOR = "system:harvest"
 RECENT_RUNS = 10
 
@@ -48,6 +54,29 @@ _PERMISSIONS = (RUN_HARVEST, MAP_OBJECTS)
 def data_store_actions(principal: Principal, domain_id: uuid.UUID) -> list[str]:
     """`allowed_actions` on a data store's harvest, from the same rules the writes check."""
     return allowed_actions(principal, _PERMISSIONS, domain_id)
+
+
+class MeasurementError(Exception):
+    """A fact could not be read from a data store; the message is safe to show to users."""
+
+
+# Where a table keeps the date a record was created, best name first; any other date or
+# timestamp column is the fallback. A person cannot yet say which column to use.
+_RECORD_DATE_NAMES = ("created_at", "created", "placed_at", "opened_at", "inserted_at", "timestamp")
+_DATE_TYPES = ("timestamp with time zone", "timestamp without time zone", "date")
+
+
+@dataclass(frozen=True)
+class OldestRecord:
+    """The oldest record of the table that stores an asset, as read from the store."""
+
+    data_store_id: uuid.UUID
+    data_store_name: str
+    snapshot_id: uuid.UUID
+    snapshot_taken_at: datetime
+    table_path: str
+    column: str
+    oldest_at: datetime | None  # None: the table has no rows
 
 
 @dataclass(frozen=True)
@@ -72,13 +101,20 @@ class ObjectView:
 
 
 class ConnectorsService:
-    def __init__(self, session: Session, *, adapter: HarvestAdapter | None = None) -> None:
+    def __init__(
+        self,
+        session: Session,
+        *,
+        adapter: HarvestAdapter | None = None,
+        record_reader: RecordAgeAdapter | None = None,
+    ) -> None:
         self._session = session
         self._repository = ConnectorsRepository(session)
         self._audit = AuditService(session)
         self._inventory = InventoryService(session)
         self._assets = AssetService(session)
         self._adapter = adapter
+        self._record_reader = record_reader
 
     # --- Running a harvest
 
@@ -156,6 +192,11 @@ class ConnectorsService:
         )
         self._inventory.record_harvest(store.id, succeeded=True, at=snapshot.taken_at)
         counts = self._repository.object_counts([snapshot.id])[snapshot.id]
+        publish(
+            self._session,
+            HARVEST_SUCCEEDED,
+            {"data_store_id": store.id, "snapshot_id": snapshot.id},
+        )
         self._audit.record(
             actor=actor,
             action="data_store.harvested",
@@ -164,6 +205,58 @@ class ConnectorsService:
             after={"snapshot_id": snapshot.id, **counts},
         )
         return RunView(snapshot, counts)
+
+    # --- Facts for evaluation
+
+    def asset_ids_in_store(self, data_store_id: uuid.UUID) -> list[uuid.UUID]:
+        """The assets that have a table in the store."""
+        return self._repository.asset_ids_in_store(data_store_id)
+
+    def oldest_record_of_asset(self, asset_id: uuid.UUID) -> OldestRecord:
+        """Read the age of the oldest record of the table that stores an asset, through the
+        store's read-only connection. For jobs: acts for the system, no caller.
+
+        Raises `MeasurementError` when it cannot be read: no table is mapped, the store has not
+        been harvested, the table has no date column, or the store is unreachable.
+        """
+        mapping = self._repository.table_mapping_of_asset(asset_id)
+        if mapping is None:
+            raise MeasurementError(
+                "No table is mapped to this asset, so the age of its records cannot be read."
+            )
+        store = self._inventory.find_data_store(mapping.data_store_id)
+        if store is None:
+            raise MeasurementError("The data store of this asset's table no longer exists.")
+        snapshot = self._repository.last_successful_snapshot(store.id)
+        if snapshot is None:
+            raise MeasurementError(f"{store.name} has not been harvested successfully yet.")
+        table = self._repository.get_object(snapshot.id, mapping.path)
+        if table is None or table.kind != ObjectKind.TABLE.value:
+            raise MeasurementError(
+                f"The table {mapping.path} is not in the last harvest of {store.name}."
+            )
+        column = _record_date_column(self._repository.columns_of(snapshot.id, table.path))
+        if column is None:
+            raise MeasurementError(f"The table {table.path} has no date column to measure.")
+        try:
+            reader = self._record_reader or record_age_adapter_for(store.platform, store.type)
+            oldest = reader.oldest_record(
+                resolve_connection(store.connection_ref),
+                table.parent_path or "public",
+                table.name,
+                column,
+            )
+        except HarvestError as exc:
+            raise MeasurementError(str(exc)) from exc
+        return OldestRecord(
+            data_store_id=store.id,
+            data_store_name=store.name,
+            snapshot_id=snapshot.id,
+            snapshot_taken_at=snapshot.taken_at,
+            table_path=table.path,
+            column=column,
+            oldest_at=oldest,
+        )
 
     # --- Status and objects
 
@@ -343,6 +436,15 @@ class ConnectorsService:
     def _view_of(self, data_store_id: uuid.UUID, obj: PhysicalObject) -> ObjectView:
         mapping = self._repository.get_mapping(data_store_id, obj.path)
         return self._views([ObjectRow(obj, mapping)])[0]
+
+
+def _record_date_column(columns: list[PhysicalObject]) -> str | None:
+    dated = [c for c in columns if (c.data_type or "").lower() in _DATE_TYPES]
+    by_name = {c.name.lower(): c.name for c in dated}
+    for name in _RECORD_DATE_NAMES:
+        if name in by_name:
+            return by_name[name]
+    return dated[0].name if dated else None
 
 
 def describe(job_result: RunView | None) -> dict[str, Any]:

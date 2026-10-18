@@ -1,3 +1,5 @@
+from datetime import UTC, datetime, timedelta
+
 import pytest
 from sqlalchemy import Connection, text
 
@@ -5,6 +7,10 @@ from app import seed
 from app.core.config import Settings
 from app.core.db import Database
 from app.estate import TABLES, load_estate
+from app.modules.connectors.adapters import Catalog, HarvestedObject
+from app.modules.connectors.domain import ObjectKind
+from app.modules.connectors.service import ConnectorsService
+from app.modules.evaluation.service import EvaluationService
 from app.modules.identity.service import User
 from app.modules.inventory.service import InventoryService
 from app.modules.policy.service import PolicyService
@@ -98,3 +104,59 @@ def test_seed_needs_a_database_url(
 
     assert seed.main() == 2
     assert "DMC_DATABASE_URL" in capsys.readouterr().err
+
+
+class _FakeEstate:
+    """A harvest that finds one table, whose oldest record is 4000 days old."""
+
+    oldest = datetime.now(UTC) - timedelta(days=4000)
+
+    def harvest(self, connection_url: str) -> Catalog:
+        return Catalog(
+            [
+                HarvestedObject(ObjectKind.SCHEMA, "public", "public"),
+                HarvestedObject(ObjectKind.TABLE, "public.customers", "customers", "public"),
+                HarvestedObject(
+                    ObjectKind.COLUMN,
+                    "public.customers.created_at",
+                    "created_at",
+                    "public.customers",
+                    1,
+                    "timestamp with time zone",
+                ),
+            ]
+        )
+
+    def oldest_record(
+        self, connection_url: str, schema: str, table: str, column: str
+    ) -> datetime | None:
+        return self.oldest
+
+
+def test_estate_tables_become_stored_assets_that_fail_their_retention_window(
+    database: Database, personas: dict[str, User], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(
+        "app.modules.connectors.service.resolve_connection", lambda ref: "postgresql://fake/db"
+    )
+    estate = _FakeEstate()
+    with database.transaction() as session:
+        seed.seed_sample_application(session)
+        connectors = ConnectorsService(session, adapter=estate, record_reader=estate)
+        declared = seed.seed_estate_assets(session, connectors)
+        again = seed.seed_estate_assets(session, connectors)
+        seed.seed_policies(session)
+        written = seed.seed_evaluations(session, EvaluationService(session, connectors=connectors))
+        rewritten = seed.seed_evaluations(
+            session, EvaluationService(session, connectors=connectors)
+        )
+
+    assert (declared, again) == (1, 0)  # only public.customers is in the fake catalog
+    assert written == 1 and rewritten == 0  # the second pass finds the same facts
+    with database.transaction() as session:
+        principal = personas["hannah.becker"].principal()
+        page = EvaluationService(session).list_results(principal, limit=10, cursor=None)
+    [result] = page.items
+    assert result.control.code == "RET-01" and result.subject.name == "customers"
+    assert result.outcome == "fail"
+    assert result.measured == 4000 and result.threshold == 3650

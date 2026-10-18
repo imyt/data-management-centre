@@ -81,3 +81,27 @@ def test_a_connection_failure_is_reported_without_the_password() -> None:
         PostgresHarvest().harvest(url.render_as_string(hide_password=False))
     assert "hunter2" not in str(raised.value)
     assert str(raised.value)
+
+
+def test_the_postgres_adapter_reads_the_oldest_value_of_a_date_column(
+    db_engine: Engine, migration_url: str
+) -> None:
+    oldest = PostgresHarvest().oldest_record(migration_url, "inventory", "domain", "created_at")
+    assert oldest is not None and oldest.tzinfo is not None
+    assert oldest.year >= 2026
+
+
+def test_reading_a_missing_table_or_column_is_reported_not_raised_raw(
+    db_engine: Engine, migration_url: str
+) -> None:
+    with pytest.raises(HarvestError, match="does not exist"):
+        PostgresHarvest().oldest_record(migration_url, "inventory", "no_such_table", "created_at")
+    with pytest.raises(HarvestError, match="does not exist"):
+        PostgresHarvest().oldest_record(migration_url, "inventory", "domain", "nope")
+
+
+def test_a_name_is_quoted_not_executed(db_engine: Engine, migration_url: str) -> None:
+    with pytest.raises(HarvestError):
+        PostgresHarvest().oldest_record(
+            migration_url, "inventory", 'domain"; DROP TABLE inventory.domain; --', "created_at"
+        )

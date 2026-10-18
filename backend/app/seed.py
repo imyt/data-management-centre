@@ -17,6 +17,11 @@ from sqlalchemy.orm import Session
 from app.core.config import PROTECTED, get_settings
 from app.core.db import Database, create_database_engine
 from app.estate import EstateLoad, load_estate
+from app.modules.connectors.domain import ObjectKind
+from app.modules.connectors.schemas import CreateAssets
+from app.modules.connectors.service import ConnectorsService
+from app.modules.evaluation.domain import Trigger
+from app.modules.evaluation.service import EvaluationService
 from app.modules.identity.personas import CUSTOMER
 from app.modules.identity.service import IdentityDirectory, IdentityService
 from app.modules.inventory.domain import Criticality, DataStoreType, Hosting, LifecycleStatus
@@ -166,6 +171,76 @@ def seed_policies(session: Session) -> int:
     return added
 
 
+# The sample tables as stored assets, each with the retention policy its owner declared and the
+# oldest row the estate loads (customers 3900 days, orders 3050, tickets 2990): the first two are
+# kept past their window, so `retention_window` fails on them; tickets are within theirs.
+# (table, retention policy code, data category code)
+_ESTATE_ASSETS = (
+    ("public.customers", "r10y", "personal"),
+    ("public.orders", "r7y", "payment"),
+    ("public.support_tickets", "r10y", "personal"),
+)
+_DATA_OWNER = "priya.raman"
+
+
+def seed_estate_assets(session: Session, connectors: ConnectorsService | None = None) -> int:
+    """Harvest the sample application's `estate` store and declare a stored asset for each of its
+    sample tables that has none. Returns how many it declared; 0 if the store cannot be harvested
+    (no connection, tables not loaded yet) or the assets are there."""
+    inventory = InventoryService(session)
+    principal = IdentityDirectory().principal_for(session, _SEEDER)
+    if principal is None:
+        raise RuntimeError(f"The persona {_SEEDER} is missing; seed the personas first.")
+    store = next(
+        (
+            ref
+            for ref in map(inventory.find_data_store, inventory.list_data_store_ids())
+            if ref and ref.name == "estate" and ref.application_name == "Online Shop"
+        ),
+        None,
+    )
+    if store is None:
+        return 0
+    connectors = connectors or ConnectorsService(session)
+    if connectors.status(principal, store.id).objects is None:
+        connectors.run_harvest(store.id, requested_by=None)
+        if connectors.status(principal, store.id).objects is None:
+            return 0
+    unmapped = {
+        view.row.object.path
+        for view in connectors.list_objects(
+            principal, store.id, limit=200, cursor=None, kind=ObjectKind.TABLE, mapped=False
+        ).items
+    }
+    retention = {r.code: r.id for r in inventory.list_reference("retention_policy")}
+    categories = {c.code: c.id for c in inventory.list_reference("data_category")}
+    owner = IdentityService(session).find_by_username(_DATA_OWNER)
+    declared = 0
+    for path, retention_code, category_code in _ESTATE_ASSETS:
+        if path not in unmapped:
+            continue
+        connectors.create_assets(
+            principal,
+            store.id,
+            CreateAssets(
+                paths=[path],
+                retention_policy_id=retention[retention_code],
+                data_category_id=categories[category_code],
+                owner_id=owner.id if owner else None,
+            ),
+        )
+        declared += 1
+    return declared
+
+
+def seed_evaluations(session: Session, evaluation: EvaluationService | None = None) -> int:
+    """Evaluate every applied control now, so results show without a worker. Returns how many
+    results were new."""
+    evaluation = evaluation or EvaluationService(session)
+    ids = [r.id for r in PolicyService(session).active_applied_controls()]
+    return evaluation.run(ids, Trigger.EVENT, requested_by=None).counts["written"]
+
+
 def seed_estate(engine: Engine) -> EstateLoad:
     with engine.begin() as connection:
         return load_estate(connection)
@@ -181,28 +256,36 @@ def main() -> int:
     if not settings.database_url:
         print("Set DMC_DATABASE_URL (see backend/.env.example).", file=sys.stderr)
         return 2
+    if settings.estate_migration_url:
+        estate_engine = create_database_engine(settings.estate_migration_url)
+        try:
+            load = seed_estate(estate_engine)
+        finally:
+            estate_engine.dispose()
+    else:
+        load = None
     engine = create_database_engine(settings.database_url)
     try:
         with Database(engine).transaction() as session:
             personas = IdentityService(session).seed_personas()
             session.flush()
             registered = seed_sample_application(session)
+            assets = seed_estate_assets(session)
             controls = seed_policies(session)
+            results = seed_evaluations(session)
     finally:
         engine.dispose()
     print(f"Seeded {len(personas)} new personas.")
     print("Registered the sample application." if registered else "Sample application present.")
     print(f"Added {controls} starter controls." if controls else "Starter controls present.")
-
-    if not settings.estate_migration_url:
+    print(
+        f"Declared {assets} estate assets." if assets else "Estate assets present or not harvested."
+    )
+    print(f"Wrote {results} evaluation results.")
+    if load is None:
         print("DMC_ESTATE_MIGRATION_URL is not set; skipped the estate sample tables.")
-        return 0
-    estate_engine = create_database_engine(settings.estate_migration_url)
-    try:
-        load = seed_estate(estate_engine)
-    finally:
-        estate_engine.dispose()
-    print(f"Estate: {load.tables_created} tables created, {load.rows_inserted} rows inserted.")
+    else:
+        print(f"Estate: {load.tables_created} tables created, {load.rows_inserted} rows inserted.")
     return 0
 
 

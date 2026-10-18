@@ -183,6 +183,27 @@ class ConnectorsRepository:
             )
         )
 
+    def table_mapping_of_asset(self, asset_id: uuid.UUID) -> PhysicalObjectMapping | None:
+        """The table that stores an asset (the first by store and path if several are mapped)."""
+        return self._session.scalar(
+            select(PhysicalObjectMapping)
+            .where(PhysicalObjectMapping.asset_id == asset_id)
+            .order_by(PhysicalObjectMapping.data_store_id, PhysicalObjectMapping.path)
+            .limit(1)
+        )
+
+    def asset_ids_in_store(self, data_store_id: uuid.UUID) -> list[uuid.UUID]:
+        return list(
+            self._session.scalars(
+                select(PhysicalObjectMapping.asset_id)
+                .where(
+                    PhysicalObjectMapping.data_store_id == data_store_id,
+                    PhysicalObjectMapping.asset_id.is_not(None),
+                )
+                .distinct()
+            )
+        )
+
     def add_mapping(self, mapping: PhysicalObjectMapping) -> PhysicalObjectMapping:
         self._session.add(mapping)
         self._session.flush()

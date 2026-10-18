@@ -1147,6 +1147,134 @@ export type EnvironmentResponse = {
 export type EnvironmentType = 'production' | 'non_production';
 
 /**
+ * EvaluationRequest
+ *
+ * Which applied controls to evaluate: one, or every control on a subject.
+ */
+export type EvaluationRequest = {
+    /**
+     * Applied Control Id
+     */
+    applied_control_id?: string | null;
+    subject_type?: SubjectType | null;
+    /**
+     * Subject Id
+     */
+    subject_id?: string | null;
+};
+
+/**
+ * EvaluationResultPage
+ */
+export type EvaluationResultPage = {
+    /**
+     * Data
+     */
+    data: Array<EvaluationResultRead>;
+    /**
+     * Allowed Actions
+     *
+     * Actions the caller may take on `data` right now.
+     */
+    allowed_actions: Array<string>;
+    meta: ListMeta;
+};
+
+/**
+ * EvaluationResultRead
+ *
+ * What one rule said about one subject, with the facts it was judged on.
+ */
+export type EvaluationResultRead = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Applied Control Id
+     */
+    applied_control_id: string;
+    control: ResultControl;
+    subject: ResultSubject;
+    /**
+     * `error` means the rule could not be evaluated; it is not a failure.
+     */
+    outcome: Outcome;
+    /**
+     * Measured
+     *
+     * What was measured, in `unit`, where relevant.
+     */
+    measured: number | null;
+    /**
+     * Threshold
+     *
+     * The most the rule allows, in `unit`.
+     */
+    threshold: number | null;
+    /**
+     * Unit
+     */
+    unit: string | null;
+    /**
+     * Reason
+     *
+     * Plain language; shown by 'Why?'.
+     */
+    reason: string;
+    /**
+     * Facts
+     *
+     * The recorded facts and versions the verdict used.
+     */
+    facts: {
+        [key: string]: unknown;
+    };
+    /**
+     * Evaluated At
+     */
+    evaluated_at: string;
+    /**
+     * Stale After
+     */
+    stale_after: string;
+    /**
+     * Is Stale
+     *
+     * True once `stale_after` has passed: evaluate again.
+     */
+    is_stale: boolean;
+    /**
+     * Previous Result Id
+     */
+    previous_result_id: string | null;
+    /**
+     * Transition
+     *
+     * `first`, `unchanged` (same outcome on new facts) or `<before>_to_<after>`.
+     */
+    transition: string;
+    /**
+     * Run Id
+     */
+    run_id: string;
+};
+
+/**
+ * EvaluationResultResponse
+ */
+export type EvaluationResultResponse = {
+    data: EvaluationResultRead;
+    /**
+     * Allowed Actions
+     *
+     * Actions the caller may take on `data` right now.
+     */
+    allowed_actions: Array<string>;
+    meta: Meta;
+};
+
+/**
  * ExamplePage
  */
 export type ExamplePage = {
@@ -1587,6 +1715,14 @@ export type ObjectMappingRead = {
 };
 
 /**
+ * Outcome
+ *
+ * `error` means the rule could not be evaluated, which says nothing about compliance: it is
+ * never counted as `fail`.
+ */
+export type Outcome = 'pass' | 'fail' | 'error' | 'not_applicable';
+
+/**
  * OwnershipRead
  */
 export type OwnershipRead = {
@@ -1967,6 +2103,45 @@ export type ReferenceRef = {
      * Code
      */
     code: string;
+    /**
+     * Name
+     */
+    name: string;
+};
+
+/**
+ * ResultControl
+ */
+export type ResultControl = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Code
+     */
+    code: string;
+    /**
+     * Rule Type
+     */
+    rule_type: string;
+    /**
+     * Rule Version
+     *
+     * The version of the rule this result was judged by.
+     */
+    rule_version: number;
+};
+
+/**
+ * ResultSubject
+ */
+export type ResultSubject = {
+    type: SubjectType;
+    /**
+     * Id
+     */
+    id: string;
     /**
      * Name
      */
@@ -4271,6 +4446,153 @@ export type GetAppliedControlResponses = {
 };
 
 export type GetAppliedControlResponse = GetAppliedControlResponses[keyof GetAppliedControlResponses];
+
+export type ListEvaluationResultsData = {
+    body?: never;
+    path?: never;
+    query?: {
+        /**
+         * Limit
+         */
+        limit?: number;
+        /**
+         * Cursor
+         */
+        cursor?: string | null;
+        /**
+         * Applied Control Id
+         */
+        applied_control_id?: string | null;
+        /**
+         * Control Id
+         */
+        control_id?: string | null;
+        /**
+         * Subject Type
+         */
+        subject_type?: SubjectType | null;
+        /**
+         * Subject Id
+         */
+        subject_id?: string | null;
+        /**
+         * Outcome
+         */
+        outcome?: Outcome | null;
+        /**
+         * Latest Only
+         *
+         * false: every result, newest first.
+         */
+        latest_only?: boolean;
+    };
+    url: '/api/v1/evaluation-results';
+};
+
+export type ListEvaluationResultsErrors = {
+    /**
+     * Not signed in
+     */
+    401: ProblemDetail;
+    /**
+     * Validation error
+     */
+    422: ProblemDetail;
+};
+
+export type ListEvaluationResultsError = ListEvaluationResultsErrors[keyof ListEvaluationResultsErrors];
+
+export type ListEvaluationResultsResponses = {
+    /**
+     * Successful Response
+     */
+    200: EvaluationResultPage;
+};
+
+export type ListEvaluationResultsResponse = ListEvaluationResultsResponses[keyof ListEvaluationResultsResponses];
+
+export type GetEvaluationResultData = {
+    body?: never;
+    path: {
+        /**
+         * Result Id
+         */
+        result_id: string;
+    };
+    query?: never;
+    url: '/api/v1/evaluation-results/{result_id}';
+};
+
+export type GetEvaluationResultErrors = {
+    /**
+     * Not signed in
+     */
+    401: ProblemDetail;
+    /**
+     * Permission denied
+     */
+    403: ProblemDetail;
+    /**
+     * Not found
+     */
+    404: ProblemDetail;
+    /**
+     * Validation error
+     */
+    422: ProblemDetail;
+};
+
+export type GetEvaluationResultError = GetEvaluationResultErrors[keyof GetEvaluationResultErrors];
+
+export type GetEvaluationResultResponses = {
+    /**
+     * Successful Response
+     */
+    200: EvaluationResultResponse;
+};
+
+export type GetEvaluationResultResponse = GetEvaluationResultResponses[keyof GetEvaluationResultResponses];
+
+export type RunEvaluationData = {
+    body: EvaluationRequest;
+    path?: never;
+    query?: never;
+    url: '/api/v1/evaluations';
+};
+
+export type RunEvaluationErrors = {
+    /**
+     * Invalid input
+     */
+    400: ProblemDetail;
+    /**
+     * Not signed in
+     */
+    401: ProblemDetail;
+    /**
+     * Permission denied
+     */
+    403: ProblemDetail;
+    /**
+     * Not found
+     */
+    404: ProblemDetail;
+    /**
+     * Validation error
+     */
+    422: ProblemDetail;
+};
+
+export type RunEvaluationError = RunEvaluationErrors[keyof RunEvaluationErrors];
+
+export type RunEvaluationResponses = {
+    /**
+     * Successful Response
+     */
+    202: JobResponse;
+};
+
+export type RunEvaluationResponse = RunEvaluationResponses[keyof RunEvaluationResponses];
 
 export type ListInboxData = {
     body?: never;

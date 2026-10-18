@@ -3,8 +3,8 @@
 import { type DefaultError, type InfiniteData, infiniteQueryOptions, queryOptions, type UseMutationOptions } from '@tanstack/react-query';
 
 import { client } from '../client.gen';
-import { assignOwnership, confirmOwnership, createApplication, createAsset, createAssetsFromTables, createControl, createDataElement, createDataStore, createEnvironment, createPolicy, disputeOwnership, getApplication, getAppliedControl, getAsset, getControl, getExample, getHarvestStatus, getHealth, getHealthReady, getJob, getMe, getMeta, getPolicy, getPolicyVocabulary, listApplications, listAppliedControls, listAssets, listControls, listDataCategories, listDevUsers, listDomains, listExamples, listInbox, listPhysicalObjects, listPolicies, listPurposes, listRegions, listRetentionPolicies, listUsers, mapTable, type Options, previewSelector, publishRuleVersion, recomputeControl, retireControl, runHarvest, updateApplication, updateAsset, updateControl, updateDataElement, updatePolicy } from '../sdk.gen';
-import type { AssignOwnershipData, AssignOwnershipError, AssignOwnershipResponse, ConfirmOwnershipData, ConfirmOwnershipError, ConfirmOwnershipResponse, CreateApplicationData, CreateApplicationError, CreateApplicationResponse, CreateAssetData, CreateAssetError, CreateAssetResponse, CreateAssetsFromTablesData, CreateAssetsFromTablesError, CreateAssetsFromTablesResponse, CreateControlData, CreateControlError, CreateControlResponse, CreateDataElementData, CreateDataElementError, CreateDataElementResponse, CreateDataStoreData, CreateDataStoreError, CreateDataStoreResponse, CreateEnvironmentData, CreateEnvironmentError, CreateEnvironmentResponse, CreatePolicyData, CreatePolicyError, CreatePolicyResponse, DisputeOwnershipData, DisputeOwnershipError, DisputeOwnershipResponse, GetApplicationData, GetApplicationError, GetApplicationResponse, GetAppliedControlData, GetAppliedControlError, GetAppliedControlResponse, GetAssetData, GetAssetError, GetAssetResponse, GetControlData, GetControlError, GetControlResponse, GetExampleData, GetExampleError, GetExampleResponse, GetHarvestStatusData, GetHarvestStatusError, GetHarvestStatusResponse, GetHealthData, GetHealthReadyData, GetHealthReadyError, GetHealthReadyResponse, GetHealthResponse, GetJobData, GetJobError, GetJobResponse, GetMeData, GetMeError, GetMeResponse, GetMetaData, GetMetaResponse, GetPolicyData, GetPolicyError, GetPolicyResponse, GetPolicyVocabularyData, GetPolicyVocabularyError, GetPolicyVocabularyResponse, ListApplicationsData, ListApplicationsError, ListApplicationsResponse, ListAppliedControlsData, ListAppliedControlsError, ListAppliedControlsResponse, ListAssetsData, ListAssetsError, ListAssetsResponse, ListControlsData, ListControlsError, ListControlsResponse, ListDataCategoriesData, ListDataCategoriesResponse, ListDevUsersData, ListDevUsersError, ListDevUsersResponse, ListDomainsData, ListDomainsResponse, ListExamplesData, ListExamplesError, ListExamplesResponse, ListInboxData, ListInboxError, ListInboxResponse, ListPhysicalObjectsData, ListPhysicalObjectsError, ListPhysicalObjectsResponse, ListPoliciesData, ListPoliciesError, ListPoliciesResponse, ListPurposesData, ListPurposesResponse, ListRegionsData, ListRegionsResponse, ListRetentionPoliciesData, ListRetentionPoliciesResponse, ListUsersData, ListUsersError, ListUsersResponse, MapTableData, MapTableError, MapTableResponse, PreviewSelectorData, PreviewSelectorError, PreviewSelectorResponse, PublishRuleVersionData, PublishRuleVersionError, PublishRuleVersionResponse, RecomputeControlData, RecomputeControlError, RecomputeControlResponse, RetireControlData, RetireControlError, RetireControlResponse, RunHarvestData, RunHarvestError, RunHarvestResponse, UpdateApplicationData, UpdateApplicationError, UpdateApplicationResponse, UpdateAssetData, UpdateAssetError, UpdateAssetResponse, UpdateControlData, UpdateControlError, UpdateControlResponse, UpdateDataElementData, UpdateDataElementError, UpdateDataElementResponse, UpdatePolicyData, UpdatePolicyError, UpdatePolicyResponse } from '../types.gen';
+import { assignOwnership, confirmOwnership, createApplication, createAsset, createAssetsFromTables, createControl, createDataElement, createDataStore, createEnvironment, createPolicy, disputeOwnership, getApplication, getAppliedControl, getAsset, getControl, getEvaluationResult, getExample, getHarvestStatus, getHealth, getHealthReady, getJob, getMe, getMeta, getPolicy, getPolicyVocabulary, listApplications, listAppliedControls, listAssets, listControls, listDataCategories, listDevUsers, listDomains, listEvaluationResults, listExamples, listInbox, listPhysicalObjects, listPolicies, listPurposes, listRegions, listRetentionPolicies, listUsers, mapTable, type Options, previewSelector, publishRuleVersion, recomputeControl, retireControl, runEvaluation, runHarvest, updateApplication, updateAsset, updateControl, updateDataElement, updatePolicy } from '../sdk.gen';
+import type { AssignOwnershipData, AssignOwnershipError, AssignOwnershipResponse, ConfirmOwnershipData, ConfirmOwnershipError, ConfirmOwnershipResponse, CreateApplicationData, CreateApplicationError, CreateApplicationResponse, CreateAssetData, CreateAssetError, CreateAssetResponse, CreateAssetsFromTablesData, CreateAssetsFromTablesError, CreateAssetsFromTablesResponse, CreateControlData, CreateControlError, CreateControlResponse, CreateDataElementData, CreateDataElementError, CreateDataElementResponse, CreateDataStoreData, CreateDataStoreError, CreateDataStoreResponse, CreateEnvironmentData, CreateEnvironmentError, CreateEnvironmentResponse, CreatePolicyData, CreatePolicyError, CreatePolicyResponse, DisputeOwnershipData, DisputeOwnershipError, DisputeOwnershipResponse, GetApplicationData, GetApplicationError, GetApplicationResponse, GetAppliedControlData, GetAppliedControlError, GetAppliedControlResponse, GetAssetData, GetAssetError, GetAssetResponse, GetControlData, GetControlError, GetControlResponse, GetEvaluationResultData, GetEvaluationResultError, GetEvaluationResultResponse, GetExampleData, GetExampleError, GetExampleResponse, GetHarvestStatusData, GetHarvestStatusError, GetHarvestStatusResponse, GetHealthData, GetHealthReadyData, GetHealthReadyError, GetHealthReadyResponse, GetHealthResponse, GetJobData, GetJobError, GetJobResponse, GetMeData, GetMeError, GetMeResponse, GetMetaData, GetMetaResponse, GetPolicyData, GetPolicyError, GetPolicyResponse, GetPolicyVocabularyData, GetPolicyVocabularyError, GetPolicyVocabularyResponse, ListApplicationsData, ListApplicationsError, ListApplicationsResponse, ListAppliedControlsData, ListAppliedControlsError, ListAppliedControlsResponse, ListAssetsData, ListAssetsError, ListAssetsResponse, ListControlsData, ListControlsError, ListControlsResponse, ListDataCategoriesData, ListDataCategoriesResponse, ListDevUsersData, ListDevUsersError, ListDevUsersResponse, ListDomainsData, ListDomainsResponse, ListEvaluationResultsData, ListEvaluationResultsError, ListEvaluationResultsResponse, ListExamplesData, ListExamplesError, ListExamplesResponse, ListInboxData, ListInboxError, ListInboxResponse, ListPhysicalObjectsData, ListPhysicalObjectsError, ListPhysicalObjectsResponse, ListPoliciesData, ListPoliciesError, ListPoliciesResponse, ListPurposesData, ListPurposesResponse, ListRegionsData, ListRegionsResponse, ListRetentionPoliciesData, ListRetentionPoliciesResponse, ListUsersData, ListUsersError, ListUsersResponse, MapTableData, MapTableError, MapTableResponse, PreviewSelectorData, PreviewSelectorError, PreviewSelectorResponse, PublishRuleVersionData, PublishRuleVersionError, PublishRuleVersionResponse, RecomputeControlData, RecomputeControlError, RecomputeControlResponse, RetireControlData, RetireControlError, RetireControlResponse, RunEvaluationData, RunEvaluationError, RunEvaluationResponse, RunHarvestData, RunHarvestError, RunHarvestResponse, UpdateApplicationData, UpdateApplicationError, UpdateApplicationResponse, UpdateAssetData, UpdateAssetError, UpdateAssetResponse, UpdateControlData, UpdateControlError, UpdateControlResponse, UpdateDataElementData, UpdateDataElementError, UpdateDataElementResponse, UpdatePolicyData, UpdatePolicyError, UpdatePolicyResponse } from '../types.gen';
 
 export type QueryKey<TOptions extends Options> = [
     Pick<TOptions, 'baseUrl' | 'body' | 'headers' | 'path' | 'query'> & {
@@ -1113,6 +1113,95 @@ export const getAppliedControlOptions = (options: Options<GetAppliedControlData>
     },
     queryKey: getAppliedControlQueryKey(options)
 });
+
+export const listEvaluationResultsQueryKey = (options?: Options<ListEvaluationResultsData>) => createQueryKey('listEvaluationResults', options);
+
+/**
+ * List evaluation results
+ *
+ * By default one result per applied control: its latest. Pass `latest_only=false` for the history. `allowed_actions` offers `run_evaluation` when the list is narrowed to one applied control or subject the caller may evaluate.
+ */
+export const listEvaluationResultsOptions = (options?: Options<ListEvaluationResultsData>) => queryOptions<ListEvaluationResultsResponse, ListEvaluationResultsError, ListEvaluationResultsResponse, ReturnType<typeof listEvaluationResultsQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await listEvaluationResults({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: listEvaluationResultsQueryKey(options)
+});
+
+export const listEvaluationResultsInfiniteQueryKey = (options?: Options<ListEvaluationResultsData>): QueryKey<Options<ListEvaluationResultsData>> => createQueryKey('listEvaluationResults', options, true);
+
+/**
+ * List evaluation results
+ *
+ * By default one result per applied control: its latest. Pass `latest_only=false` for the history. `allowed_actions` offers `run_evaluation` when the list is narrowed to one applied control or subject the caller may evaluate.
+ */
+export const listEvaluationResultsInfiniteOptions = (options?: Options<ListEvaluationResultsData>) => {
+    const opts = infiniteQueryOptions<ListEvaluationResultsResponse, ListEvaluationResultsError, InfiniteData<ListEvaluationResultsResponse>, QueryKey<Options<ListEvaluationResultsData>>, string | null | Pick<QueryKey<Options<ListEvaluationResultsData>>[0], 'body' | 'headers' | 'path' | 'query'>>(
+    // @ts-ignore
+    {
+        queryFn: async ({ pageParam, queryKey, signal }) => {
+            // @ts-ignore
+            const page: Pick<QueryKey<Options<ListEvaluationResultsData>>[0], 'body' | 'headers' | 'path' | 'query'> = typeof pageParam === 'object' ? pageParam : {
+                query: {
+                    cursor: pageParam
+                }
+            };
+            const params = createInfiniteParams(queryKey, page);
+            const { data } = await listEvaluationResults({
+                ...options,
+                ...params,
+                signal,
+                throwOnError: true
+            });
+            return data;
+        },
+        queryKey: listEvaluationResultsInfiniteQueryKey(options)
+    });
+    return opts as Omit<typeof opts, 'initialData'>;
+};
+
+export const getEvaluationResultQueryKey = (options: Options<GetEvaluationResultData>) => createQueryKey('getEvaluationResult', options);
+
+/**
+ * Get one evaluation result with its facts
+ */
+export const getEvaluationResultOptions = (options: Options<GetEvaluationResultData>) => queryOptions<GetEvaluationResultResponse, GetEvaluationResultError, GetEvaluationResultResponse, ReturnType<typeof getEvaluationResultQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await getEvaluationResult({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: getEvaluationResultQueryKey(options)
+});
+
+/**
+ * Evaluate an applied control, or every control on a subject, now
+ *
+ * Queues the evaluation and returns the job. A result is written only if the facts or the rule version changed since the latest one.
+ */
+export const runEvaluationMutation = (options?: Partial<Options<RunEvaluationData>>): UseMutationOptions<RunEvaluationResponse, RunEvaluationError, Options<RunEvaluationData>> => {
+    const mutationOptions: UseMutationOptions<RunEvaluationResponse, RunEvaluationError, Options<RunEvaluationData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await runEvaluation({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
 
 export const listInboxQueryKey = (options?: Options<ListInboxData>) => createQueryKey('listInbox', options);
 

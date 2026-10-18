@@ -8,6 +8,7 @@ resolves to one of its own databases, so a harvest never runs with DMC's own cre
 import os
 import re
 from dataclasses import dataclass, field
+from datetime import UTC, date, datetime
 from pathlib import Path
 from typing import Protocol
 
@@ -46,6 +47,14 @@ class Catalog:
 
 class HarvestAdapter(Protocol):
     def harvest(self, connection_url: str) -> Catalog: ...
+
+
+class RecordAgeAdapter(Protocol):
+    """Reads one fact from the rows themselves: the oldest value of a date column."""
+
+    def oldest_record(
+        self, connection_url: str, schema: str, table: str, column: str
+    ) -> datetime | None: ...
 
 
 # --- Connection references
@@ -129,21 +138,18 @@ _COLUMNS = text(
 )
 
 
+_READ_ONLY_ARGS = {
+    "connect_timeout": CONNECT_TIMEOUT_SECONDS,
+    "options": f"-c default_transaction_read_only=on -c statement_timeout={STATEMENT_TIMEOUT_MS}",
+}
+
+
 class PostgresHarvest:
     """Schemas, tables, columns and estimated row counts from the system catalogs."""
 
     def harvest(self, connection_url: str) -> Catalog:
         # Read-only for the session as well as by the account's grants.
-        engine = create_engine(
-            connection_url,
-            connect_args={
-                "connect_timeout": CONNECT_TIMEOUT_SECONDS,
-                "options": (
-                    "-c default_transaction_read_only=on "
-                    f"-c statement_timeout={STATEMENT_TIMEOUT_MS}"
-                ),
-            },
-        )
+        engine = create_engine(connection_url, connect_args=_READ_ONLY_ARGS)
         try:
             with engine.connect() as connection:
                 schemas = connection.execute(_SCHEMAS).all()
@@ -178,6 +184,27 @@ class PostgresHarvest:
         ]
         return Catalog(objects)
 
+    def oldest_record(
+        self, connection_url: str, schema: str, table: str, column: str
+    ) -> datetime | None:
+        """`min(column)` of one table, as the same read-only account and session as a harvest.
+        The names come from a harvest of the store, and are quoted all the same."""
+        engine = create_engine(connection_url, connect_args=_READ_ONLY_ARGS)
+        quote = engine.dialect.identifier_preparer.quote
+        statement = text(f"SELECT min({quote(column)}) FROM {quote(schema)}.{quote(table)}")
+        try:
+            with engine.connect() as connection:
+                value = connection.execute(statement).scalar()
+        except SQLAlchemyError as exc:
+            raise HarvestError(_describe(exc)) from exc
+        finally:
+            engine.dispose()
+        if isinstance(value, datetime):
+            return value if value.tzinfo else value.replace(tzinfo=UTC)
+        if isinstance(value, date):
+            return datetime(value.year, value.month, value.day, tzinfo=UTC)
+        return None
+
 
 def _describe(exc: SQLAlchemyError) -> str:
     """The database's own message, first line only: never the URL or the password."""
@@ -190,3 +217,9 @@ def adapter_for(platform: str, store_type: str) -> HarvestAdapter:
     if store_type == "relational" and platform.lower().startswith("postgres"):
         return PostgresHarvest()
     raise HarvestError(f"There is no harvest adapter for {platform} ({store_type}) yet.")
+
+
+def record_age_adapter_for(platform: str, store_type: str) -> RecordAgeAdapter:
+    if store_type == "relational" and platform.lower().startswith("postgres"):
+        return PostgresHarvest()
+    raise HarvestError(f"Rows in {platform} ({store_type}) cannot be read yet.")

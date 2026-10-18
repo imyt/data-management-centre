@@ -17,6 +17,7 @@ from app.core.jobs import router as jobs
 from app.core.logs import AccessLogMiddleware, configure_logging
 from app.core.migrations import ensure_database_is_current
 from app.modules.connectors import router as connectors
+from app.modules.evaluation import router as evaluation
 from app.modules.examples import router as examples
 from app.modules.identity import router as identity
 from app.modules.identity.service import IdentityDirectory
@@ -76,6 +77,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(inventory.router, prefix=API_PREFIX)
     app.include_router(connectors.router, prefix=API_PREFIX)
     app.include_router(policy.router, prefix=API_PREFIX)
+    app.include_router(evaluation.router, prefix=API_PREFIX)
     app.include_router(workflow.router, prefix=API_PREFIX)
     return app
 

@@ -1,9 +1,9 @@
 import * as React from "react"
-import { useInfiniteQuery } from "@tanstack/react-query"
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query"
 import { PlusIcon } from "lucide-react"
 
-import type { AppliedControlRead, ControlStatus, ControlSummary } from "@/api"
-import { listAppliedControlsInfiniteOptions, listControlsInfiniteOptions } from "@/api/@tanstack/react-query.gen"
+import type { AppliedControlRead, ControlStatus, ControlSummary, EvaluationResultRead } from "@/api"
+import { listAppliedControlsInfiniteOptions, listControlsInfiniteOptions, listEvaluationResultsOptions } from "@/api/@tanstack/react-query.gen"
 import {
   Button,
   createDataTableColumns,
@@ -19,6 +19,7 @@ import {
 import { problemStatus } from "@/features/applications/problem"
 import { ControlDetailView, NewControlView } from "@/features/controls/control-detail"
 import { subjectLabel } from "@/features/controls/labels"
+import { ResultStatus } from "@/features/evaluation/result-status"
 import { NewPolicyView, NEW_POLICY, PolicyDetailView, PolicyList } from "@/features/controls/policies"
 import { Screen } from "@/features/shell/screen"
 import { useSearchParam } from "@/hooks/use-search-param"
@@ -182,7 +183,7 @@ function LibraryList() {
   )
 }
 
-const appliedColumns = (() => {
+function appliedColumnsFor(results: Map<string, EvaluationResultRead>) {
   const col = createDataTableColumns<AppliedControlRead>()
   return [
     col.accessor((a) => a.subject.name, { id: "subject", header: "Subject" }),
@@ -192,7 +193,7 @@ const appliedColumns = (() => {
     col.display({
       id: "status",
       header: "Status",
-      cell: () => <StatusBadge status="pending" label="Not evaluated yet" size="sm" />,
+      cell: ({ row }) => <ResultStatus result={results.get(row.original.id)} />,
     }),
     col.display({
       id: "why",
@@ -208,7 +209,7 @@ const appliedColumns = (() => {
       ),
     }),
   ]
-})()
+}
 
 function AppliedList() {
   const [, open] = useDetailParam("control")
@@ -217,6 +218,13 @@ function AppliedList() {
     initialPageParam: {},
     getNextPageParam: (page) => page.meta.next_cursor ?? undefined,
   })
+
+  // The latest result of every applied control, to show beside it.
+  const results = useQuery(listEvaluationResultsOptions({ query: { limit: 200 } }))
+  const columns = React.useMemo(
+    () => appliedColumnsFor(new Map((results.data?.data ?? []).map((r) => [r.applied_control_id, r]))),
+    [results.data],
+  )
 
   const first = query.data?.pages[0]
   const rows = React.useMemo(() => query.data?.pages.flatMap((p) => p.data) ?? [], [query.data])
@@ -232,7 +240,7 @@ function AppliedList() {
       )}
       <DataTable<AppliedControlRead>
         label="Applied controls"
-        columns={appliedColumns}
+        columns={columns}
         data={rows}
         getRowId={(a) => a.id}
         loading={query.isPending}

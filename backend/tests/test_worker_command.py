@@ -7,14 +7,22 @@ from app.core.jobs.housekeeping import PURGE
 from app.core.migrations import DatabaseOutOfDateError
 from app.modules.connectors.jobs import HARVEST_ALL
 from app.modules.connectors.service import HARVEST
+from app.modules.evaluation.service import RUN_EVALUATION, SWEEP_EVALUATION
 
 
 def test_registry_has_the_platforms_jobs_and_schedules() -> None:
     registry = worker.build_registry()
 
-    assert {PURGE, HARVEST, HARVEST_ALL} <= set(registry.jobs)
-    assert [schedule.kind for schedule in registry.schedules.values()] == [PURGE, HARVEST_ALL]
+    assert {PURGE, HARVEST, HARVEST_ALL, RUN_EVALUATION, SWEEP_EVALUATION} <= set(registry.jobs)
+    assert [schedule.kind for schedule in registry.schedules.values()] == [
+        PURGE,
+        HARVEST_ALL,
+        SWEEP_EVALUATION,
+    ]
     assert "inventory.data_store_created" in registry.events
+    assert {"policy.applied_control_derived", "connectors.harvest_succeeded"} <= set(
+        registry.events
+    )
 
 
 def test_dmc_worker_needs_a_database_url(

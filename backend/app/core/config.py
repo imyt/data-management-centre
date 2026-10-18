@@ -38,6 +38,8 @@ class Settings(BaseSettings):
     # How often the worker harvests every data store (a store is also harvested when registered
     # and on demand).
     harvest_interval_seconds: int = 86_400
+    # How often the worker evaluates every applied control (events and requests evaluate sooner).
+    evaluation_interval_seconds: int = 21_600
 
     @field_validator("cors_origins", mode="before")
     @classmethod

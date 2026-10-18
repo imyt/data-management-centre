@@ -203,6 +203,9 @@ class Derivation:
         for field, value in changed.items():
             setattr(applied, field, value)
         self._repository.flush_applied(applied)
+        if "rule_version_id" in changed:
+            # Re-derived under a new rule version: results of the old one no longer count.
+            publish(self._session, APPLIED_CONTROL_DERIVED, _payload(applied))
         summary.updated += 1
 
     def _retire(self, applied: AppliedControl, reason: str, summary: DerivationSummary) -> None:
