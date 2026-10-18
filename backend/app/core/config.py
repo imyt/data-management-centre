@@ -25,6 +25,8 @@ class Settings(BaseSettings):
     # SQLAlchemy URLs, e.g. postgresql+psycopg://dmc_app:…@localhost:5432/dmc
     database_url: str | None = None
     migration_database_url: str | None = None
+    # The estate sample database, as the role that owns it; only dmc-seed uses it (ADR 0004 §8).
+    estate_migration_url: str | None = None
     # dev: a persona named in the X-DMC-Dev-User header (ADR 0007). oidc: bearer tokens (Phase 4).
     auth_mode: Literal["dev", "oidc"] = "dev"
     # The git SHA this build came from, reported by GET /api/v1/meta. Unset: asks git, if present.

@@ -11,9 +11,11 @@ uv run pytest                                   # needs Postgres: docker compose
 uv run ruff check . && uv run ruff format --check .
 uv run lint-imports                             # module boundaries
 uv run dmc-migrate upgrade                      # apply migrations (the API refuses to start without them)
-uv run dmc-seed                                 # create the dev personas (refused in staging and production)
+uv run dmc-seed                                 # personas, sample application, estate tables (refused in staging and production)
 uv run dmc-migrate revision -m "add x" --autogenerate   # new migration from model changes
 ```
+
+First run on a fresh database: `docker compose up -d --wait db` (in `infra/`), then `uv run dmc-migrate upgrade` and `uv run dmc-seed`. Without the seed there are no users and the UI shows "not signed in". The seed is idempotent. It creates the seven dev personas, registers a sample application ("Online Shop", `SHOP`) whose data store points at the local `estate` database, and loads the estate's sample tables (`app/estate.py`) through `DMC_ESTATE_MIGRATION_URL`. Harvest reads estate as the read-only `dmc_harvest` role via `DMC_ESTATE_HARVEST_URL` (see `.env.example`). Reference data comes with the migrations.
 
 Responses: every route returns `{data, allowed_actions, meta}` (`Envelope` or, for lists, `ListEnvelope` with `meta.next_cursor`) from `app/core/schemas.py`. Only the platform endpoints are exempt: `/health` (liveness), `/health/ready` (readiness: the database answers, else 503) and `/meta` (environment, version, commit and contract hash for the frontend's pairing check; ADR 0004 §5, ADR 0008). Errors are RFC 9457 problem details (`application/problem+json`).
 

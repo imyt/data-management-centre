@@ -9,6 +9,19 @@ docker compose exec db psql -U postgres -d dmc
 docker compose down                   # stop; add -v to delete the data and re-run the init scripts
 ```
 
+## One-command local setup
+
+A fresh database has no users, so every request shows "not signed in" until it is seeded. From a clean checkout:
+
+```bash
+cd infra && cp .env.example .env && docker compose up -d --wait db
+cd ../backend && uv sync && cp .env.example .env     # set the port in both URLs if you changed DMC_DB_PORT
+uv run dmc-migrate upgrade                           # schemas and reference data
+uv run dmc-seed                                      # personas, the sample application and the estate tables
+```
+
+`dmc-seed` is safe to run again and refuses staging and production.
+
 On first start, `db/init/` creates:
 
 | Name | What |
@@ -17,7 +30,14 @@ On first start, `db/init/` creates:
 | `dmc_app` | Runtime role for the API and worker; data access only |
 | `dmc` | Application database |
 | `dmc_test` | Database used by the backend tests |
-| `estate` | Sample application data store that harvest reads |
+| `dmc_harvest` | Read-only role on `estate`; harvest connects as this role |
+| `estate` | Sample application data store that harvest reads; owned by `dmc_migrator` |
+
+The `estate` tables (`customers`, `orders`, `support_tickets`: names, emails, phones, dates of birth, card last four, addresses, with rows deliberately older than the sample retention policies) are created by `dmc-seed`, not by migrations, so they stay apart from DMC's schema. A volume created before `dmc_harvest` existed picks it up with:
+
+```bash
+docker compose exec -T db bash /docker-entrypoint-initdb.d/02-estate.sh
+```
 
 Parallel worktrees each get their own test database, so their test runs and migrations never collide:
 

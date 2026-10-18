@@ -37,7 +37,7 @@ Goal: everything later slices depend on, already working the way it will in ever
 | 0.9 | Frontend: settle the router (React Router 8 is installed), add the hey-api TanStack Query plugin, wire `AppShell` navigation (Inbox, Assets, Applications, Controls, Reports) with empty screens | ARCHITECTURE §10, §14 |
 | 0.10 | Structured JSON logs with request and job IDs; health for API and worker | ARCHITECTURE §12 |
 | 0.11 | mypy in CI; Dockerfiles for the backend (API and worker share one image) and the frontend (nginx serving the build and proxying `/api/`); `docker compose up` runs everything (done) | ARCHITECTURE §13; ADR 0004 §4 |
-| 0.12 | `dmc-seed` with personas and reference data; the `estate` sample tables | ADR 0004 §8 |
+| 0.12 | `dmc-seed` with personas, a sample application and the `estate` sample tables (reference data ships with the migrations) (done) | ADR 0004 §8 |
 
 **Exit:** `docker compose up` from `infra/` runs Postgres, API, worker and frontend on one origin. CI is green with Postgres. A test write produces an audit event and an outbox event in one transaction, and a job runs in the worker and reports through `/jobs/{id}`.
 
