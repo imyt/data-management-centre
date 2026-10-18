@@ -15,6 +15,7 @@ const DROP = new Set([
   "outline-none", "focus-visible:border-ring", "focus-visible:ring-[3px]", "focus-visible:ring-ring/50",
   "focus-visible:outline-1", "focus-visible:outline-ring", "focus:ring-2", "focus:ring-ring",
   "focus:ring-offset-2", "focus:outline-hidden", "ring-offset-background",
+  "focus-visible:ring-1", "focus-visible:ring-ring", "focus-visible:ring-offset-1", "focus-visible:outline-hidden",
   "focus-visible:ring-destructive/20", "aria-invalid:ring-destructive/20",
   // Elevation: only shadow-sm (menus) and shadow-lg (modals) exist.
   "shadow-xs", "shadow-2xs",
@@ -42,7 +43,7 @@ const REPLACE = new Map([
   ["transition-all", "transition-colors"],
 ])
 
-const MODAL_FILES = new Set(["dialog.tsx", "sheet.tsx"])
+const MODAL_FILES = new Set(["alert-dialog.tsx", "dialog.tsx", "sheet.tsx"])
 const FIELD_FILES = new Set(["input.tsx", "textarea.tsx", "select.tsx"])
 const BORDERS = new Set(["border", "border-l", "border-r", "border-t", "border-b"])
 
