@@ -9,7 +9,7 @@ import argparse
 import sys
 from pathlib import Path
 
-from dmc_api.openapi import render_openapi
+from app.openapi import render_openapi
 
 DEFAULT_PATH = Path(__file__).resolve().parents[2] / "contracts" / "openapi.json"
 

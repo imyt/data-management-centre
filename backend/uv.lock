@@ -2,14 +2,6 @@ version = 1
 revision = 3
 requires-python = ">=3.12"
 
-[manifest]
-members = [
-    "dmc-api",
-    "dmc-backend",
-    "dmc-common",
-    "dmc-platform",
-]
-
 [[package]]
 name = "annotated-doc"
 version = "0.0.5"
@@ -69,34 +61,14 @@ wheels = [
 ]
 
 [[package]]
-name = "dmc-api"
-version = "0.1.0"
-source = { editable = "apps/api" }
-dependencies = [
-    { name = "dmc-common" },
-    { name = "dmc-platform" },
-    { name = "fastapi" },
-    { name = "pydantic-settings" },
-    { name = "uvicorn", extra = ["standard"] },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "dmc-common", editable = "packages/dmc_common" },
-    { name = "dmc-platform", editable = "packages/dmc_platform" },
-    { name = "fastapi", specifier = ">=0.115" },
-    { name = "pydantic-settings", specifier = ">=2" },
-    { name = "uvicorn", extras = ["standard"], specifier = ">=0.30" },
-]
-
-[[package]]
 name = "dmc-backend"
 version = "0.1.0"
-source = { virtual = "." }
+source = { editable = "." }
 dependencies = [
-    { name = "dmc-api" },
-    { name = "dmc-common" },
-    { name = "dmc-platform" },
+    { name = "fastapi" },
+    { name = "pydantic" },
+    { name = "pydantic-settings" },
+    { name = "uvicorn", extra = ["standard"] },
 ]
 
 [package.dev-dependencies]
@@ -109,9 +81,10 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "dmc-api", editable = "apps/api" },
-    { name = "dmc-common", editable = "packages/dmc_common" },
-    { name = "dmc-platform", editable = "packages/dmc_platform" },
+    { name = "fastapi", specifier = ">=0.115" },
+    { name = "pydantic", specifier = ">=2" },
+    { name = "pydantic-settings", specifier = ">=2" },
+    { name = "uvicorn", extras = ["standard"], specifier = ">=0.30" },
 ]
 
 [package.metadata.requires-dev]
@@ -120,32 +93,6 @@ dev = [
     { name = "import-linter" },
     { name = "pytest" },
     { name = "ruff" },
-]
-
-[[package]]
-name = "dmc-common"
-version = "0.1.0"
-source = { editable = "packages/dmc_common" }
-dependencies = [
-    { name = "pydantic" },
-]
-
-[package.metadata]
-requires-dist = [{ name = "pydantic", specifier = ">=2" }]
-
-[[package]]
-name = "dmc-platform"
-version = "0.1.0"
-source = { editable = "packages/dmc_platform" }
-dependencies = [
-    { name = "dmc-common" },
-    { name = "fastapi" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "dmc-common", editable = "packages/dmc_common" },
-    { name = "fastapi", specifier = ">=0.115" },
 ]
 
 [[package]]
