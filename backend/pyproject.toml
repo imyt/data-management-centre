@@ -1,0 +1,42 @@
+[project]
+name = "dmc-backend"
+version = "0.1.0"
+description = "DMC backend: uv workspace root (apps and bounded-context packages)"
+requires-python = ">=3.12"
+dependencies = ["dmc-api", "dmc-common", "dmc-platform"]
+
+[dependency-groups]
+dev = ["pytest", "httpx", "ruff", "import-linter"]
+
+[tool.uv]
+package = false
+
+[tool.uv.workspace]
+members = ["apps/*", "packages/*"]
+
+[tool.uv.sources]
+dmc-api = { workspace = true }
+dmc-common = { workspace = true }
+dmc-platform = { workspace = true }
+
+[tool.pytest.ini_options]
+testpaths = ["apps", "packages"]
+addopts = ["--import-mode=importlib", "-ra"]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "W", "F", "I", "B", "UP", "SIM", "RUF"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["dmc_api", "dmc_common", "dmc_platform"]
+
+[tool.importlinter]
+root_packages = ["dmc_api", "dmc_platform", "dmc_common"]
+
+[[tool.importlinter.contracts]]
+name = "Packages only import downwards"
+type = "layers"
+layers = ["dmc_api", "dmc_platform", "dmc_common"]
