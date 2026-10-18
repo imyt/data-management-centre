@@ -1,6 +1,6 @@
 # ADR 0004: Environments, the database, and frontend/backend pairing
 
-- Status: proposed
+- Status: accepted
 - Date: 2026-10-18
 
 ## Context
