@@ -70,8 +70,15 @@ function Button({
       aria-busy={loading || undefined}
       {...props}
     >
-      {!asChild && loading && <Loader2Icon className="animate-spin" aria-hidden="true" />}
-      {children}
+      {/* Slot needs exactly one child, so asChild passes it through untouched. */}
+      {asChild ? (
+        children
+      ) : (
+        <>
+          {loading && <Loader2Icon className="animate-spin" aria-hidden="true" />}
+          {children}
+        </>
+      )}
     </Comp>
   )
 
