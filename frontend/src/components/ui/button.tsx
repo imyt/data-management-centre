@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils"
 import { Loader2Icon } from "lucide-react"
 import { Slot } from "radix-ui"
 
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/ui/tooltip"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 
 const buttonVariants = cva(
   "inline-flex shrink-0 items-center justify-center gap-2 rounded-sm text-sm font-medium whitespace-nowrap transition-colors duration-fast disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",

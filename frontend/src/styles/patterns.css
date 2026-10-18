@@ -1,5 +1,5 @@
 /*
-  tokens.css  ->  frontend/src/tokens/tokens.css
+  tokens.css  ->  frontend/sr./styles/patterns.css
   Paper + teal. Source of truth is DESIGN.md; change it there first.
   Assumes Tailwind v4 + shadcn/ui. Dark mode via the `.dark` class.
   Import once in your global CSS, after `@import "tailwindcss";`

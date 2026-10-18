@@ -2,6 +2,6 @@
 @import "tw-animate-css";
 @import "@fontsource-variable/inter";
 @import "@fontsource-variable/geist-mono";
-@import "./tokens/tokens.css";
+@import "./styles/patterns.css";
 
 @custom-variant dark (&:is(.dark *));

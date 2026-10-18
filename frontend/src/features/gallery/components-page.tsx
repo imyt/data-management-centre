@@ -1,13 +1,13 @@
 import * as React from "react"
 import { MoonIcon, SunIcon } from "lucide-react"
 
-import { patternEntries } from "@/dev/entries/pattern-entries"
-import { uiEntries } from "@/dev/entries/ui-entries"
-import { Specimen, type GalleryEntry } from "@/dev/specimen"
+import { patternEntries } from "@/features/gallery/entries/pattern-entries"
+import { uiEntries } from "@/features/gallery/entries/ui-entries"
+import { Specimen, type GalleryEntry } from "@/features/gallery/specimen"
 import { useTheme } from "@/lib/theme"
-import { Button } from "@/ui/button"
-import { Label } from "@/ui/label"
-import { Switch } from "@/ui/switch"
+import { Button } from "@/components/ui/button"
+import { Label } from "@/components/ui/label"
+import { Switch } from "@/components/ui/switch"
 
 export const galleryEntries: GalleryEntry[] = [...uiEntries, ...patternEntries]
 

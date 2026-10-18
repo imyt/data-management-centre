@@ -1,6 +1,6 @@
 import { CircleCheckIcon, CircleDashedIcon, CircleXIcon, TriangleAlertIcon, type LucideIcon } from "lucide-react"
 
-import { Badge } from "@/ui/badge"
+import { Badge } from "@/components/ui/badge"
 
 export type Status = "success" | "warning" | "danger" | "neutral"
 

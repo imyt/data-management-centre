@@ -18,10 +18,10 @@ import { useVirtualizer } from "@tanstack/react-virtual"
 import { ArrowDownIcon, ArrowUpDownIcon, ArrowUpIcon, InboxIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
-import { EmptyState, ErrorState } from "@/patterns/states"
-import { Checkbox } from "@/ui/checkbox"
-import { Skeleton } from "@/ui/skeleton"
-import { TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/table"
+import { EmptyState, ErrorState } from "@/components/patterns/states"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Skeleton } from "@/components/ui/skeleton"
+import { TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 
 export interface DataTableColumnMeta {
   /** Numbers are right-aligned with tabular figures. */

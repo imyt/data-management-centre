@@ -32,7 +32,7 @@ function write(key: string, value: string) {
   }
 }
 
-/** Applies `.dark` and `data-density` to <html>, as tokens.css expects, and persists both per user. */
+/** Applies `.dark` and `data-density` to <html>, as patterns.css expects, and persists both per user. */
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setThemeState] = React.useState<Theme>(() =>
     read(THEME_KEY, ["light", "dark"] as const, "light")
