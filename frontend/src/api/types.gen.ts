@@ -1278,6 +1278,10 @@ export type GetApplicationData = {
 
 export type GetApplicationErrors = {
     /**
+     * Permission denied
+     */
+    403: ProblemDetail;
+    /**
      * Not found
      */
     404: ProblemDetail;

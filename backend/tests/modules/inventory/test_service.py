@@ -166,7 +166,7 @@ def test_environments_and_data_stores_belong_to_the_application(
                 connection_ref="vault:dmc/orders-db",
             ),
         )
-        detail = service.get_application(application.id)
+        detail = service.get_application(CALLER, application.id)
 
     assert store.harvest_status == "never"
     assert [e.name for e in detail.environments] == ["Production"]
@@ -205,11 +205,13 @@ def test_list_filters_searches_and_pages(database: Database, finance: uuid.UUID)
                 CALLER,
                 _new_app(domain, code=code, name=name, lifecycle_status=LifecycleStatus.ACTIVE),
             )
-        first = service.list_applications(limit=2, cursor=None, domain_id=finance)
-        second = service.list_applications(limit=2, cursor=first.next_cursor, domain_id=finance)
-        searched = service.list_applications(limit=10, cursor=None, query="LEDG")
+        first = service.list_applications(CALLER, limit=2, cursor=None, domain_id=finance)
+        second = service.list_applications(
+            CALLER, limit=2, cursor=first.next_cursor, domain_id=finance
+        )
+        searched = service.list_applications(CALLER, limit=10, cursor=None, query="LEDG")
         planned = service.list_applications(
-            limit=10, cursor=None, lifecycle_status=LifecycleStatus.PLANNED
+            CALLER, limit=10, cursor=None, lifecycle_status=LifecycleStatus.PLANNED
         )
 
     assert [a.code for a in first.items] == ["BIL", "GL"]
@@ -240,3 +242,9 @@ def test_roles_and_domain_scope_decide_writes_and_allowed_actions(
         InventoryService(session).update_application(
             customer_owner, application.id, ApplicationUpdate(name="Mine now")
         )
+    with pytest.raises(PermissionDeniedError), database.transaction() as session:
+        InventoryService(session).get_application(customer_owner, application.id)
+    with database.transaction() as session:
+        page = InventoryService(session).list_applications(customer_owner, limit=10, cursor=None)
+    assert page.items == []
+    assert page.total == 0

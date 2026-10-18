@@ -130,7 +130,12 @@ def list_applications(
     lifecycle_status: Annotated[LifecycleStatus | None, Query()] = None,
 ) -> ApplicationPage:
     page = service.list_applications(
-        limit=limit, cursor=cursor, query=q, domain_id=domain_id, lifecycle_status=lifecycle_status
+        principal,
+        limit=limit,
+        cursor=cursor,
+        query=q,
+        domain_id=domain_id,
+        lifecycle_status=lifecycle_status,
     )
     return ApplicationPage(
         data=[ApplicationRead.model_validate(item) for item in page.items],
@@ -162,12 +167,12 @@ def create_application(
     response_model=ApplicationResponse,
     operation_id="getApplication",
     summary="Get an application with its environments and data stores",
-    responses=error_responses(404, 422),
+    responses=error_responses(403, 404, 422),
 )
 def get_application(
     application_id: uuid.UUID, service: Service, principal: PrincipalDep
 ) -> ApplicationResponse:
-    application = service.get_application(application_id)
+    application = service.get_application(principal, application_id)
     return ApplicationResponse(
         data=ApplicationDetail.model_validate(application),
         allowed_actions=application_actions(principal, application),

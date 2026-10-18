@@ -36,9 +36,15 @@ class InventoryRepository:
     # --- Applications
 
     def _filtered(
-        self, query: str | None, domain_id: uuid.UUID | None, lifecycle_status: str | None
+        self,
+        query: str | None,
+        domain_id: uuid.UUID | None,
+        lifecycle_status: str | None,
+        scope: frozenset[uuid.UUID] | None,
     ) -> Select[tuple[Application]]:
         statement = select(Application)
+        if scope is not None:
+            statement = statement.where(Application.domain_id.in_(scope))
         if query:
             pattern = f"%{query}%"
             statement = statement.where(
@@ -58,9 +64,13 @@ class InventoryRepository:
         query: str | None,
         domain_id: uuid.UUID | None,
         lifecycle_status: str | None,
+        scope: frozenset[uuid.UUID] | None,
     ) -> list[Application]:
-        """Ordered by (name, id) so the keyset cursor is stable when names repeat."""
-        statement = self._filtered(query, domain_id, lifecycle_status)
+        """Ordered by (name, id) so the keyset cursor is stable when names repeat.
+
+        `scope` limits rows to those domains; None means every domain.
+        """
+        statement = self._filtered(query, domain_id, lifecycle_status, scope)
         if after is not None:
             name, after_id = after
             statement = statement.where(
@@ -73,9 +83,14 @@ class InventoryRepository:
         return list(self._session.scalars(statement))
 
     def count_applications(
-        self, *, query: str | None, domain_id: uuid.UUID | None, lifecycle_status: str | None
+        self,
+        *,
+        query: str | None,
+        domain_id: uuid.UUID | None,
+        lifecycle_status: str | None,
+        scope: frozenset[uuid.UUID] | None,
     ) -> int:
-        subquery = self._filtered(query, domain_id, lifecycle_status).subquery()
+        subquery = self._filtered(query, domain_id, lifecycle_status, scope).subquery()
         return self._session.scalar(select(func.count()).select_from(subquery)) or 0
 
     def get_application(self, application_id: uuid.UUID) -> Application | None:

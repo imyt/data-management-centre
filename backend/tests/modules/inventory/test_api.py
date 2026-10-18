@@ -172,8 +172,12 @@ def test_roles_and_scope_decide_writes_and_allowed_actions(api: TestClient) -> N
     as_app_owner = {DEV_USER_HEADER: "marcus.webb"}  # scoped to Customer and Finance
 
     assert api.get("/api/v1/applications", headers=as_auditor).json()["allowed_actions"] == []
-    detail = api.get(f"/api/v1/applications/{app_id}", headers=as_app_owner).json()
-    assert detail["allowed_actions"] == []
+    assert api.get(f"/api/v1/applications/{app_id}", headers=as_app_owner).status_code == 403
+    listed = api.get("/api/v1/applications", headers=as_app_owner).json()
+    assert listed["data"] == []
+    assert listed["allowed_actions"] == ["create"]
+    auditor_view = api.get(f"/api/v1/applications/{app_id}", headers=as_auditor).json()
+    assert auditor_view["allowed_actions"] == []
     denied = api.patch(f"/api/v1/applications/{app_id}", json={"name": "X"}, headers=as_app_owner)
     assert denied.status_code == 403
     assert denied.headers["content-type"] == "application/problem+json"

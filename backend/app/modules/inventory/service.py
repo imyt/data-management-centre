@@ -10,7 +10,12 @@ from typing import Any
 from sqlalchemy.orm import Session
 
 from app.core.auth import Permission, Principal, Role, allowed_actions, require
-from app.core.errors import ConflictError, InvalidInputError, NotFoundError
+from app.core.errors import (
+    ConflictError,
+    InvalidInputError,
+    NotFoundError,
+    PermissionDeniedError,
+)
 from app.core.pagination import PageResult, decode_cursor, encode_cursor
 from app.modules.audit.service import AuditService
 from app.modules.inventory.domain import LifecycleStatus
@@ -96,6 +101,7 @@ class InventoryService:
 
     def list_applications(
         self,
+        principal: Principal,
         *,
         limit: int,
         cursor: str | None,
@@ -103,7 +109,7 @@ class InventoryService:
         domain_id: uuid.UUID | None = None,
         lifecycle_status: LifecycleStatus | None = None,
     ) -> PageResult[Application]:
-        """A page of applications ordered by name, filtered on the server."""
+        """A page of the applications in the caller's domains, ordered by name."""
         after = self._decode_application_cursor(cursor) if cursor else None
         query = query.strip() if query else None
         status = lifecycle_status.value if lifecycle_status else None
@@ -113,17 +119,28 @@ class InventoryService:
             query=query,
             domain_id=domain_id,
             lifecycle_status=status,
+            scope=principal.domain_ids,
         )
         items = rows[:limit]
         next_cursor = (
             encode_cursor(f"{items[-1].id}|{items[-1].name}") if len(rows) > limit else None
         )
         total = self._repository.count_applications(
-            query=query, domain_id=domain_id, lifecycle_status=status
+            query=query, domain_id=domain_id, lifecycle_status=status, scope=principal.domain_ids
         )
         return PageResult(items=items, next_cursor=next_cursor, total=total)
 
-    def get_application(self, application_id: uuid.UUID) -> Application:
+    def get_application(self, principal: Principal, application_id: uuid.UUID) -> Application:
+        """One application with its environments and stores, if it is in the caller's scope."""
+        application = self._get(application_id)
+        if not principal.in_scope(application.domain_id):
+            raise PermissionDeniedError(
+                "This application is outside the domains you are scoped to.",
+                details={"id": str(application_id)},
+            )
+        return application
+
+    def _get(self, application_id: uuid.UUID) -> Application:
         application = self._repository.get_application(application_id)
         if application is None:
             raise NotFoundError(
@@ -149,12 +166,12 @@ class InventoryService:
             subject_id=application.id,
             after=_application_snapshot(application),
         )
-        return self.get_application(application.id)
+        return self._get(application.id)
 
     def update_application(
         self, principal: Principal, application_id: uuid.UUID, data: ApplicationUpdate
     ) -> Application:
-        application = self.get_application(application_id)
+        application = self._get(application_id)
         require(principal, EDIT_APPLICATION, application.domain_id)
         changes = data.model_dump(exclude_unset=True)
         for required in ("name", "code", "domain_id", "criticality", "hosting", "lifecycle_status"):
@@ -185,12 +202,12 @@ class InventoryService:
             before={k: before[k] for k in changed},
             after={k: after[k] for k in changed},
         )
-        return self.get_application(application.id)
+        return self._get(application.id)
 
     def add_environment(
         self, principal: Principal, application_id: uuid.UUID, data: EnvironmentCreate
     ) -> AppEnvironment:
-        application = self.get_application(application_id)
+        application = self._get(application_id)
         require(principal, ADD_ENVIRONMENT, application.domain_id)
         self._require_region(data.region_id)
         environment = self._repository.add(
