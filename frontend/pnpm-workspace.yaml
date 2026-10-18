@@ -5,3 +5,8 @@ minimumReleaseAgeExclude:
 permissions:
   '@tanstack/react-table':
     skills: true
+# pnpm 12 links approved agent skills into an agent's directory, which it detects from the
+# environment. CI has no agent, so name the directory: the install fails without one.
+skills:
+  dirs:
+    - .claude/skills
