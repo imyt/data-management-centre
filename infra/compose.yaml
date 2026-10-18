@@ -1,0 +1,27 @@
+# Local stack (ADR 0004). Start the database with: docker compose up -d --wait db
+name: dmc
+
+services:
+  db:
+    image: postgres:18
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      # Read by db/init/01-roles-and-databases.sh on first start only.
+      DMC_MIGRATOR_PASSWORD: ${DMC_MIGRATOR_PASSWORD:-dmc_migrator}
+      DMC_APP_PASSWORD: ${DMC_APP_PASSWORD:-dmc_app}
+    ports:
+      - "${DMC_DB_PORT:-5432}:5432"
+    volumes:
+      # Postgres 18 images keep data in a versioned folder under /var/lib/postgresql.
+      - db-data:/var/lib/postgresql
+      - ./db/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      # TCP, not the socket: the server only listens on TCP once the init scripts have finished.
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U postgres -d dmc"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+volumes:
+  db-data:

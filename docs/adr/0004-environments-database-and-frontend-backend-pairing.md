@@ -40,7 +40,7 @@ What exists today:
 
 - `DMC_DATABASE_URL` is the runtime connection (SQLAlchemy 2.x with psycopg 3), used by both the API and the worker. `DMC_MIGRATION_DATABASE_URL` is used only by the migration step.
 - **Runtime role:** read and write data only (DML) on the module schemas. **Migration role:** owns the schemas and runs DDL. The app never connects as the migration role.
-- Locally, `infra/db/init/*.sql` creates the roles, the `dmc` and `estate` databases, and the module schemas when the container first starts. In deployed environments, infrastructure code does this.
+- Locally, `infra/db/init/` creates the roles and the `dmc`, `dmc_test` and `estate` databases when the container first starts, and sets default privileges so every schema and table the migration role creates is usable by the runtime role. In deployed environments, infrastructure code does the same. Module schemas themselves are created by migrations, so a new module needs no change to the init scripts.
 - The architecture rule that no module writes another module's tables is enforced in code (`import-linter`, service interfaces), not by one database role per module. Splitting roles per module is deferred until a module actually becomes a service.
 
 ### 3. Migrations: Alembic, run as a separate step
