@@ -11,7 +11,8 @@
     "test": "vitest run",
     "e2e": "playwright test",
     "e2e:update": "playwright test --update-snapshots",
-    "ui:adapt": "node scripts/adapt-shadcn.mjs"
+    "ui:adapt": "node scripts/adapt-shadcn.mjs",
+    "api:sync": "uv --directory ../backend run python scripts/export_openapi.py && openapi-ts"
   },
   "dependencies": {
     "@fontsource-variable/geist-mono": "^5.3.0",
@@ -36,6 +37,7 @@
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.14.0",
+    "@hey-api/openapi-ts": "^0.99.0",
     "@playwright/test": "^1.64.1",
     "@tailwindcss/vite": "^4.3.3",
     "@types/node": "^26.6.5",
