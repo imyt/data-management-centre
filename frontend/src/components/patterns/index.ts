@@ -16,6 +16,7 @@ export { EntityHeader, type EntityMeta } from "./entity-header"
 export { ExplainWhy, type ExplainSource } from "./explain-why"
 export { Field, fieldA11y, ReadOnlyField } from "./field"
 export { FilterChips, type ActiveFilter } from "./filter-chips"
+export { Button, SelectInput, TextArea, TextInput, type SelectOption } from "./form-controls"
 export {
   EnvironmentBadge,
   GlobalNav,

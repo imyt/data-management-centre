@@ -1,4 +1,5 @@
 import * as React from "react"
+import { useQuery } from "@tanstack/react-query"
 import {
   AppWindowIcon,
   DatabaseIcon,
@@ -9,6 +10,7 @@ import {
 } from "lucide-react"
 import { Outlet, useLocation } from "react-router"
 
+import { listDomainsOptions } from "@/api/@tanstack/react-query.gen"
 import {
   AccountMenu,
   AppShell,
@@ -18,6 +20,7 @@ import {
   type ScopeOption,
   type Section,
 } from "@/components/patterns"
+import { ALL_DOMAINS, type ShellContext } from "@/features/shell/scope"
 
 import { useIdentity } from "./use-identity"
 import { usePairing } from "./use-pairing"
@@ -39,8 +42,7 @@ const SECTION_PAGES: Record<Section, { label: string; icon: LucideIcon }> = {
   reports: { label: "Posture", icon: LayoutDashboardIcon },
 }
 
-// Domains come with reference data (slice 1); until then the only scope is everything.
-const SCOPES: ScopeOption[] = [{ id: "all", label: "All domains" }]
+const ALL_SCOPE: ScopeOption = { id: ALL_DOMAINS, label: "All domains" }
 
 function sectionFor(pathname: string): Section {
   const first = pathname.split("/")[1]
@@ -52,9 +54,16 @@ function sectionFor(pathname: string): Section {
 export function AppLayout() {
   const { pathname } = useLocation()
   const section = sectionFor(pathname)
-  const [scope, setScope] = React.useState(SCOPES[0].id)
+  const [scope, setScope] = React.useState(ALL_DOMAINS)
   const pairing = usePairing()
   const identity = useIdentity()
+  // Scope options are the domains from reference data (FR-D2). Until they load, only "All domains".
+  const domains = useQuery(listDomainsOptions())
+  const scopes = React.useMemo<ScopeOption[]>(
+    () => [ALL_SCOPE, ...(domains.data?.data ?? []).map((d) => ({ id: d.id, label: d.name }))],
+    [domains.data]
+  )
+  const context: ShellContext = { domainId: scope === ALL_DOMAINS ? null : scope }
 
   const page = SECTION_PAGES[section]
   const nav: NavGroup[] = [{ items: [{ label: page.label, to: SECTION_ROUTES[section], icon: page.icon }] }]
@@ -67,7 +76,7 @@ export function AppLayout() {
           <PortalHeader
             sectionRoutes={SECTION_ROUTES}
             inboxCount={0}
-            scopes={SCOPES}
+            scopes={scopes}
             scope={scope}
             onScopeChange={setScope}
             posture={null}
@@ -79,7 +88,7 @@ export function AppLayout() {
       }
       nav={nav}
     >
-      <Outlet />
+      <Outlet context={context} />
     </AppShell>
   )
 }

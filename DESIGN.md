@@ -73,7 +73,7 @@ Tokens live in `frontend/src/styles/patterns.css`.
 
 ## Patterns
 
-Built: `AppShell`, `PortalHeader` (with `EnvironmentBadge` outside production), `UpdateBanner`, `DmcMark`, `StageTracker`, `DetailSplit` and `DetailLayout`, `EntityHeader`, `StatusBadge`, `ExplainWhy`, `ConfirmWithReason`, state set (empty, error, no access, not found, loading). DataTable is maintained separately.
+Built: `AppShell`, `PortalHeader` (with `EnvironmentBadge` outside production), `UpdateBanner`, `DmcMark`, `StageTracker`, `DetailSplit` and `DetailLayout`, `EntityHeader`, `StatusBadge`, `ExplainWhy`, `ConfirmWithReason`, state set (empty, error, no access, not found, loading), form controls (`Button`, `TextInput`, `TextArea`, `SelectInput`, paired with `Field`). DataTable is maintained separately.
 
 Next as screens need them: command palette, inbox and approval card, filter builder, compare view, lineage graph, audit timeline, evidence viewer, wizard, background job progress, notification centre.
 
