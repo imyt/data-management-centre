@@ -86,7 +86,7 @@ Next as screens need them: command palette, inbox and approval card, filter buil
 
 ## Enforcement
 
-- Screens import from `components/patterns`, never `components/ui` (ESLint boundaries).
+- Screens import from `components/patterns`, never `components/ui` (oxlint `no-restricted-imports`; the gallery is exempt).
 - No raw hex or arbitrary Tailwind values outside the token file.
 - axe and Playwright visual tests on the gallery; Lighthouse performance budgets.
 - Every API response carries `allowed_actions`, `reason` for derived items, `evaluated_at`, and paging.

@@ -273,7 +273,7 @@ Main resources: `applications`, `environments`, `data-stores`, `assets`, `data-e
 
 ## 10. Frontend
 
-- Screens in `src/features/<area>` import UI only from `src/components/patterns`, enforced by ESLint boundaries.
+- Screens in `src/features/<area>` import UI only from `src/components/patterns`, enforced by oxlint `no-restricted-imports`.
 - Server state through TanStack Query; selection and filters in the URL so every view is deep-linkable.
 - Layout: `AppShell` with `PortalHeader`; entity detail uses `EntityHeader` and `StageTracker`; list and detail through `DetailSplit`.
 - Actions are rendered from `allowed_actions`.
@@ -293,7 +293,7 @@ In-app inbox items for anything awaiting a user; email digests by default; immed
 
 | Gate | Tool |
 |---|---|
-| Lint and types | ESLint (with boundaries), TypeScript; Ruff, mypy |
+| Lint and types | oxlint (with `no-restricted-imports` boundaries), TypeScript; Ruff, mypy |
 | Module boundaries | `import-linter` contracts |
 | Response contract | Test that every route's response model inherits the base |
 | Tests | Vitest, pytest, Playwright end-to-end |

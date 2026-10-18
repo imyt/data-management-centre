@@ -36,7 +36,7 @@ export function Specimen({ entry }: { entry: GalleryEntry }) {
         <h2 id={headingId} className="text-xl leading-tight font-semibold tracking-tight">
           {entry.name}
         </h2>
-        <span className="mono text-text-tertiary">src/{entry.layer}</span>
+        <span className="mono text-text-tertiary">src/components/{entry.layer}</span>
       </div>
       <p className="mb-6 max-w-(--content-max) text-sm text-muted-foreground">{entry.summary}</p>
 
