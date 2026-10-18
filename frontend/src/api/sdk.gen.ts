@@ -2,7 +2,7 @@
 
 import type { Client, ClientMeta, Options as Options2, RequestResult, TDataShape } from './client';
 import { client } from './client.gen';
-import type { GetExampleData, GetExampleErrors, GetExampleResponses, GetHealthData, GetHealthReadyData, GetHealthReadyErrors, GetHealthReadyResponses, GetHealthResponses, GetMeData, GetMeErrors, GetMeResponses, GetMetaData, GetMetaResponses, ListDevUsersData, ListDevUsersErrors, ListDevUsersResponses, ListExamplesData, ListExamplesErrors, ListExamplesResponses } from './types.gen';
+import type { GetExampleData, GetExampleErrors, GetExampleResponses, GetHealthData, GetHealthReadyData, GetHealthReadyErrors, GetHealthReadyResponses, GetHealthResponses, GetJobData, GetJobErrors, GetJobResponses, GetMeData, GetMeErrors, GetMeResponses, GetMetaData, GetMetaResponses, ListDevUsersData, ListDevUsersErrors, ListDevUsersResponses, ListExamplesData, ListExamplesErrors, ListExamplesResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -32,6 +32,11 @@ export const getHealthReady = <ThrowOnError extends boolean = false>(options?: O
  * Environment, build and contract hash
  */
 export const getMeta = <ThrowOnError extends boolean = false>(options?: Options<GetMetaData, ThrowOnError>): RequestResult<GetMetaResponses, unknown, ThrowOnError> => (options?.client ?? client).get<GetMetaResponses, unknown, ThrowOnError>({ url: '/api/v1/meta', ...options });
+
+/**
+ * Get a background job's status, progress and result
+ */
+export const getJob = <ThrowOnError extends boolean = false>(options: Options<GetJobData, ThrowOnError>): RequestResult<GetJobResponses, GetJobErrors, ThrowOnError> => (options.client ?? client).get<GetJobResponses, GetJobErrors, ThrowOnError>({ url: '/api/v1/jobs/{job_id}', ...options });
 
 /**
  * List examples

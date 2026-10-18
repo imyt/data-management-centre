@@ -3,8 +3,8 @@
 import { type DefaultError, type InfiniteData, infiniteQueryOptions, queryOptions } from '@tanstack/react-query';
 
 import { client } from '../client.gen';
-import { getExample, getHealth, getHealthReady, getMe, getMeta, listDevUsers, listExamples, type Options } from '../sdk.gen';
-import type { GetExampleData, GetExampleError, GetExampleResponse, GetHealthData, GetHealthReadyData, GetHealthReadyError, GetHealthReadyResponse, GetHealthResponse, GetMeData, GetMeError, GetMeResponse, GetMetaData, GetMetaResponse, ListDevUsersData, ListDevUsersError, ListDevUsersResponse, ListExamplesData, ListExamplesError, ListExamplesResponse } from '../types.gen';
+import { getExample, getHealth, getHealthReady, getJob, getMe, getMeta, listDevUsers, listExamples, type Options } from '../sdk.gen';
+import type { GetExampleData, GetExampleError, GetExampleResponse, GetHealthData, GetHealthReadyData, GetHealthReadyError, GetHealthReadyResponse, GetHealthResponse, GetJobData, GetJobError, GetJobResponse, GetMeData, GetMeError, GetMeResponse, GetMetaData, GetMetaResponse, ListDevUsersData, ListDevUsersError, ListDevUsersResponse, ListExamplesData, ListExamplesError, ListExamplesResponse } from '../types.gen';
 
 export type QueryKey<TOptions extends Options> = [
     Pick<TOptions, 'baseUrl' | 'body' | 'headers' | 'path' | 'query'> & {
@@ -91,6 +91,24 @@ export const getMetaOptions = (options?: Options<GetMetaData>) => queryOptions<G
         return data;
     },
     queryKey: getMetaQueryKey(options)
+});
+
+export const getJobQueryKey = (options: Options<GetJobData>) => createQueryKey('getJob', options);
+
+/**
+ * Get a background job's status, progress and result
+ */
+export const getJobOptions = (options: Options<GetJobData>) => queryOptions<GetJobResponse, GetJobError, GetJobResponse, ReturnType<typeof getJobQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await getJob({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: getJobQueryKey(options)
 });
 
 export const listExamplesQueryKey = (options?: Options<ListExamplesData>) => createQueryKey('listExamples', options);

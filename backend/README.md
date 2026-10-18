@@ -6,6 +6,7 @@ One FastAPI app: `app/core` (config, errors, base schemas) and one package per d
 uv sync                                         # create .venv with the app and dev tools
 cp .env.example .env                            # database URLs and local overrides
 uv run uvicorn app.main:app --reload            # http://localhost:8000/api/v1/health, docs at /docs
+uv run dmc-worker                               # background jobs, outbox relay and schedules; Ctrl+C stops it
 uv run pytest                                   # needs Postgres: docker compose up -d --wait db (in infra/)
 uv run ruff check . && uv run ruff format --check .
 uv run lint-imports                             # module boundaries
@@ -20,3 +21,5 @@ Logs: JSON lines on stdout, plain text locally (`DMC_LOG_FORMAT` overrides). Eac
 After any API change, run `npm run api:sync` from `frontend/`. It exports `contracts/openapi.json` and regenerates `frontend/src/api/`. Commit both together.
 
 Database access, sessions and the test database: [ADR 0005](../docs/adr/0005-database-layer.md).
+
+Background work ([ADR 0009](../docs/adr/0009-jobs-outbox-and-idempotency.md)): `enqueue(session, kind, payload)` (`app.core.jobs`) queues a job and `publish(session, type, payload)` (`app.core.outbox`) writes a domain event, both in the caller's transaction. Handlers and schedules are registered in `app/worker.py`. Routes that start a long operation return `accepted(request, job)` (`202` with `Location: /api/v1/jobs/{id}`); retryable writes take `IdempotencyDep` (`app.core.idempotency`) and return through `idempotency.record(...)`.

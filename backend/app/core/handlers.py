@@ -8,7 +8,7 @@ from typing import Any
 from fastapi import FastAPI, Request, status
 from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, Response
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.types import ASGIApp, Message, Receive, Scope, Send
 
@@ -20,6 +20,7 @@ from app.core.errors import (
     PermissionDeniedError,
     UnauthenticatedError,
 )
+from app.core.idempotency import IdempotentReplay
 from app.core.logs import log_context
 from app.core.schemas import PROBLEM_JSON, ProblemDetail, ValidationIssue
 
@@ -140,6 +141,10 @@ def register_error_handlers(app: FastAPI) -> None:
             detail=exc.message,
             extensions=exc.details,
         )
+
+    @app.exception_handler(IdempotentReplay)
+    async def _replay(request: Request, exc: IdempotentReplay) -> Response:
+        return exc.response()
 
     @app.exception_handler(RequestValidationError)
     async def _validation(request: Request, exc: RequestValidationError) -> JSONResponse:

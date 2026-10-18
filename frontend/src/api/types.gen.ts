@@ -84,6 +84,88 @@ export type HealthReadyRead = {
 };
 
 /**
+ * JobRead
+ *
+ * A background job's state. Poll it while `status` is queued or running.
+ */
+export type JobRead = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Kind
+     *
+     * What the job does, `<module>.<verb>`.
+     */
+    kind: string;
+    status: JobStatus;
+    /**
+     * Progress
+     *
+     * Percent done (0 to 100), when the job reports it.
+     */
+    progress: number | null;
+    /**
+     * Result
+     *
+     * What the job produced, once it has succeeded.
+     */
+    result: unknown | null;
+    /**
+     * Error
+     *
+     * Why the last attempt failed. Set while a failed job waits for a retry.
+     */
+    error: string | null;
+    /**
+     * Attempts
+     */
+    attempts: number;
+    /**
+     * Max Attempts
+     */
+    max_attempts: number;
+    /**
+     * Created At
+     */
+    created_at: string;
+    /**
+     * Run After
+     *
+     * Not started before this time (retries back off).
+     */
+    run_after: string;
+    /**
+     * Started At
+     */
+    started_at: string | null;
+    /**
+     * Finished At
+     */
+    finished_at: string | null;
+};
+
+/**
+ * JobResponse
+ */
+export type JobResponse = {
+    data: JobRead;
+    /**
+     * Allowed Actions
+     *
+     * Actions the caller may take on `data` right now.
+     */
+    allowed_actions: Array<string>;
+    meta: Meta;
+};
+
+/**
+ * JobStatus
+ */
+export type JobStatus = 'queued' | 'running' | 'succeeded' | 'failed' | 'cancelled';
+
+/**
  * ListMeta
  *
  * Meta for a list: freshness plus cursor paging.
@@ -364,6 +446,44 @@ export type GetMetaResponses = {
 };
 
 export type GetMetaResponse = GetMetaResponses[keyof GetMetaResponses];
+
+export type GetJobData = {
+    body?: never;
+    path: {
+        /**
+         * Job Id
+         */
+        job_id: string;
+    };
+    query?: never;
+    url: '/api/v1/jobs/{job_id}';
+};
+
+export type GetJobErrors = {
+    /**
+     * Not signed in
+     */
+    401: ProblemDetail;
+    /**
+     * Not found
+     */
+    404: ProblemDetail;
+    /**
+     * Validation error
+     */
+    422: ProblemDetail;
+};
+
+export type GetJobError = GetJobErrors[keyof GetJobErrors];
+
+export type GetJobResponses = {
+    /**
+     * Successful Response
+     */
+    200: JobResponse;
+};
+
+export type GetJobResponse = GetJobResponses[keyof GetJobResponses];
 
 export type ListExamplesData = {
     body?: never;

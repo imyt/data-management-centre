@@ -13,8 +13,14 @@ from app.core.db import Base
 config = context.config
 
 
+# Core's own tables, in the `platform` schema.
+CORE_MODELS = ("app.core.jobs.models", "app.core.outbox", "app.core.idempotency")
+
+
 def _import_all_models() -> None:
-    """Import every module's `models`, so their tables are on Base.metadata for autogenerate."""
+    """Import core's and every module's `models`, so their tables are on Base.metadata."""
+    for name in CORE_MODELS:
+        importlib.import_module(name)
     for module in pkgutil.iter_modules(app.modules.__path__):
         if importlib.util.find_spec(f"app.modules.{module.name}.models") is not None:
             importlib.import_module(f"app.modules.{module.name}.models")

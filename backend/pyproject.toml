@@ -16,6 +16,7 @@ dependencies = [
 [project.scripts]
 dmc-migrate = "app.core.migrations:main"
 dmc-seed = "app.seed:main"
+dmc-worker = "app.worker:main"
 
 [dependency-groups]
 dev = ["pytest", "httpx", "ruff", "import-linter"]
@@ -46,14 +47,14 @@ known-first-party = ["app"]
 root_packages = ["app"]
 
 [[tool.importlinter.contracts]]
-name = "Core never imports modules; only the app wires them"
+name = "Core never imports modules; only the app, the seed and the worker wire them"
 type = "layers"
-layers = ["app.openapi", "app.main", "app.seed", "app.modules", "app.core"]
+layers = ["app.openapi", "app.main", "app.seed | app.worker", "app.modules", "app.core"]
 
 [[tool.importlinter.contracts]]
 name = "Modules reach each other only through service.py"
 type = "protected"
 protected_modules = ["app.modules.*"]
-allowed_importers = ["app.main", "app.seed"]
+allowed_importers = ["app.main", "app.seed", "app.worker"]
 ignore_imports = ["app.modules.** -> app.modules.*.service"]
 unmatched_ignore_imports_alerting = "none"

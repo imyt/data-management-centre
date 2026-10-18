@@ -93,6 +93,7 @@ Rules:
 - Modules call each other only through a public `service.py` interface; contracts are enforced in CI with `import-linter`.
 - Each module owns its database schema; no module writes another module's tables.
 - Cross-module reactions use domain events written to an outbox table in the same transaction and processed by the worker.
+- Core owns the `platform` schema: the job queue, the outbox, worker heartbeats and idempotency keys (ADR 0009).
 
 ## 6. Data model
 
@@ -158,7 +159,9 @@ Reference data: `domain`, `data_category`, `region`, `retention_policy`, `purpos
 | `attestation` | campaign, subject, `attester_id`, state, signed_at |
 | `inbox_item` | `user_id`, kind, subject, due_at, state |
 | `audit_event` | actor, action, subject, reason, before, after, at, prev_hash, hash |
-| `outbox_event` | type, payload, created_at, processed_at |
+| `outbox_event` | type, payload, created_at, available_at, processed_at, attempts, last_error; each handler's delivery recorded once in `outbox_delivery` |
+| `job` | kind, payload, status (queued, running, succeeded, failed, cancelled), attempts, max_attempts, run_after, locked_by, locked_at, progress, result, error, created_by, idempotency_key |
+| `idempotency_key` | owner, key, request_hash, response, expires_at (24 hours) |
 
 ### 6.4 State machines
 

@@ -29,6 +29,10 @@ class Settings(BaseSettings):
     auth_mode: Literal["dev", "oidc"] = "dev"
     # The git SHA this build came from, reported by GET /api/v1/meta. Unset: asks git, if present.
     commit: str | None = None
+    # Worker (dmc-worker): seconds between polls when idle, and how long a job's lease lasts
+    # without a refresh before another worker treats its worker as dead and requeues it.
+    worker_poll_seconds: float = 1.0
+    job_lease_seconds: int = 300
 
     @field_validator("cors_origins", mode="before")
     @classmethod
