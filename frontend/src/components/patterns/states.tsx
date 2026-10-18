@@ -2,7 +2,7 @@ import * as React from "react"
 import { CircleXIcon, LockIcon, type LucideIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
-import { Button } from "@/ui/button"
+import { Button } from "@/components/ui/button"
 
 interface EmptyStateProps {
   icon: LucideIcon

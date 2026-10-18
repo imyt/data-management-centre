@@ -1,8 +1,8 @@
 import { ChevronDownIcon, DownloadIcon, PlusIcon, SearchIcon, TrashIcon } from "lucide-react"
 import { toast } from "sonner"
 
-import type { GalleryEntry } from "@/dev/specimen"
-import { Badge } from "@/ui/badge"
+import type { GalleryEntry } from "@/features/gallery/specimen"
+import { Badge } from "@/components/ui/badge"
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -10,10 +10,10 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@/ui/breadcrumb"
-import { Button } from "@/ui/button"
-import { Checkbox } from "@/ui/checkbox"
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/ui/command"
+} from "@/components/ui/breadcrumb"
+import { Button } from "@/components/ui/button"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command"
 import {
   Dialog,
   DialogClose,
@@ -23,26 +23,26 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/ui/dialog"
+} from "@/components/ui/dialog"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/ui/dropdown-menu"
-import { Input } from "@/ui/input"
-import { Label } from "@/ui/label"
-import { Popover, PopoverContent, PopoverTrigger } from "@/ui/popover"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/ui/select"
-import { Separator } from "@/ui/separator"
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/ui/sheet"
-import { Skeleton } from "@/ui/skeleton"
-import { Switch } from "@/ui/switch"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/table"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/ui/tabs"
-import { Textarea } from "@/ui/textarea"
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/ui/tooltip"
+} from "@/components/ui/dropdown-menu"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Separator } from "@/components/ui/separator"
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
+import { Skeleton } from "@/components/ui/skeleton"
+import { Switch } from "@/components/ui/switch"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Textarea } from "@/components/ui/textarea"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 
 const S = { "data-gallery-subject": "" } as const
 

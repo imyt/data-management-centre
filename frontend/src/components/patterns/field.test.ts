@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { fieldA11y } from "@/patterns/field"
+import { fieldA11y } from "@/components/patterns/field"
 
 describe("fieldA11y", () => {
   it("returns only the id when there is no hint or error", () => {
