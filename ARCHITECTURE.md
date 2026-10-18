@@ -120,8 +120,8 @@ erDiagram
 | Table | Key fields |
 |---|---|
 | `application` | name, code, description, `app_owner_id`, `tech_owner_id`, `domain_id`, criticality, hosting, `vendor_id`, lifecycle_status (planned, active, retiring, decommissioned) |
-| `app_environment` | `application_id`, type (production, non_production), region |
-| `data_store` | `environment_id`, type, platform, region, `connection_ref` (secret reference, never the secret), harvest_status, last_harvested_at |
+| `app_environment` | `application_id`, name, type (production, non_production), `region_id` |
+| `data_store` | `environment_id`, name, type, platform, `region_id`, `connection_ref` (secret reference, never the secret), harvest_status (never, succeeded, failed), last_harvested_at |
 | `asset` | type (dataset, report, model, file), name, `owner_id`, `steward_id`, classification, classification_status, `domain_id`, `data_category_id`, business_context, is_stored, `retention_policy_id` (required when stored) |
 | `data_element` | `asset_id`, name, data_type, is_pii, pii_source (scanner, declared), is_cde, dq_threshold |
 | `application_asset` | `application_id`, `asset_id`, `data_store_id`, role (system_of_record, copy, consumer), access (read, write), `purpose_id` |
@@ -133,7 +133,7 @@ erDiagram
 | `physical_object` | `snapshot_id`, kind (schema, table, column), path, row_count, oldest_record_at |
 | `declaration` | subject (type, id), field, declared_value, `declared_by`, declared_at, expires_at, check_state (confirmed, mismatch, unverifiable, expired) |
 
-Reference data: `domain`, `data_category`, `region`, `retention_policy`, `purpose`.
+Reference data: `domain`, `data_category`, `region`, `retention_policy` (with `retention_days`), `purpose`, each with a unique `code` and a `name`. The inventory module owns them, including `domain`; other modules (identity's domain scopes) refer to domain ids without a foreign key.
 
 ### 6.2 Policy and evaluation
 

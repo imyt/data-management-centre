@@ -5,6 +5,369 @@ export type ClientOptions = {
 };
 
 /**
+ * ApplicationCreate
+ */
+export type ApplicationCreate = {
+    /**
+     * Name
+     */
+    name: string;
+    /**
+     * Code
+     *
+     * Short unique code, e.g. `ORD`. Letters, digits, - and _.
+     */
+    code: string;
+    /**
+     * Description
+     */
+    description?: string | null;
+    /**
+     * Domain Id
+     */
+    domain_id: string;
+    criticality: Criticality;
+    hosting: Hosting;
+    lifecycle_status?: LifecycleStatus;
+    /**
+     * App Owner Id
+     */
+    app_owner_id?: string | null;
+    /**
+     * Tech Owner Id
+     */
+    tech_owner_id?: string | null;
+};
+
+/**
+ * ApplicationDetail
+ */
+export type ApplicationDetail = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Name
+     */
+    name: string;
+    /**
+     * Code
+     */
+    code: string;
+    /**
+     * Description
+     */
+    description: string | null;
+    domain: ReferenceRef;
+    criticality: Criticality;
+    hosting: Hosting;
+    lifecycle_status: LifecycleStatus;
+    /**
+     * App Owner Id
+     */
+    app_owner_id: string | null;
+    /**
+     * Tech Owner Id
+     */
+    tech_owner_id: string | null;
+    /**
+     * Created At
+     */
+    created_at: string;
+    /**
+     * Updated At
+     */
+    updated_at: string;
+    /**
+     * Environments
+     */
+    environments: Array<EnvironmentDetail>;
+};
+
+/**
+ * ApplicationPage
+ */
+export type ApplicationPage = {
+    /**
+     * Data
+     */
+    data: Array<ApplicationRead>;
+    /**
+     * Allowed Actions
+     *
+     * Actions the caller may take on `data` right now.
+     */
+    allowed_actions: Array<string>;
+    meta: ListMeta;
+};
+
+/**
+ * ApplicationRead
+ */
+export type ApplicationRead = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Name
+     */
+    name: string;
+    /**
+     * Code
+     */
+    code: string;
+    /**
+     * Description
+     */
+    description: string | null;
+    domain: ReferenceRef;
+    criticality: Criticality;
+    hosting: Hosting;
+    lifecycle_status: LifecycleStatus;
+    /**
+     * App Owner Id
+     */
+    app_owner_id: string | null;
+    /**
+     * Tech Owner Id
+     */
+    tech_owner_id: string | null;
+    /**
+     * Created At
+     */
+    created_at: string;
+    /**
+     * Updated At
+     */
+    updated_at: string;
+};
+
+/**
+ * ApplicationResponse
+ */
+export type ApplicationResponse = {
+    data: ApplicationDetail;
+    /**
+     * Allowed Actions
+     *
+     * Actions the caller may take on `data` right now.
+     */
+    allowed_actions: Array<string>;
+    meta: Meta;
+};
+
+/**
+ * ApplicationUpdate
+ *
+ * Only the fields sent are changed.
+ */
+export type ApplicationUpdate = {
+    /**
+     * Name
+     */
+    name?: string | null;
+    /**
+     * Code
+     */
+    code?: string | null;
+    /**
+     * Description
+     */
+    description?: string | null;
+    /**
+     * Domain Id
+     */
+    domain_id?: string | null;
+    criticality?: Criticality | null;
+    hosting?: Hosting | null;
+    lifecycle_status?: LifecycleStatus | null;
+    /**
+     * App Owner Id
+     */
+    app_owner_id?: string | null;
+    /**
+     * Tech Owner Id
+     */
+    tech_owner_id?: string | null;
+};
+
+/**
+ * Criticality
+ */
+export type Criticality = 'low' | 'medium' | 'high' | 'critical';
+
+/**
+ * DataStoreCreate
+ */
+export type DataStoreCreate = {
+    /**
+     * Name
+     */
+    name: string;
+    type: DataStoreType;
+    /**
+     * Platform
+     *
+     * The product, e.g. `PostgreSQL 18` or `Amazon S3`.
+     */
+    platform: string;
+    /**
+     * Region Id
+     */
+    region_id: string;
+    /**
+     * Connection Ref
+     *
+     * Where the secrets store keeps the credentials, e.g. `vault:dmc/orders-db`.
+     */
+    connection_ref: string;
+};
+
+/**
+ * DataStoreRead
+ */
+export type DataStoreRead = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Environment Id
+     */
+    environment_id: string;
+    /**
+     * Name
+     */
+    name: string;
+    type: DataStoreType;
+    /**
+     * Platform
+     */
+    platform: string;
+    region: ReferenceRef;
+    /**
+     * Connection Ref
+     */
+    connection_ref: string;
+    harvest_status: HarvestStatus;
+    /**
+     * Last Harvested At
+     */
+    last_harvested_at: string | null;
+    /**
+     * Created At
+     */
+    created_at: string;
+};
+
+/**
+ * DataStoreResponse
+ */
+export type DataStoreResponse = {
+    data: DataStoreRead;
+    /**
+     * Allowed Actions
+     *
+     * Actions the caller may take on `data` right now.
+     */
+    allowed_actions: Array<string>;
+    meta: Meta;
+};
+
+/**
+ * DataStoreType
+ */
+export type DataStoreType = 'relational' | 'document' | 'object_storage' | 'warehouse' | 'file_share';
+
+/**
+ * EnvironmentCreate
+ */
+export type EnvironmentCreate = {
+    /**
+     * Name
+     */
+    name: string;
+    type: EnvironmentType;
+    /**
+     * Region Id
+     */
+    region_id: string;
+};
+
+/**
+ * EnvironmentDetail
+ */
+export type EnvironmentDetail = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Application Id
+     */
+    application_id: string;
+    /**
+     * Name
+     */
+    name: string;
+    type: EnvironmentType;
+    region: ReferenceRef;
+    /**
+     * Created At
+     */
+    created_at: string;
+    /**
+     * Data Stores
+     */
+    data_stores: Array<DataStoreRead>;
+};
+
+/**
+ * EnvironmentRead
+ */
+export type EnvironmentRead = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Application Id
+     */
+    application_id: string;
+    /**
+     * Name
+     */
+    name: string;
+    type: EnvironmentType;
+    region: ReferenceRef;
+    /**
+     * Created At
+     */
+    created_at: string;
+};
+
+/**
+ * EnvironmentResponse
+ */
+export type EnvironmentResponse = {
+    data: EnvironmentRead;
+    /**
+     * Allowed Actions
+     *
+     * Actions the caller may take on `data` right now.
+     */
+    allowed_actions: Array<string>;
+    meta: Meta;
+};
+
+/**
+ * EnvironmentType
+ */
+export type EnvironmentType = 'production' | 'non_production';
+
+/**
  * ExamplePage
  */
 export type ExamplePage = {
@@ -60,6 +423,13 @@ export type ExampleResponse = {
 export type ExampleStatus = 'draft' | 'active' | 'retired';
 
 /**
+ * HarvestStatus
+ *
+ * `never` until the first harvest runs (slice 4).
+ */
+export type HarvestStatus = 'never' | 'succeeded' | 'failed';
+
+/**
  * HealthRead
  */
 export type HealthRead = {
@@ -82,6 +452,11 @@ export type HealthReadyRead = {
      */
     database: 'ok';
 };
+
+/**
+ * Hosting
+ */
+export type Hosting = 'on_premises' | 'private_cloud' | 'public_cloud' | 'saas';
 
 /**
  * JobRead
@@ -164,6 +539,13 @@ export type JobResponse = {
  * JobStatus
  */
 export type JobStatus = 'queued' | 'running' | 'succeeded' | 'failed' | 'cancelled';
+
+/**
+ * LifecycleStatus
+ *
+ * ARCHITECTURE §6.4: planned → active → retiring → decommissioned.
+ */
+export type LifecycleStatus = 'planned' | 'active' | 'retiring' | 'decommissioned';
 
 /**
  * ListMeta
@@ -294,6 +676,108 @@ export type ProblemDetail = {
      */
     errors?: Array<ValidationIssue> | null;
     [key: string]: unknown;
+};
+
+/**
+ * ReferenceItemList
+ */
+export type ReferenceItemList = {
+    /**
+     * Data
+     */
+    data: Array<ReferenceItemRead>;
+    /**
+     * Allowed Actions
+     *
+     * Actions the caller may take on `data` right now.
+     */
+    allowed_actions: Array<string>;
+    meta: ListMeta;
+};
+
+/**
+ * ReferenceItemRead
+ */
+export type ReferenceItemRead = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Code
+     */
+    code: string;
+    /**
+     * Name
+     */
+    name: string;
+    /**
+     * Description
+     */
+    description: string | null;
+};
+
+/**
+ * ReferenceRef
+ *
+ * A reference-data item embedded in another resource.
+ */
+export type ReferenceRef = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Code
+     */
+    code: string;
+    /**
+     * Name
+     */
+    name: string;
+};
+
+/**
+ * RetentionPolicyList
+ */
+export type RetentionPolicyList = {
+    /**
+     * Data
+     */
+    data: Array<RetentionPolicyRead>;
+    /**
+     * Allowed Actions
+     *
+     * Actions the caller may take on `data` right now.
+     */
+    allowed_actions: Array<string>;
+    meta: ListMeta;
+};
+
+/**
+ * RetentionPolicyRead
+ */
+export type RetentionPolicyRead = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Code
+     */
+    code: string;
+    /**
+     * Name
+     */
+    name: string;
+    /**
+     * Description
+     */
+    description: string | null;
+    /**
+     * Retention Days
+     */
+    retention_days: number;
 };
 
 /**
@@ -610,3 +1094,336 @@ export type ListDevUsersResponses = {
 };
 
 export type ListDevUsersResponse = ListDevUsersResponses[keyof ListDevUsersResponses];
+
+export type ListDomainsData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/reference/domains';
+};
+
+export type ListDomainsResponses = {
+    /**
+     * Successful Response
+     */
+    200: ReferenceItemList;
+};
+
+export type ListDomainsResponse = ListDomainsResponses[keyof ListDomainsResponses];
+
+export type ListDataCategoriesData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/reference/data-categories';
+};
+
+export type ListDataCategoriesResponses = {
+    /**
+     * Successful Response
+     */
+    200: ReferenceItemList;
+};
+
+export type ListDataCategoriesResponse = ListDataCategoriesResponses[keyof ListDataCategoriesResponses];
+
+export type ListRegionsData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/reference/regions';
+};
+
+export type ListRegionsResponses = {
+    /**
+     * Successful Response
+     */
+    200: ReferenceItemList;
+};
+
+export type ListRegionsResponse = ListRegionsResponses[keyof ListRegionsResponses];
+
+export type ListRetentionPoliciesData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/reference/retention-policies';
+};
+
+export type ListRetentionPoliciesResponses = {
+    /**
+     * Successful Response
+     */
+    200: RetentionPolicyList;
+};
+
+export type ListRetentionPoliciesResponse = ListRetentionPoliciesResponses[keyof ListRetentionPoliciesResponses];
+
+export type ListPurposesData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/reference/purposes';
+};
+
+export type ListPurposesResponses = {
+    /**
+     * Successful Response
+     */
+    200: ReferenceItemList;
+};
+
+export type ListPurposesResponse = ListPurposesResponses[keyof ListPurposesResponses];
+
+export type ListApplicationsData = {
+    body?: never;
+    path?: never;
+    query?: {
+        /**
+         * Limit
+         */
+        limit?: number;
+        /**
+         * Cursor
+         */
+        cursor?: string | null;
+        /**
+         * Q
+         *
+         * Matches name or code, ignoring case.
+         */
+        q?: string | null;
+        /**
+         * Domain Id
+         */
+        domain_id?: string | null;
+        /**
+         * Lifecycle Status
+         */
+        lifecycle_status?: LifecycleStatus | null;
+    };
+    url: '/api/v1/applications';
+};
+
+export type ListApplicationsErrors = {
+    /**
+     * Invalid input
+     */
+    400: ProblemDetail;
+    /**
+     * Validation error
+     */
+    422: ProblemDetail;
+};
+
+export type ListApplicationsError = ListApplicationsErrors[keyof ListApplicationsErrors];
+
+export type ListApplicationsResponses = {
+    /**
+     * Successful Response
+     */
+    200: ApplicationPage;
+};
+
+export type ListApplicationsResponse = ListApplicationsResponses[keyof ListApplicationsResponses];
+
+export type CreateApplicationData = {
+    body: ApplicationCreate;
+    path?: never;
+    query?: never;
+    url: '/api/v1/applications';
+};
+
+export type CreateApplicationErrors = {
+    /**
+     * Invalid input
+     */
+    400: ProblemDetail;
+    /**
+     * Permission denied
+     */
+    403: ProblemDetail;
+    /**
+     * Conflict
+     */
+    409: ProblemDetail;
+    /**
+     * Validation error
+     */
+    422: ProblemDetail;
+};
+
+export type CreateApplicationError = CreateApplicationErrors[keyof CreateApplicationErrors];
+
+export type CreateApplicationResponses = {
+    /**
+     * Successful Response
+     */
+    201: ApplicationResponse;
+};
+
+export type CreateApplicationResponse = CreateApplicationResponses[keyof CreateApplicationResponses];
+
+export type GetApplicationData = {
+    body?: never;
+    path: {
+        /**
+         * Application Id
+         */
+        application_id: string;
+    };
+    query?: never;
+    url: '/api/v1/applications/{application_id}';
+};
+
+export type GetApplicationErrors = {
+    /**
+     * Not found
+     */
+    404: ProblemDetail;
+    /**
+     * Validation error
+     */
+    422: ProblemDetail;
+};
+
+export type GetApplicationError = GetApplicationErrors[keyof GetApplicationErrors];
+
+export type GetApplicationResponses = {
+    /**
+     * Successful Response
+     */
+    200: ApplicationResponse;
+};
+
+export type GetApplicationResponse = GetApplicationResponses[keyof GetApplicationResponses];
+
+export type UpdateApplicationData = {
+    body: ApplicationUpdate;
+    path: {
+        /**
+         * Application Id
+         */
+        application_id: string;
+    };
+    query?: never;
+    url: '/api/v1/applications/{application_id}';
+};
+
+export type UpdateApplicationErrors = {
+    /**
+     * Invalid input
+     */
+    400: ProblemDetail;
+    /**
+     * Permission denied
+     */
+    403: ProblemDetail;
+    /**
+     * Not found
+     */
+    404: ProblemDetail;
+    /**
+     * Conflict
+     */
+    409: ProblemDetail;
+    /**
+     * Validation error
+     */
+    422: ProblemDetail;
+};
+
+export type UpdateApplicationError = UpdateApplicationErrors[keyof UpdateApplicationErrors];
+
+export type UpdateApplicationResponses = {
+    /**
+     * Successful Response
+     */
+    200: ApplicationResponse;
+};
+
+export type UpdateApplicationResponse = UpdateApplicationResponses[keyof UpdateApplicationResponses];
+
+export type CreateEnvironmentData = {
+    body: EnvironmentCreate;
+    path: {
+        /**
+         * Application Id
+         */
+        application_id: string;
+    };
+    query?: never;
+    url: '/api/v1/applications/{application_id}/environments';
+};
+
+export type CreateEnvironmentErrors = {
+    /**
+     * Invalid input
+     */
+    400: ProblemDetail;
+    /**
+     * Permission denied
+     */
+    403: ProblemDetail;
+    /**
+     * Not found
+     */
+    404: ProblemDetail;
+    /**
+     * Validation error
+     */
+    422: ProblemDetail;
+};
+
+export type CreateEnvironmentError = CreateEnvironmentErrors[keyof CreateEnvironmentErrors];
+
+export type CreateEnvironmentResponses = {
+    /**
+     * Successful Response
+     */
+    201: EnvironmentResponse;
+};
+
+export type CreateEnvironmentResponse = CreateEnvironmentResponses[keyof CreateEnvironmentResponses];
+
+export type CreateDataStoreData = {
+    body: DataStoreCreate;
+    path: {
+        /**
+         * Environment Id
+         */
+        environment_id: string;
+    };
+    query?: never;
+    url: '/api/v1/environments/{environment_id}/data-stores';
+};
+
+export type CreateDataStoreErrors = {
+    /**
+     * Invalid input
+     */
+    400: ProblemDetail;
+    /**
+     * Permission denied
+     */
+    403: ProblemDetail;
+    /**
+     * Not found
+     */
+    404: ProblemDetail;
+    /**
+     * Validation error
+     */
+    422: ProblemDetail;
+};
+
+export type CreateDataStoreError = CreateDataStoreErrors[keyof CreateDataStoreErrors];
+
+export type CreateDataStoreResponses = {
+    /**
+     * Successful Response
+     */
+    201: DataStoreResponse;
+};
+
+export type CreateDataStoreResponse = CreateDataStoreResponses[keyof CreateDataStoreResponses];

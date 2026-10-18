@@ -2,7 +2,7 @@
 
 import type { Client, ClientMeta, Options as Options2, RequestResult, TDataShape } from './client';
 import { client } from './client.gen';
-import type { GetExampleData, GetExampleErrors, GetExampleResponses, GetHealthData, GetHealthReadyData, GetHealthReadyErrors, GetHealthReadyResponses, GetHealthResponses, GetJobData, GetJobErrors, GetJobResponses, GetMeData, GetMeErrors, GetMeResponses, GetMetaData, GetMetaResponses, ListDevUsersData, ListDevUsersErrors, ListDevUsersResponses, ListExamplesData, ListExamplesErrors, ListExamplesResponses } from './types.gen';
+import type { CreateApplicationData, CreateApplicationErrors, CreateApplicationResponses, CreateDataStoreData, CreateDataStoreErrors, CreateDataStoreResponses, CreateEnvironmentData, CreateEnvironmentErrors, CreateEnvironmentResponses, GetApplicationData, GetApplicationErrors, GetApplicationResponses, GetExampleData, GetExampleErrors, GetExampleResponses, GetHealthData, GetHealthReadyData, GetHealthReadyErrors, GetHealthReadyResponses, GetHealthResponses, GetJobData, GetJobErrors, GetJobResponses, GetMeData, GetMeErrors, GetMeResponses, GetMetaData, GetMetaResponses, ListApplicationsData, ListApplicationsErrors, ListApplicationsResponses, ListDataCategoriesData, ListDataCategoriesResponses, ListDevUsersData, ListDevUsersErrors, ListDevUsersResponses, ListDomainsData, ListDomainsResponses, ListExamplesData, ListExamplesErrors, ListExamplesResponses, ListPurposesData, ListPurposesResponses, ListRegionsData, ListRegionsResponses, ListRetentionPoliciesData, ListRetentionPoliciesResponses, UpdateApplicationData, UpdateApplicationErrors, UpdateApplicationResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -57,3 +57,86 @@ export const getMe = <ThrowOnError extends boolean = false>(options?: Options<Ge
  * List the personas to act as (dev authentication only)
  */
 export const listDevUsers = <ThrowOnError extends boolean = false>(options?: Options<ListDevUsersData, ThrowOnError>): RequestResult<ListDevUsersResponses, ListDevUsersErrors, ThrowOnError> => (options?.client ?? client).get<ListDevUsersResponses, ListDevUsersErrors, ThrowOnError>({ url: '/api/v1/dev/users', ...options });
+
+/**
+ * List domains
+ */
+export const listDomains = <ThrowOnError extends boolean = false>(options?: Options<ListDomainsData, ThrowOnError>): RequestResult<ListDomainsResponses, unknown, ThrowOnError> => (options?.client ?? client).get<ListDomainsResponses, unknown, ThrowOnError>({ url: '/api/v1/reference/domains', ...options });
+
+/**
+ * List data categories
+ */
+export const listDataCategories = <ThrowOnError extends boolean = false>(options?: Options<ListDataCategoriesData, ThrowOnError>): RequestResult<ListDataCategoriesResponses, unknown, ThrowOnError> => (options?.client ?? client).get<ListDataCategoriesResponses, unknown, ThrowOnError>({ url: '/api/v1/reference/data-categories', ...options });
+
+/**
+ * List regions
+ */
+export const listRegions = <ThrowOnError extends boolean = false>(options?: Options<ListRegionsData, ThrowOnError>): RequestResult<ListRegionsResponses, unknown, ThrowOnError> => (options?.client ?? client).get<ListRegionsResponses, unknown, ThrowOnError>({ url: '/api/v1/reference/regions', ...options });
+
+/**
+ * List retention policies
+ */
+export const listRetentionPolicies = <ThrowOnError extends boolean = false>(options?: Options<ListRetentionPoliciesData, ThrowOnError>): RequestResult<ListRetentionPoliciesResponses, unknown, ThrowOnError> => (options?.client ?? client).get<ListRetentionPoliciesResponses, unknown, ThrowOnError>({ url: '/api/v1/reference/retention-policies', ...options });
+
+/**
+ * List purposes
+ */
+export const listPurposes = <ThrowOnError extends boolean = false>(options?: Options<ListPurposesData, ThrowOnError>): RequestResult<ListPurposesResponses, unknown, ThrowOnError> => (options?.client ?? client).get<ListPurposesResponses, unknown, ThrowOnError>({ url: '/api/v1/reference/purposes', ...options });
+
+/**
+ * List applications
+ */
+export const listApplications = <ThrowOnError extends boolean = false>(options?: Options<ListApplicationsData, ThrowOnError>): RequestResult<ListApplicationsResponses, ListApplicationsErrors, ThrowOnError> => (options?.client ?? client).get<ListApplicationsResponses, ListApplicationsErrors, ThrowOnError>({ url: '/api/v1/applications', ...options });
+
+/**
+ * Register an application
+ */
+export const createApplication = <ThrowOnError extends boolean = false>(options: Options<CreateApplicationData, ThrowOnError>): RequestResult<CreateApplicationResponses, CreateApplicationErrors, ThrowOnError> => (options.client ?? client).post<CreateApplicationResponses, CreateApplicationErrors, ThrowOnError>({
+    url: '/api/v1/applications',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Get an application with its environments and data stores
+ */
+export const getApplication = <ThrowOnError extends boolean = false>(options: Options<GetApplicationData, ThrowOnError>): RequestResult<GetApplicationResponses, GetApplicationErrors, ThrowOnError> => (options.client ?? client).get<GetApplicationResponses, GetApplicationErrors, ThrowOnError>({ url: '/api/v1/applications/{application_id}', ...options });
+
+/**
+ * Update an application
+ */
+export const updateApplication = <ThrowOnError extends boolean = false>(options: Options<UpdateApplicationData, ThrowOnError>): RequestResult<UpdateApplicationResponses, UpdateApplicationErrors, ThrowOnError> => (options.client ?? client).patch<UpdateApplicationResponses, UpdateApplicationErrors, ThrowOnError>({
+    url: '/api/v1/applications/{application_id}',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Add an environment to an application
+ */
+export const createEnvironment = <ThrowOnError extends boolean = false>(options: Options<CreateEnvironmentData, ThrowOnError>): RequestResult<CreateEnvironmentResponses, CreateEnvironmentErrors, ThrowOnError> => (options.client ?? client).post<CreateEnvironmentResponses, CreateEnvironmentErrors, ThrowOnError>({
+    url: '/api/v1/applications/{application_id}/environments',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Add a data store to an environment
+ */
+export const createDataStore = <ThrowOnError extends boolean = false>(options: Options<CreateDataStoreData, ThrowOnError>): RequestResult<CreateDataStoreResponses, CreateDataStoreErrors, ThrowOnError> => (options.client ?? client).post<CreateDataStoreResponses, CreateDataStoreErrors, ThrowOnError>({
+    url: '/api/v1/environments/{environment_id}/data-stores',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});

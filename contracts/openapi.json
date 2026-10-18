@@ -335,10 +335,1346 @@
           }
         }
       }
+    },
+    "/api/v1/reference/domains": {
+      "get": {
+        "tags": [
+          "inventory"
+        ],
+        "summary": "List domains",
+        "operationId": "listDomains",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReferenceItemList"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/reference/data-categories": {
+      "get": {
+        "tags": [
+          "inventory"
+        ],
+        "summary": "List data categories",
+        "operationId": "listDataCategories",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReferenceItemList"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/reference/regions": {
+      "get": {
+        "tags": [
+          "inventory"
+        ],
+        "summary": "List regions",
+        "operationId": "listRegions",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReferenceItemList"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/reference/retention-policies": {
+      "get": {
+        "tags": [
+          "inventory"
+        ],
+        "summary": "List retention policies",
+        "operationId": "listRetentionPolicies",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RetentionPolicyList"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/reference/purposes": {
+      "get": {
+        "tags": [
+          "inventory"
+        ],
+        "summary": "List purposes",
+        "operationId": "listPurposes",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReferenceItemList"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/applications": {
+      "get": {
+        "tags": [
+          "inventory"
+        ],
+        "summary": "List applications",
+        "operationId": "listApplications",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 25,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor"
+            }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 200
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Matches name or code, ignoring case.",
+              "title": "Q"
+            },
+            "description": "Matches name or code, ignoring case."
+          },
+          {
+            "name": "domain_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Domain Id"
+            }
+          },
+          {
+            "name": "lifecycle_status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/LifecycleStatus"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Lifecycle Status"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplicationPage"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "inventory"
+        ],
+        "summary": "Register an application",
+        "operationId": "createApplication",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApplicationCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplicationResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Permission denied",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/applications/{application_id}": {
+      "get": {
+        "tags": [
+          "inventory"
+        ],
+        "summary": "Get an application with its environments and data stores",
+        "operationId": "getApplication",
+        "parameters": [
+          {
+            "name": "application_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Application Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplicationResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "inventory"
+        ],
+        "summary": "Update an application",
+        "operationId": "updateApplication",
+        "parameters": [
+          {
+            "name": "application_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Application Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApplicationUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplicationResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Permission denied",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/applications/{application_id}/environments": {
+      "post": {
+        "tags": [
+          "inventory"
+        ],
+        "summary": "Add an environment to an application",
+        "operationId": "createEnvironment",
+        "parameters": [
+          {
+            "name": "application_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Application Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EnvironmentCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EnvironmentResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Permission denied",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/environments/{environment_id}/data-stores": {
+      "post": {
+        "tags": [
+          "inventory"
+        ],
+        "summary": "Add a data store to an environment",
+        "operationId": "createDataStore",
+        "parameters": [
+          {
+            "name": "environment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Environment Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DataStoreCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataStoreResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Permission denied",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
     "schemas": {
+      "ApplicationCreate": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "code": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{1,39}$",
+            "title": "Code",
+            "description": "Short unique code, e.g. `ORD`. Letters, digits, - and _."
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 2000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "domain_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Domain Id"
+          },
+          "criticality": {
+            "$ref": "#/components/schemas/Criticality"
+          },
+          "hosting": {
+            "$ref": "#/components/schemas/Hosting"
+          },
+          "lifecycle_status": {
+            "$ref": "#/components/schemas/LifecycleStatus",
+            "default": "planned"
+          },
+          "app_owner_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "App Owner Id"
+          },
+          "tech_owner_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tech Owner Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "name",
+          "code",
+          "domain_id",
+          "criticality",
+          "hosting"
+        ],
+        "title": "ApplicationCreate"
+      },
+      "ApplicationDetail": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "domain": {
+            "$ref": "#/components/schemas/ReferenceRef"
+          },
+          "criticality": {
+            "$ref": "#/components/schemas/Criticality"
+          },
+          "hosting": {
+            "$ref": "#/components/schemas/Hosting"
+          },
+          "lifecycle_status": {
+            "$ref": "#/components/schemas/LifecycleStatus"
+          },
+          "app_owner_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "App Owner Id"
+          },
+          "tech_owner_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tech Owner Id"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          },
+          "environments": {
+            "items": {
+              "$ref": "#/components/schemas/EnvironmentDetail"
+            },
+            "type": "array",
+            "title": "Environments"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "code",
+          "description",
+          "domain",
+          "criticality",
+          "hosting",
+          "lifecycle_status",
+          "app_owner_id",
+          "tech_owner_id",
+          "created_at",
+          "updated_at",
+          "environments"
+        ],
+        "title": "ApplicationDetail"
+      },
+      "ApplicationPage": {
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/ApplicationRead"
+            },
+            "type": "array",
+            "title": "Data"
+          },
+          "allowed_actions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Allowed Actions",
+            "description": "Actions the caller may take on `data` right now."
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ListMeta"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data",
+          "allowed_actions",
+          "meta"
+        ],
+        "title": "ApplicationPage"
+      },
+      "ApplicationRead": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "domain": {
+            "$ref": "#/components/schemas/ReferenceRef"
+          },
+          "criticality": {
+            "$ref": "#/components/schemas/Criticality"
+          },
+          "hosting": {
+            "$ref": "#/components/schemas/Hosting"
+          },
+          "lifecycle_status": {
+            "$ref": "#/components/schemas/LifecycleStatus"
+          },
+          "app_owner_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "App Owner Id"
+          },
+          "tech_owner_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tech Owner Id"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "code",
+          "description",
+          "domain",
+          "criticality",
+          "hosting",
+          "lifecycle_status",
+          "app_owner_id",
+          "tech_owner_id",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "ApplicationRead"
+      },
+      "ApplicationResponse": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/ApplicationDetail"
+          },
+          "allowed_actions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Allowed Actions",
+            "description": "Actions the caller may take on `data` right now."
+          },
+          "meta": {
+            "$ref": "#/components/schemas/Meta"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data",
+          "allowed_actions",
+          "meta"
+        ],
+        "title": "ApplicationResponse"
+      },
+      "ApplicationUpdate": {
+        "properties": {
+          "name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "code": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{1,39}$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Code"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 2000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "domain_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Domain Id"
+          },
+          "criticality": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Criticality"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "hosting": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Hosting"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "lifecycle_status": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/LifecycleStatus"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "app_owner_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "App Owner Id"
+          },
+          "tech_owner_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tech Owner Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "ApplicationUpdate",
+        "description": "Only the fields sent are changed."
+      },
+      "Criticality": {
+        "type": "string",
+        "enum": [
+          "low",
+          "medium",
+          "high",
+          "critical"
+        ],
+        "title": "Criticality"
+      },
+      "DataStoreCreate": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "type": {
+            "$ref": "#/components/schemas/DataStoreType"
+          },
+          "platform": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Platform",
+            "description": "The product, e.g. `PostgreSQL 18` or `Amazon S3`."
+          },
+          "region_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Region Id"
+          },
+          "connection_ref": {
+            "type": "string",
+            "maxLength": 500,
+            "pattern": "^[a-z][a-z0-9+.-]*:[^\\s@]+$",
+            "title": "Connection Ref",
+            "description": "Where the secrets store keeps the credentials, e.g. `vault:dmc/orders-db`."
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "name",
+          "type",
+          "platform",
+          "region_id",
+          "connection_ref"
+        ],
+        "title": "DataStoreCreate"
+      },
+      "DataStoreRead": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "environment_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Environment Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "type": {
+            "$ref": "#/components/schemas/DataStoreType"
+          },
+          "platform": {
+            "type": "string",
+            "title": "Platform"
+          },
+          "region": {
+            "$ref": "#/components/schemas/ReferenceRef"
+          },
+          "connection_ref": {
+            "type": "string",
+            "title": "Connection Ref"
+          },
+          "harvest_status": {
+            "$ref": "#/components/schemas/HarvestStatus"
+          },
+          "last_harvested_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Harvested At"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "environment_id",
+          "name",
+          "type",
+          "platform",
+          "region",
+          "connection_ref",
+          "harvest_status",
+          "last_harvested_at",
+          "created_at"
+        ],
+        "title": "DataStoreRead"
+      },
+      "DataStoreResponse": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/DataStoreRead"
+          },
+          "allowed_actions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Allowed Actions",
+            "description": "Actions the caller may take on `data` right now."
+          },
+          "meta": {
+            "$ref": "#/components/schemas/Meta"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data",
+          "allowed_actions",
+          "meta"
+        ],
+        "title": "DataStoreResponse"
+      },
+      "DataStoreType": {
+        "type": "string",
+        "enum": [
+          "relational",
+          "document",
+          "object_storage",
+          "warehouse",
+          "file_share"
+        ],
+        "title": "DataStoreType"
+      },
+      "EnvironmentCreate": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "type": {
+            "$ref": "#/components/schemas/EnvironmentType"
+          },
+          "region_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Region Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "name",
+          "type",
+          "region_id"
+        ],
+        "title": "EnvironmentCreate"
+      },
+      "EnvironmentDetail": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "application_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Application Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "type": {
+            "$ref": "#/components/schemas/EnvironmentType"
+          },
+          "region": {
+            "$ref": "#/components/schemas/ReferenceRef"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "data_stores": {
+            "items": {
+              "$ref": "#/components/schemas/DataStoreRead"
+            },
+            "type": "array",
+            "title": "Data Stores"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "application_id",
+          "name",
+          "type",
+          "region",
+          "created_at",
+          "data_stores"
+        ],
+        "title": "EnvironmentDetail"
+      },
+      "EnvironmentRead": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "application_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Application Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "type": {
+            "$ref": "#/components/schemas/EnvironmentType"
+          },
+          "region": {
+            "$ref": "#/components/schemas/ReferenceRef"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "application_id",
+          "name",
+          "type",
+          "region",
+          "created_at"
+        ],
+        "title": "EnvironmentRead"
+      },
+      "EnvironmentResponse": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/EnvironmentRead"
+          },
+          "allowed_actions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Allowed Actions",
+            "description": "Actions the caller may take on `data` right now."
+          },
+          "meta": {
+            "$ref": "#/components/schemas/Meta"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data",
+          "allowed_actions",
+          "meta"
+        ],
+        "title": "EnvironmentResponse"
+      },
+      "EnvironmentType": {
+        "type": "string",
+        "enum": [
+          "production",
+          "non_production"
+        ],
+        "title": "EnvironmentType"
+      },
       "ExamplePage": {
         "properties": {
           "data": {
@@ -430,6 +1766,16 @@
         ],
         "title": "ExampleStatus"
       },
+      "HarvestStatus": {
+        "type": "string",
+        "enum": [
+          "never",
+          "succeeded",
+          "failed"
+        ],
+        "title": "HarvestStatus",
+        "description": "`never` until the first harvest runs (slice 4)."
+      },
       "HealthRead": {
         "properties": {
           "status": {
@@ -463,6 +1809,16 @@
           "database"
         ],
         "title": "HealthReadyRead"
+      },
+      "Hosting": {
+        "type": "string",
+        "enum": [
+          "on_premises",
+          "private_cloud",
+          "public_cloud",
+          "saas"
+        ],
+        "title": "Hosting"
       },
       "JobRead": {
         "properties": {
@@ -610,6 +1966,17 @@
           "cancelled"
         ],
         "title": "JobStatus"
+      },
+      "LifecycleStatus": {
+        "type": "string",
+        "enum": [
+          "planned",
+          "active",
+          "retiring",
+          "decommissioned"
+        ],
+        "title": "LifecycleStatus",
+        "description": "ARCHITECTURE §6.4: planned → active → retiring → decommissioned."
       },
       "ListMeta": {
         "properties": {
@@ -829,6 +2196,166 @@
         ],
         "title": "ProblemDetail",
         "description": "The one error shape every endpoint returns: RFC 9457 problem details.\n\nStructured context from a domain error is added as extension members."
+      },
+      "ReferenceItemList": {
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/ReferenceItemRead"
+            },
+            "type": "array",
+            "title": "Data"
+          },
+          "allowed_actions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Allowed Actions",
+            "description": "Actions the caller may take on `data` right now."
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ListMeta"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data",
+          "allowed_actions",
+          "meta"
+        ],
+        "title": "ReferenceItemList"
+      },
+      "ReferenceItemRead": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "code",
+          "name",
+          "description"
+        ],
+        "title": "ReferenceItemRead"
+      },
+      "ReferenceRef": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "code",
+          "name"
+        ],
+        "title": "ReferenceRef",
+        "description": "A reference-data item embedded in another resource."
+      },
+      "RetentionPolicyList": {
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/RetentionPolicyRead"
+            },
+            "type": "array",
+            "title": "Data"
+          },
+          "allowed_actions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Allowed Actions",
+            "description": "Actions the caller may take on `data` right now."
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ListMeta"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data",
+          "allowed_actions",
+          "meta"
+        ],
+        "title": "RetentionPolicyList"
+      },
+      "RetentionPolicyRead": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "retention_days": {
+            "type": "integer",
+            "title": "Retention Days"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "code",
+          "name",
+          "description",
+          "retention_days"
+        ],
+        "title": "RetentionPolicyRead"
       },
       "Role": {
         "type": "string",

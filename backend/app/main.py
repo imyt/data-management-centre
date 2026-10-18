@@ -19,6 +19,7 @@ from app.core.migrations import ensure_database_is_current
 from app.modules.examples import router as examples
 from app.modules.identity import router as identity
 from app.modules.identity.service import IdentityDirectory
+from app.modules.inventory import router as inventory
 
 API_PREFIX = "/api/v1"
 
@@ -69,6 +70,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(jobs.router, prefix=API_PREFIX)
     app.include_router(examples.router, prefix=API_PREFIX)
     app.include_router(identity.router, prefix=API_PREFIX)
+    app.include_router(inventory.router, prefix=API_PREFIX)
     return app
 
 
