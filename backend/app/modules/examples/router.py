@@ -4,9 +4,9 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, Query, status
 
-from app.core.schemas import error_responses
+from app.core.schemas import ListMeta, error_responses
 from app.modules.examples.repository import InMemoryExampleRepository
-from app.modules.examples.schemas import ExamplePage, ExampleRead
+from app.modules.examples.schemas import ExamplePage, ExampleRead, ExampleResponse
 from app.modules.examples.service import ExampleService
 
 router = APIRouter(prefix="/examples", tags=["examples"])
@@ -36,19 +36,18 @@ async def list_examples(
 ) -> ExamplePage:
     page = await service.list_examples(limit=limit, cursor=cursor)
     return ExamplePage(
-        items=[ExampleRead.model_validate(item) for item in page.items],
-        next_cursor=page.next_cursor,
-        total=page.total,
+        data=[ExampleRead.model_validate(item) for item in page.items],
+        meta=ListMeta(next_cursor=page.next_cursor, total=page.total),
     )
 
 
 @router.get(
     "/{example_id}",
-    response_model=ExampleRead,
+    response_model=ExampleResponse,
     status_code=status.HTTP_200_OK,
     operation_id="getExample",
     summary="Get an example",
     responses=error_responses(404, 422),
 )
-async def get_example(example_id: str, service: Service) -> ExampleRead:
-    return ExampleRead.model_validate(await service.get_example(example_id))
+async def get_example(example_id: str, service: Service) -> ExampleResponse:
+    return ExampleResponse(data=ExampleRead.model_validate(await service.get_example(example_id)))

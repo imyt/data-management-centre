@@ -1,7 +1,8 @@
-"""Maps domain errors and framework errors to the shared ErrorResponse shape."""
+"""Maps domain errors and framework errors to RFC 9457 problem details."""
 
 import logging
 import uuid
+from http import HTTPStatus
 from typing import Any
 
 from fastapi import FastAPI, Request, status
@@ -18,7 +19,7 @@ from app.core.errors import (
     NotFoundError,
     PermissionDeniedError,
 )
-from app.core.schemas import ErrorResponse
+from app.core.schemas import PROBLEM_JSON, ProblemDetail, ValidationIssue
 
 logger = logging.getLogger(__name__)
 
@@ -30,6 +31,15 @@ _DOMAIN_STATUS: dict[type[DomainError], int] = {
     ConflictError: status.HTTP_409_CONFLICT,
     PermissionDeniedError: status.HTTP_403_FORBIDDEN,
 }
+
+_DOMAIN_TITLE: dict[str, str] = {
+    NotFoundError.code: "Not found",
+    InvalidInputError.code: "Invalid input",
+    ConflictError.code: "Conflict",
+    PermissionDeniedError.code: "Permission denied",
+}
+
+_RESERVED_MEMBERS = frozenset(ProblemDetail.model_fields)
 
 
 class RequestIdMiddleware:
@@ -55,49 +65,100 @@ class RequestIdMiddleware:
         await self.app(scope, receive, send_with_id)
 
 
-def _error(
-    request: Request, status_code: int, code: str, message: str, details: Any = None
+def problem_type(code: str) -> str:
+    """The problem `type` URI for a stable error code."""
+    return f"urn:dmc:problem:{code}"
+
+
+def _problem(
+    request: Request,
+    status_code: int,
+    *,
+    type_: str = "about:blank",
+    title: str | None = None,
+    detail: str | None = None,
+    errors: list[ValidationIssue] | None = None,
+    extensions: Any = None,
+    headers: dict[str, str] | None = None,
 ) -> JSONResponse:
-    body = ErrorResponse(
-        code=code,
-        message=message,
-        details=jsonable_encoder(details),
+    extra = jsonable_encoder(extensions) if isinstance(extensions, dict) else {}
+    body = ProblemDetail(
+        type=type_,
+        title=title or HTTPStatus(status_code).phrase,
+        status=status_code,
+        detail=detail,
+        instance=request.url.path,
         request_id=getattr(request.state, "request_id", ""),
+        errors=errors,
+        **{k: v for k, v in extra.items() if k not in _RESERVED_MEMBERS},
     )
-    return JSONResponse(status_code=status_code, content=body.model_dump())
+    return JSONResponse(
+        status_code=status_code,
+        content=body.model_dump(mode="json", exclude_none=True),
+        media_type=PROBLEM_JSON,
+        headers=headers,
+    )
+
+
+def _document_problem_media_type(app: FastAPI) -> None:
+    """FastAPI documents every response model as application/json; errors are problem+json."""
+    generate = app.openapi
+
+    def openapi() -> dict[str, Any]:
+        spec = generate()
+        for path in spec.get("paths", {}).values():
+            for operation in path.values():
+                for code, response in operation.get("responses", {}).items():
+                    content = response.get("content", {})
+                    if str(code)[0] in "45" and "application/json" in content:
+                        content[PROBLEM_JSON] = content.pop("application/json")
+        return spec
+
+    app.openapi = openapi  # type: ignore[method-assign]
 
 
 def register_error_handlers(app: FastAPI) -> None:
+    _document_problem_media_type(app)
+
     @app.exception_handler(DomainError)
     async def _domain(request: Request, exc: DomainError) -> JSONResponse:
         status_code = next(
             (code for cls, code in _DOMAIN_STATUS.items() if isinstance(exc, cls)),
             status.HTTP_400_BAD_REQUEST,
         )
-        return _error(request, status_code, exc.code, exc.message, exc.details)
+        return _problem(
+            request,
+            status_code,
+            type_=problem_type(exc.code),
+            title=_DOMAIN_TITLE.get(exc.code, HTTPStatus(status_code).phrase),
+            detail=exc.message,
+            extensions=exc.details,
+        )
 
     @app.exception_handler(RequestValidationError)
     async def _validation(request: Request, exc: RequestValidationError) -> JSONResponse:
-        details = [{k: e[k] for k in ("loc", "msg", "type") if k in e} for e in exc.errors()]
-        return _error(
+        errors = [ValidationIssue(loc=e["loc"], msg=e["msg"], type=e["type"]) for e in exc.errors()]
+        return _problem(
             request,
             status.HTTP_422_UNPROCESSABLE_CONTENT,
-            "validation_error",
-            "Some fields are not valid.",
-            details,
+            type_=problem_type("validation_error"),
+            title="Validation error",
+            detail="Some fields are not valid.",
+            errors=errors,
         )
 
     @app.exception_handler(StarletteHTTPException)
     async def _http(request: Request, exc: StarletteHTTPException) -> JSONResponse:
-        return _error(request, exc.status_code, "http_error", str(exc.detail))
+        return _problem(request, exc.status_code, detail=str(exc.detail))
 
     @app.exception_handler(Exception)
     async def _unhandled(request: Request, exc: Exception) -> JSONResponse:
         request_id = getattr(request.state, "request_id", "")
         logger.exception("Unhandled error", extra={"request_id": request_id})
-        return _error(
+        return _problem(
             request,
             status.HTTP_500_INTERNAL_SERVER_ERROR,
-            "internal_error",
-            "Something went wrong. Try again, or contact support with the request ID.",
+            detail="Something went wrong. Try again, or contact support with the request ID.",
+            # Unhandled errors are answered outside RequestIdMiddleware, so echo the ID here.
+            headers={REQUEST_ID_HEADER: request_id},
         )

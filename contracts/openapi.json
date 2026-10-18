@@ -77,9 +77,9 @@
           "400": {
             "description": "Invalid input",
             "content": {
-              "application/json": {
+              "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
+                  "$ref": "#/components/schemas/ProblemDetail"
                 }
               }
             }
@@ -87,9 +87,9 @@
           "422": {
             "description": "Validation error",
             "content": {
-              "application/json": {
+              "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
+                  "$ref": "#/components/schemas/ProblemDetail"
                 }
               }
             }
@@ -121,7 +121,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ExampleRead"
+                  "$ref": "#/components/schemas/ExampleResponse"
                 }
               }
             }
@@ -129,9 +129,9 @@
           "404": {
             "description": "Not found",
             "content": {
-              "application/json": {
+              "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
+                  "$ref": "#/components/schemas/ProblemDetail"
                 }
               }
             }
@@ -139,9 +139,9 @@
           "422": {
             "description": "Validation error",
             "content": {
-              "application/json": {
+              "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
+                  "$ref": "#/components/schemas/ProblemDetail"
                 }
               }
             }
@@ -152,75 +152,32 @@
   },
   "components": {
     "schemas": {
-      "ErrorResponse": {
-        "properties": {
-          "code": {
-            "type": "string",
-            "title": "Code",
-            "description": "Stable, machine-readable error code."
-          },
-          "message": {
-            "type": "string",
-            "title": "Message",
-            "description": "Plain-language message safe to show to the user."
-          },
-          "details": {
-            "title": "Details",
-            "description": "Optional structured context."
-          },
-          "request_id": {
-            "type": "string",
-            "title": "Request Id",
-            "description": "Matches the X-Request-ID response header."
-          }
-        },
-        "type": "object",
-        "required": [
-          "code",
-          "message",
-          "request_id"
-        ],
-        "title": "ErrorResponse",
-        "description": "The one error shape every endpoint returns."
-      },
       "ExamplePage": {
         "properties": {
-          "items": {
+          "data": {
             "items": {
               "$ref": "#/components/schemas/ExampleRead"
             },
             "type": "array",
-            "title": "Items"
+            "title": "Data"
           },
-          "next_cursor": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Next Cursor",
-            "description": "Pass as `cursor` to get the next page."
+          "allowed_actions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Allowed Actions",
+            "description": "Actions the caller may take on `data` right now."
           },
-          "total": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Total",
-            "description": "Total matching items, when cheap."
+          "meta": {
+            "$ref": "#/components/schemas/ListMeta"
           }
         },
         "type": "object",
         "required": [
-          "items",
-          "next_cursor"
+          "data",
+          "allowed_actions",
+          "meta"
         ],
         "title": "ExamplePage"
       },
@@ -252,6 +209,31 @@
         ],
         "title": "ExampleRead"
       },
+      "ExampleResponse": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/ExampleRead"
+          },
+          "allowed_actions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Allowed Actions",
+            "description": "Actions the caller may take on `data` right now."
+          },
+          "meta": {
+            "$ref": "#/components/schemas/Meta"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data",
+          "allowed_actions",
+          "meta"
+        ],
+        "title": "ExampleResponse"
+      },
       "ExampleStatus": {
         "type": "string",
         "enum": [
@@ -274,6 +256,216 @@
           "status"
         ],
         "title": "HealthRead"
+      },
+      "ListMeta": {
+        "properties": {
+          "evaluated_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Evaluated At",
+            "description": "When the data was last evaluated, if it is derived."
+          },
+          "stale_after": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stale After",
+            "description": "When the data should be treated as stale."
+          },
+          "next_cursor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Cursor",
+            "description": "Pass as `cursor` to get the next page; null on the last page."
+          },
+          "total": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Total",
+            "description": "Total matching items, when cheap."
+          }
+        },
+        "type": "object",
+        "required": [
+          "evaluated_at",
+          "stale_after",
+          "next_cursor",
+          "total"
+        ],
+        "title": "ListMeta",
+        "description": "Meta for a list: freshness plus cursor paging."
+      },
+      "Meta": {
+        "properties": {
+          "evaluated_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Evaluated At",
+            "description": "When the data was last evaluated, if it is derived."
+          },
+          "stale_after": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stale After",
+            "description": "When the data should be treated as stale."
+          }
+        },
+        "type": "object",
+        "required": [
+          "evaluated_at",
+          "stale_after"
+        ],
+        "title": "Meta",
+        "description": "Freshness of the data in a response, when the data was derived by an evaluation."
+      },
+      "ProblemDetail": {
+        "properties": {
+          "type": {
+            "type": "string",
+            "title": "Type",
+            "description": "URI identifying the problem type; `urn:dmc:problem:<code>` for domain errors.",
+            "default": "about:blank"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title",
+            "description": "Short summary of the problem type."
+          },
+          "status": {
+            "type": "integer",
+            "title": "Status",
+            "description": "HTTP status code."
+          },
+          "detail": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Detail",
+            "description": "Plain-language explanation safe to show to the user."
+          },
+          "instance": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Instance",
+            "description": "The request path that failed."
+          },
+          "request_id": {
+            "type": "string",
+            "title": "Request Id",
+            "description": "Matches the X-Request-ID response header."
+          },
+          "errors": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/ValidationIssue"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Errors",
+            "description": "Fields that failed validation (422 only)."
+          }
+        },
+        "additionalProperties": true,
+        "type": "object",
+        "required": [
+          "title",
+          "status",
+          "request_id"
+        ],
+        "title": "ProblemDetail",
+        "description": "The one error shape every endpoint returns: RFC 9457 problem details.\n\nStructured context from a domain error is added as extension members."
+      },
+      "ValidationIssue": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Loc",
+            "description": "Where the field is, e.g. `['query', 'limit']`."
+          },
+          "msg": {
+            "type": "string",
+            "title": "Msg",
+            "description": "Plain-language message."
+          },
+          "type": {
+            "type": "string",
+            "title": "Type",
+            "description": "Stable, machine-readable kind of failure."
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationIssue",
+        "description": "One field that failed request validation."
       }
     }
   }

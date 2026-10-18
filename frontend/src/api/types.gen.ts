@@ -5,57 +5,20 @@ export type ClientOptions = {
 };
 
 /**
- * ErrorResponse
- *
- * The one error shape every endpoint returns.
- */
-export type ErrorResponse = {
-    /**
-     * Code
-     *
-     * Stable, machine-readable error code.
-     */
-    code: string;
-    /**
-     * Message
-     *
-     * Plain-language message safe to show to the user.
-     */
-    message: string;
-    /**
-     * Details
-     *
-     * Optional structured context.
-     */
-    details?: unknown;
-    /**
-     * Request Id
-     *
-     * Matches the X-Request-ID response header.
-     */
-    request_id: string;
-};
-
-/**
  * ExamplePage
  */
 export type ExamplePage = {
     /**
-     * Items
+     * Data
      */
-    items: Array<ExampleRead>;
+    data: Array<ExampleRead>;
     /**
-     * Next Cursor
+     * Allowed Actions
      *
-     * Pass as `cursor` to get the next page.
+     * Actions the caller may take on `data` right now.
      */
-    next_cursor: string | null;
-    /**
-     * Total
-     *
-     * Total matching items, when cheap.
-     */
-    total?: number | null;
+    allowed_actions: Array<string>;
+    meta: ListMeta;
 };
 
 /**
@@ -78,6 +41,20 @@ export type ExampleRead = {
 };
 
 /**
+ * ExampleResponse
+ */
+export type ExampleResponse = {
+    data: ExampleRead;
+    /**
+     * Allowed Actions
+     *
+     * Actions the caller may take on `data` right now.
+     */
+    allowed_actions: Array<string>;
+    meta: Meta;
+};
+
+/**
  * ExampleStatus
  */
 export type ExampleStatus = 'draft' | 'active' | 'retired';
@@ -90,6 +67,137 @@ export type HealthRead = {
      * Status
      */
     status: 'ok';
+};
+
+/**
+ * ListMeta
+ *
+ * Meta for a list: freshness plus cursor paging.
+ */
+export type ListMeta = {
+    /**
+     * Evaluated At
+     *
+     * When the data was last evaluated, if it is derived.
+     */
+    evaluated_at: string | null;
+    /**
+     * Stale After
+     *
+     * When the data should be treated as stale.
+     */
+    stale_after: string | null;
+    /**
+     * Next Cursor
+     *
+     * Pass as `cursor` to get the next page; null on the last page.
+     */
+    next_cursor: string | null;
+    /**
+     * Total
+     *
+     * Total matching items, when cheap.
+     */
+    total: number | null;
+};
+
+/**
+ * Meta
+ *
+ * Freshness of the data in a response, when the data was derived by an evaluation.
+ */
+export type Meta = {
+    /**
+     * Evaluated At
+     *
+     * When the data was last evaluated, if it is derived.
+     */
+    evaluated_at: string | null;
+    /**
+     * Stale After
+     *
+     * When the data should be treated as stale.
+     */
+    stale_after: string | null;
+};
+
+/**
+ * ProblemDetail
+ *
+ * The one error shape every endpoint returns: RFC 9457 problem details.
+ *
+ * Structured context from a domain error is added as extension members.
+ */
+export type ProblemDetail = {
+    /**
+     * Type
+     *
+     * URI identifying the problem type; `urn:dmc:problem:<code>` for domain errors.
+     */
+    type?: string;
+    /**
+     * Title
+     *
+     * Short summary of the problem type.
+     */
+    title: string;
+    /**
+     * Status
+     *
+     * HTTP status code.
+     */
+    status: number;
+    /**
+     * Detail
+     *
+     * Plain-language explanation safe to show to the user.
+     */
+    detail?: string | null;
+    /**
+     * Instance
+     *
+     * The request path that failed.
+     */
+    instance?: string | null;
+    /**
+     * Request Id
+     *
+     * Matches the X-Request-ID response header.
+     */
+    request_id: string;
+    /**
+     * Errors
+     *
+     * Fields that failed validation (422 only).
+     */
+    errors?: Array<ValidationIssue> | null;
+    [key: string]: unknown;
+};
+
+/**
+ * ValidationIssue
+ *
+ * One field that failed request validation.
+ */
+export type ValidationIssue = {
+    /**
+     * Loc
+     *
+     * Where the field is, e.g. `['query', 'limit']`.
+     */
+    loc: Array<string | number>;
+    /**
+     * Msg
+     *
+     * Plain-language message.
+     */
+    msg: string;
+    /**
+     * Type
+     *
+     * Stable, machine-readable kind of failure.
+     */
+    type: string;
 };
 
 export type GetHealthData = {
@@ -128,11 +236,11 @@ export type ListExamplesErrors = {
     /**
      * Invalid input
      */
-    400: ErrorResponse;
+    400: ProblemDetail;
     /**
      * Validation error
      */
-    422: ErrorResponse;
+    422: ProblemDetail;
 };
 
 export type ListExamplesError = ListExamplesErrors[keyof ListExamplesErrors];
@@ -162,11 +270,11 @@ export type GetExampleErrors = {
     /**
      * Not found
      */
-    404: ErrorResponse;
+    404: ProblemDetail;
     /**
      * Validation error
      */
-    422: ErrorResponse;
+    422: ProblemDetail;
 };
 
 export type GetExampleError = GetExampleErrors[keyof GetExampleErrors];
@@ -175,7 +283,7 @@ export type GetExampleResponses = {
     /**
      * Successful Response
      */
-    200: ExampleRead;
+    200: ExampleResponse;
 };
 
 export type GetExampleResponse = GetExampleResponses[keyof GetExampleResponses];

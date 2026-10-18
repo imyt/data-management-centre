@@ -2,7 +2,7 @@
 
 - Status: accepted
 - Date: 2026-10-18
-- Supersedes: ADR 0002 decisions 1 to 3 (layout, tiers per package, import-linter contracts). Decisions 4 to 8 (errors, operation IDs, contract pipeline, hey-api on TypeScript 6, pnpm) still hold.
+- Supersedes: ADR 0002 decisions 1 to 3 (layout, tiers per package, import-linter contracts). Decisions 4 to 8 (errors, operation IDs, contract pipeline, hey-api on TypeScript 6, pnpm) still hold, except that the `ErrorResponse` shape in decision 4 is now RFC 9457 problem details (see "Not done yet").
 
 ## Context
 
@@ -41,8 +41,8 @@ ADR 0002 set up `backend/` as a uv workspace with `apps/api` and one package per
 
 ARCHITECTURE.md asks for these. Each is a behaviour or dependency change, so each gets its own PR:
 
-- Response envelope `{data, allowed_actions, meta}` (§8), and a test that every route uses it.
-- RFC 9457 problem details instead of `ErrorResponse`.
+- ~~Response envelope `{data, allowed_actions, meta}` (§8), and a test that every route uses it.~~ Done: `Envelope` and `ListEnvelope` in `app/core/schemas.py`; `tests/test_response_envelope.py` walks every route (exempt: `getHealth`).
+- ~~RFC 9457 problem details instead of `ErrorResponse`.~~ Done: `ProblemDetail` served as `application/problem+json`, with `request_id` and validation `errors` extensions; domain errors use `type` `urn:dmc:problem:<code>`.
 - `Idempotency-Key` on retryable writes; `202` with a job id and `/api/v1/jobs/{id}`.
 - SQLAlchemy 2, Alembic with one schema per module, the outbox, and the Postgres job queue in a worker.
 - mypy, and Alembic upgrade and downgrade in CI (§13).

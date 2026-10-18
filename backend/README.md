@@ -11,6 +11,8 @@ uv run ruff check . && uv run ruff format --check .
 uv run lint-imports                             # module boundaries
 ```
 
+Responses: every route returns `{data, allowed_actions, meta}` (`Envelope` or, for lists, `ListEnvelope` with `meta.next_cursor`) from `app/core/schemas.py`; only `/health` is exempt. Errors are RFC 9457 problem details (`application/problem+json`).
+
 After any API change, run `npm run api:sync` from `frontend/`. It exports `contracts/openapi.json` and regenerates `frontend/src/api/`. Commit both together.
 
 Database access, sessions and the test database: [ADR 0005](../docs/adr/0005-database-layer.md).

@@ -1,10 +1,10 @@
-"""Pydantic read models for the examples API."""
+"""Pydantic read models and response envelopes for the examples API."""
 
 from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict
 
-from app.core.schemas import Page
+from app.core.schemas import Envelope, ListEnvelope
 from app.modules.examples.domain import ExampleStatus
 
 
@@ -17,5 +17,9 @@ class ExampleRead(BaseModel):
     created_at: datetime
 
 
-class ExamplePage(Page[ExampleRead]):
+class ExampleResponse(Envelope[ExampleRead]):
+    pass
+
+
+class ExamplePage(ListEnvelope[ExampleRead]):
     pass
